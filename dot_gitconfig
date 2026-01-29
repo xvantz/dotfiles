@@ -1,0 +1,5 @@
+[user]
+	name = xvantz
+	email = xvantz@gmail.com
+[core]
+	editor = nvim
