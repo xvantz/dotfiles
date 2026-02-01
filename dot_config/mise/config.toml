@@ -1,0 +1,17 @@
+[tools]
+eza = "latest"
+go = "latest"
+"nix:cargo" = "latest"
+"nix:chezmoi" = "latest"
+"nix:dotnet-sdk_8" = "latest"
+"nix:htop" = "latest"
+"nix:lazygit" = "latest"
+"nix:neofetch" = "latest"
+"nix:tree-sitter" = "latest"
+"nix:yazi" = "latest"
+"nix:zig" = "latest"
+starship = "latest"
+zoxide = "latest"
+
+[settings]
+experimental = true
