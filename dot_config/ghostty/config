@@ -1,0 +1,7 @@
+font-family = "JetBrainsMono Nerd Font"
+font-size = 11
+theme = Catppuccin Mocha
+window-decoration = false
+confirm-close-surface = false
+
+command = /usr/bin/zsh
