@@ -1,0 +1,20 @@
+if [[ -z "$TMUX" ]] && [ "$SSH_CONNECTION" = "" ]; then
+    tmux attach-session -t default || tmux new-session -s default
+fi
+eval "$(/home/admin/.local/bin/mise activate zsh)"
+eval "$(zoxide init zsh)"
+eval "$(starship init zsh)"
+alias ls="eza --icons"
+alias cd="z"
+export EDITOR="nvim"
+export VISUAL="nvim"
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
+source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
