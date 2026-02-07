@@ -1,8 +1,4 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, lib, ... }:
 
 {
   imports =
@@ -11,11 +7,23 @@
     ];
 
   # Bootloader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "nodev";
-  boot.loader.grub.efiSupport = true;
-  boot.loader.grub.useOSProber = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader = {
+    efi.canTouchEfiVariables = true;
+    grub = {
+      enable = true;
+      device = "nodev";
+      efiSupport = true;
+      useOSProber = true;
+    };
+  };
+  boot.initrd.kernelModules = [ "amdgpu" ];
+  boot.kernelModules = [ "hp-wmi" "ec_sys" "it87" "k10temp" ];
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+  hardware.enableAllFirmware = true;
+  boot.kernelParams = [
+    "acpi_enforce_resources=lax"
+    "pci=noaer"
+  ];
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -24,13 +32,28 @@
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  # Enable networking
   networking.networkmanager.enable = true;
+  networking.useDHCP = false;
+  networking.dhcpcd.enable = false;
+  services.resolved = { 
+    enable = true;
+    dnssec = "true";
+    fallbackDns = [
+      "1.1.1.1"
+      "1.0.0.1"
+    ];
+    llmnr = "false";
+    dnsovertls = "true";
+    extraConfig = ''
+      Cache=yes
+      Domains=~.
+    '';
+  };
+  networking.nameservers = [ "127.0.0.53" "1.1.1.1" "1.0.0.1" ];
+  networking.resolvconf.enable = false;
 
-  # Set your time zone.
   time.timeZone = "Asia/Ho_Chi_Minh";
 
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
   i18n.extraLocaleSettings = {
@@ -45,23 +68,75 @@
     LC_TIME = "en_US.UTF-8";
   };
 
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+    extraPackages = with pkgs; [
+      libva-vdpau-driver
+      libvdpau-va-gl
+      mesa
+      libglvnd
+    ];
+  };
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+
+  hardware.bluetooth.settings = {
+    General = {
+      Experimental = true;
+    };
+  };
+
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 50; 
+    priority = 100;
+  };
+
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 180;
+    "vm.watermark_boost_factor" = 0;
+    "vm.watermark_scale_factor" = 125;
+    "vm.page-cluster" = 0;
+  };
+
   # Enable the X11 windowing system.
   services.xserver.enable = true;
+  services.xserver.videoDrivers = [ "amdgpu" ];
+
 
   # Enable the GNOME Desktop Environment.
-  services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
+  services.desktopManager.gnome.enable = false;
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+    theme = "catppuccin-mocha-mauve";
+  };
+  services.displayManager.defaultSession = "niri";
+  environment.gnome.excludePackages = with pkgs; [
+    gnome-terminal gnome-console gedit epiphany geary evince
+    totem gnome-music gnome-photos cheese gnome-maps gnome-weather
+    gnome-system-monitor gnome-software gnome-logs gnome-calculator
+    gnome-characters gnome-contacts gnome-font-viewer gnome-clocks
+    gnome-connections gnome-calendar gnome-tour gnome-user-docs
+    tali iagno hitori atomix
+  ];
+  # environment.sessionVariables.XDG_DATA_DIRS = lib.mkForce [ "/run/current-system/sw/share" ];
+  environment.variables = {
+    "WLR_DRM_DEVICES" = "/dev/dri/card1";
+    "WLR_RENDERER_ALLOW_SOFTWARE" = "0";
+  };
 
   # Configure keymap in X11
   services.xserver.xkb = {
-    layout = "us";
+    layout = "us,ru";
     variant = "";
+    options = "grp:caps_toggle";
   };
 
-  # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -69,14 +144,56 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
+    extraConfig.pipewire."92-ldac-rates" = {
+      "context.properties" = {
+        "default.clock.rate" = 48000;
+        "default.clock.allowed-rates" = [ 44100 48000 88200 96000 ];
+      };
+    };
+    wireplumber.extraConfig."11-bluetooth-policy" = {
+      "monitor.bluez.properties" = {
+      "bluez5.enable-sbc-xq" = true;
+      "bluez5.enable-msbc" = true;
+      "bluez5.codecs" = [ "ldac" "aptx_hd" "aac" "sbc" ];
+      };
+    };
   };
+  xdg.portal = {
+    enable = true;
+    config.common.default = [ "gnome" "gtk" ];
+    extraPortals = [ 
+      pkgs.xdg-desktop-portal-gnome
+      pkgs.xdg-desktop-portal-gtk
+    ];
+  };
+  services.gnome.at-spi2-core.enable = lib.mkForce false;
+  services.gvfs.enable = lib.mkForce false;
+  services.gnome.core-shell.enable = lib.mkForce false;
+  services.gnome.core-utilities.enable = lib.mkForce false;
+  services.gnome.evolution-data-server.enable = lib.mkForce false;
+  services.gnome.gnome-online-accounts.enable = lib.mkForce false;
+  services.gnome.gnome-keyring.enable = lib.mkForce false;
+  programs.dconf.enable = true;
+  services.dbus.enable = true;
+  services.dbus.implementation = "broker";
+  services.thermald.enable = true;
+  services.auto-cpufreq.enable = true;
+  services.auto-cpufreq.settings = {
+    charger = {
+      governor = "performance";
+      turbo = "auto";
+    };
+    battery = {
+      governor = "powersave";
+      turbo = "never";
+    };
+  };
+  services.upower.enable = true;
+  security.polkit.enable = true;
+  programs.coolercontrol.enable = true;
+  security.pam.services.hyprlock = {};
 
+  services.power-profiles-daemon.enable = false;
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
@@ -84,10 +201,10 @@
   users.users.xvantz = {
     isNormalUser = true;
     description = "Ivan R.";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "video" ];
     packages = with pkgs; [
-    #  thunderbird
     ];
+    shell = pkgs.zsh;
   };
 
   # Install firefox.
@@ -99,45 +216,75 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-	vim
-	neovim
-    	git
-	wget
-	curl
-	yazi
-	lazygit
-	starship
-	go
-	zig
-	nodejs
-	rustup
-	chezmoi
-	eza
-	zoxide
-	dotnet-sdk_8
-	tree-sitter
-	neohtop
-	neofetch
+	  vim
+	  neovim
+    git
+	  wget
+	  curl
+    wl-clipboard
+    xclip
+    waybar
+    fuzzel
+    mako
+    xwayland-satellite
+    pciutils
+    lm_sensors
+    (catppuccin-sddm.override {
+      flavor = "mocha";
+      accent = "mauve";
+      font = "JetBrainsMono Nerd Font";
+      fontSize = "12";
+     })
+    nbfc-linux
+    mission-center
+    mesa-demos
+    vulkan-tools
+    gsettings-desktop-schemas
+    adwaita-icon-theme
+    gtk4
+    libadwaita
+    hyprlock
+    hypridle
+    catppuccin-cursors.mochaDark
+  ];
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
   ];
 
-  programs.zsh = {
-	enable = true;
-	autosuggestions.enable = true;
-	syntaxHighlighting.enable = true;
-	shellAliases = {
-	ls = "eza --icons";
-	cd = "z";
-	};
-	promptInit = ''
-	  eval "$(starship init zsh)"
-	  eval "$(zoxide init zsh)"
-	'';
+  programs.zsh.enable = true;
+  
+  programs.niri = {
+    enable = true;
+    package = pkgs.niri;
   };
 
-  programs.zoxide.enableZshIntegration = true;
+  programs.uwsm = {
+    enable = true;
+    waylandCompositors = {
+      niri = {
+        prettyName = "Niri";
+        binPath = "${pkgs.niri}/bin/niri-session";
+      };
+    };
+  };
+  programs.light.enable = true;
+
   users.defaultUserShell = pkgs.zsh;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
+  services.udev.extraRules = ''
+    ACTION=="add|change", ATTRS{idVendor}=="342d", ATTRS{idProduct}=="e487", ENV{LIBINPUT_ATTR_KEYBOARD_DEBOUNCE_DELAY}="50ms"
+    ACTION=="add", SUBSYSTEM=="drm", KERNEL=="card1", ATTR{device/power_dpm_force_performance_level}="high"
+  '';
+
+  nix.settings = {
+    substituters = [
+      "https://anyrun.cachix.org"
+    ];
+    trusted-public-keys = [
+      "anyrun.cachix.org-1:pqBobmOjI7nKlsUMV25u9QHa9btJK65/C8vnO3p346s="
+    ];
+  };
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;

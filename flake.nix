@@ -3,25 +3,65 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    zen-browser = {
+      url = "github:youwen5/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    dms = {
+      url = "github:AvengeMedia/DankMaterialShell/stable";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    niri = {
+      url = "github:sodiboo/niri-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    dgop = {
+      url = "github:AvengeMedia/dgop";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    anyrun.url = "github:anyrun-org/anyrun";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, dms, dgop, ... }@inputs: 
+    let
       system = "x86_64-linux";
-      specialArgs = { inherit inputs; };
+      pkgs-unstable = import nixpkgs-unstable {
+        inherit system;
+        config.allowUnfree = true;
+      };
+    in {
+    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+      inherit system;
+      specialArgs = { inherit inputs pkgs-unstable; }; 
       modules = [
         ./configuration.nix
-        
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.users.xvantz = import ./home.nix;
+          home-manager.extraSpecialArgs = { 
+            inherit inputs pkgs-unstable;
+            zen-browser-pkg = zen-browser.packages."${system}".default;
+          };
+          home-manager.users.xvantz = {
+            disabledModules = [ "programs/anyrun.nix" ]; 
+
+            imports = [
+              inputs.anyrun.homeManagerModules.default
+              ./home.nix # Твой основной файл настроек
+            ];
+          };
         }
       ];
     };
