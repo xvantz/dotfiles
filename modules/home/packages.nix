@@ -1,0 +1,47 @@
+{
+  pkgs,
+  zen-browser-pkg,
+  pkgs-unstable,
+  ...
+}: {
+  home.packages = with pkgs; [
+    usbutils
+    yazi
+    lazygit
+    starship
+    go
+    zig
+    nodejs
+    rustup
+    eza
+    zoxide
+    dotnet-sdk_8
+    tree-sitter
+    neohtop
+    cmake
+    ripgrep
+    gcc
+    fd
+    gnumake
+    tmux
+    unzip
+    ghostty
+    zen-browser-pkg
+    waybar
+    docker
+    nbfc-linux
+    spotify
+    libnotify
+    pulseaudio
+    pavucontrol
+    playerctl
+    grim
+    slurp
+    satty
+    fastfetch
+    bitwarden-desktop
+    nixd
+    alejandra
+    pkgs-unstable.telegram-desktop
+  ];
+}
