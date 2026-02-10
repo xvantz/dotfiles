@@ -51,14 +51,6 @@
         background-color: #33467c;
       }
 
-      .plugin {
-        opacity: 0;
-      }
-
-      .plugin image {
-        opacity: 0;
-      }
-
       .title {
         color: #c0caf5;
         font-size: 16px;
