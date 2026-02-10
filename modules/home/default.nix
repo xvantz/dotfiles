@@ -10,5 +10,6 @@
     ./yazi.nix
     ./tmux.nix
     ./starship.nix
+    ./neovim.nix
   ];
 }
