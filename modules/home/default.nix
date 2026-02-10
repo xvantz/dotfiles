@@ -9,5 +9,6 @@
     ./ghostty.nix
     ./yazi.nix
     ./tmux.nix
+    ./starship.nix
   ];
 }

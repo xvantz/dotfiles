@@ -7,7 +7,6 @@
   home.packages = with pkgs; [
     usbutils
     lazygit
-    starship
     go
     zig
     nodejs

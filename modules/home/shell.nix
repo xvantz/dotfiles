@@ -2,7 +2,6 @@
   programs.zsh = {
     enable = true;
     enableCompletion = true;
-    autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
     shellAliases = {
       ls = "eza --icons";
@@ -12,11 +11,17 @@
     initContent = ''
       eval "$(starship init zsh)"
       eval "$(zoxide init zsh)"
-    '';
-    initExtra = ''
       if [[ -z "$TMUX" && -z "$TERMINAL_EMULATOR" && $- == *i* ]]; then
         exec tmux attach || exec tmux new-session
       fi
+      function y() {
+      	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+      	yazi "$@" --cwd-file="$tmp"
+      	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+      		builtin cd -- "$cwd"
+      	fi
+      	rm -f -- "$tmp"
+      }
     '';
   };
 
