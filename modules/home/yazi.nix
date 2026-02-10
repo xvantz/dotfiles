@@ -1,0 +1,15 @@
+{...}: {
+  programs.yazi = {
+    enable = true;
+    settings = {
+      yazi = {
+        sort_by = "alphabetical";
+        sort_sensitive = false;
+        sort_reverse = false;
+        sort_dir_first = true;
+        show_hidden = true;
+        show_symlink = true;
+      };
+    };
+  };
+}

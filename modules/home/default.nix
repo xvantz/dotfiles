@@ -7,5 +7,7 @@
     ./packages.nix
     ./anyrun.nix
     ./ghostty.nix
+    ./yazi.nix
+    ./tmux.nix
   ];
 }
