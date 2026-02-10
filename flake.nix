@@ -33,33 +33,40 @@
     anyrun.url = "github:anyrun-org/anyrun";
   };
 
-outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, zen-browser, dms, dgop, ... }@inputs: 
-    let
-      system = "x86_64-linux";
-      pkgs-unstable = import nixpkgs-unstable {
-        inherit system;
-        config.allowUnfree = true;
-      };
-    in {
+  outputs = {
+    nixpkgs,
+    nixpkgs-unstable,
+    home-manager,
+    zen-browser,
+    ...
+  } @ inputs: let
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
+    pkgs-unstable = import nixpkgs-unstable {
+      inherit system;
+      config.allowUnfree = true;
+    };
+    customPkgs = import ./customPkgs/default.nix pkgs;
+  in {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit inputs pkgs-unstable; }; 
+      specialArgs = {inherit inputs pkgs-unstable customPkgs;};
       modules = [
         ./configuration.nix
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-          home-manager.extraSpecialArgs = { 
-            inherit inputs pkgs-unstable;
+          home-manager.extraSpecialArgs = {
+            inherit inputs pkgs-unstable customPkgs;
             zen-browser-pkg = zen-browser.packages."${system}".default;
           };
           home-manager.users.xvantz = {
-            disabledModules = [ "programs/anyrun.nix" ]; 
+            disabledModules = ["programs/anyrun.nix"];
 
             imports = [
               inputs.anyrun.homeManagerModules.default
-              ./home.nix # Твой основной файл настроек
+              ./home.nix
             ];
           };
         }
