@@ -6,7 +6,6 @@
 }: {
   home.packages = with pkgs; [
     usbutils
-    yazi
     lazygit
     starship
     go
@@ -23,7 +22,6 @@
     gcc
     fd
     gnumake
-    tmux
     unzip
     ghostty
     zen-browser-pkg

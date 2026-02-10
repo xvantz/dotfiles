@@ -1,16 +1,22 @@
 {...}: {
   programs.zsh = {
     enable = true;
-    # autoSuggestions.enable = true;
+    enableCompletion = true;
+    autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
     shellAliases = {
       ls = "eza --icons";
       cd = "z";
-      rebuild = "sudo nixos-rebuild switch --flake ~/.dotfiles#nixos";
+      update = "sudo nixos-rebuild switch --flake ~/.dotfiles#nixos";
     };
     initContent = ''
       eval "$(starship init zsh)"
       eval "$(zoxide init zsh)"
+    '';
+    initExtra = ''
+      if [[ -z "$TMUX" && -z "$TERMINAL_EMULATOR" && $- == *i* ]]; then
+        exec tmux attach || exec tmux new-session
+      fi
     '';
   };
 
