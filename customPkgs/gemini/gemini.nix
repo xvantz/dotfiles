@@ -12,7 +12,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
   src = fetchurl {
     url = "https://github.com/google-gemini/gemini-cli/releases/download/v${finalAttrs.version}/gemini.js";
-    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    hash = "sha256-I1B1RyImSBRrrF6cFzHv5kOR1R5K6tlFZbKF/Jn1ff4=";
   };
 
   dontUnpack = true;
@@ -25,17 +25,15 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     mkdir -p $out/lib/gemini
     cp $src $out/lib/gemini/gemini.js
 
-    sed -i '/disableautoupdate: {/,/}/ s/default: false/default: true/' "$out/lib/gemini/gemini.js"
+    sed -i 's/default: false/default: true/g' "$out/lib/gemini/gemini.js"
 
     substituteInPlace $out/lib/gemini/gemini.js \
-      --replace-fail "settings.merged.general?.disableUpdateNag" "(settings.merged.general?.disableUpdateNag ?? true)" \
-      --replace-fail "settings.merged.general?.disableAutoUpdate ?? false" "settings.merged.general?.disableAutoUpdate ?? true" \
-      --replace-fail "settings.merged.general?.disableAutoUpdate" "(settings.merged.general?.disableAutoUpdate ?? true)" \
       --replace-fail 'const existingPath = await resolveExistingRgPath();' 'const existingPath = "${lib.getExe ripgrep}";'
 
     makeWrapper ${lib.getExe nodejs} $out/bin/gemini \
       --add-flags "$out/lib/gemini/gemini.js" \
-      --set NODE_PATH "$out/lib/node_modules"
+      --set NODE_PATH "$out/lib/node_modules" \
+      --set DISABLE_AUTOUPDATER 1
 
     runHook postInstall
   '';
