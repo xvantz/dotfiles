@@ -7,6 +7,7 @@
   home.packages = with pkgs; [
     usbutils
     lazygit
+    lazysql
     go
     zig
     nodejs
@@ -40,5 +41,6 @@
     nixd
     alejandra
     pkgs-unstable.telegram-desktop
+    nodePackages.pnpm
   ];
 }

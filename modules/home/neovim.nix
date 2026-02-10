@@ -13,7 +13,6 @@
       nodePackages.svelte-language-server
       nodePackages.sass
       nodePackages.postcss
-      nodePackages.pnpm
     ];
   };
 }
