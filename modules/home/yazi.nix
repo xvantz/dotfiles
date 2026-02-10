@@ -2,7 +2,7 @@
   programs.yazi = {
     enable = true;
     settings = {
-      yazi = {
+      mgr = {
         sort_by = "alphabetical";
         sort_sensitive = false;
         sort_reverse = false;
