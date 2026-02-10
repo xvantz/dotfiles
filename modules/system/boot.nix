@@ -12,7 +12,7 @@
     initrd.kernelModules = ["amdgpu"];
     kernelModules = ["hp-wmi" "ec_sys" "it87" "k10temp"];
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = ["acpi_enforce_resources=lax" "pci=noaer"];
+    kernelParams = ["acpi_enforce_resources=lax" "pci=noaer" "pcie_aspm=force"];
 
     kernel.sysctl = {
       "vm.swappiness" = 180;
