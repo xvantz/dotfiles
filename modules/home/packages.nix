@@ -1,5 +1,6 @@
 {
   pkgs,
+  customPkgs,
   zen-browser-pkg,
   pkgs-unstable,
   ...
@@ -42,5 +43,7 @@
     alejandra
     pkgs-unstable.telegram-desktop
     nodePackages.pnpm
+    customPkgs.codex
+    customPkgs.gemini
   ];
 }
