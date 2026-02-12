@@ -36,6 +36,10 @@
     nix-tree
   ];
 
+  programs.nix-ld.enable = true;
+  # programs.nix-ld.libraries = with pkgs; [
+  # ];
+
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
   ];
