@@ -41,6 +41,7 @@
     ...
   } @ inputs: let
     system = "x86_64-linux";
+    selfPath = "/home/xvantz/.dotfiles";
     pkgs = nixpkgs.legacyPackages.${system};
     pkgs-unstable = import nixpkgs-unstable {
       inherit system;
@@ -50,7 +51,7 @@
   in {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       inherit system;
-      specialArgs = {inherit inputs pkgs-unstable customPkgs;};
+      specialArgs = {inherit inputs pkgs-unstable customPkgs selfPath;};
       modules = [
         ./configuration.nix
         home-manager.nixosModules.home-manager
@@ -58,7 +59,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.extraSpecialArgs = {
-            inherit inputs pkgs-unstable customPkgs;
+            inherit inputs pkgs-unstable customPkgs selfPath;
             zen-browser-pkg = zen-browser.packages."${system}".default;
           };
           home-manager.users.xvantz = {

@@ -1,11 +1,9 @@
 {
   pkgs,
   config,
+  selfPath,
   ...
-}:
-let
-  dotfilesDir = "${config.home.homeDirectory}/.dotfiles";
-in {
+}: {
   programs.niri = {
     enable = true;
     package = pkgs.niri;
@@ -13,10 +11,10 @@ in {
 
   programs.hyprlock.enable = true;
 
-  xdg.configFile."hypr/hyprlock.conf".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/hypr/hyprlock.conf";
-  xdg.configFile."hypr/mocha.conf".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/hypr/mocha.conf";
-  xdg.configFile."hypr/nix-black.png".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/hypr/nix-black.png";
-  xdg.configFile."hypr/logo.png".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/hypr/logo.png";
+  xdg.configFile."hypr/hyprlock.conf".source = config.lib.file.mkOutOfStoreSymlink "${selfPath}/config/hypr/hyprlock.conf";
+  xdg.configFile."hypr/mocha.conf".source = config.lib.file.mkOutOfStoreSymlink "${selfPath}/config/hypr/mocha.conf";
+  xdg.configFile."hypr/nix-black.png".source = config.lib.file.mkOutOfStoreSymlink "${selfPath}/config/hypr/nix-black.png";
+  xdg.configFile."hypr/logo.png".source = config.lib.file.mkOutOfStoreSymlink "${selfPath}/config/hypr/logo.png";
 
   services.hypridle = {
     enable = true;
