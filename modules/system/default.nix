@@ -12,5 +12,6 @@
     ./i18n.nix
     ./nix-settings.nix
     ./services.nix
+    ./nh.nix
   ];
 }
