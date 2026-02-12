@@ -1,10 +1,11 @@
 {...}: {
   programs.git = {
     enable = true;
-    userName = "Ivan R.";
-    userEmail = "xvantz@gmail.com";
-
-    extraConfig = {
+    settings = {
+      user = {
+        name = "Ivan R.";
+        email = "xvantz@gmail.com";
+      };
       init.defaultBranch = "main";
       pull.rebase = true;
     };
