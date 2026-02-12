@@ -13,7 +13,7 @@
       hideIcons = false;
       ignoreExclusiveZones = false;
       layer = "overlay";
-      hidePluginInfo = false;
+      hidePluginInfo = true;
       closeOnClick = false;
       showResultsImmediately = false;
       maxEntries = null;
