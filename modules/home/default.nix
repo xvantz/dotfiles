@@ -11,5 +11,6 @@
     ./tmux.nix
     ./starship.nix
     ./neovim.nix
+    ./git.nix
   ];
 }
