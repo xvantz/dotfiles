@@ -3,4 +3,5 @@
   services.dbus.enable = true;
   services.dbus.implementation = "broker";
   security.pam.services.hyprlock = {};
+  services.fstrim.enable = true;
 }
