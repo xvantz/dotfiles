@@ -2,10 +2,15 @@
   services.xserver.enable = true;
   services.xserver.videoDrivers = ["amdgpu"];
 
-  services.displayManager.sddm = {
+  # services.displayManager.sddm = {
+  #   enable = true;
+  #   wayland.enable = true;
+  #   theme = "catppuccin-mocha-mauve";
+  # };
+
+  programs.dank-material-shell.greeter = {
     enable = true;
-    wayland.enable = true;
-    theme = "catppuccin-mocha-mauve";
+    compositor.name = "niri";
   };
 
   hardware.graphics = {
