@@ -3,14 +3,17 @@
   inputs,
   config,
   ...
-}: {
+}:
+let
+  dotfilesDir = "${config.home.homeDirectory}/.dotfiles";
+in {
   imports = [
     inputs.dms.homeModules.dank-material-shell
     inputs.dms.homeModules.niri
     inputs.niri.homeModules.niri
   ];
 
-  xdg.configFile."niri/dms/binds.kdl".source = config.lib.file.mkOutOfStoreSymlink "/home/xvantz/.dotfiles/config/niri/config.kdl";
+  xdg.configFile."niri/dms/binds.kdl".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/niri/config.kdl";
 
   programs.dank-material-shell = {
     enable = true;

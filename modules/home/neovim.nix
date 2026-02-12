@@ -2,8 +2,11 @@
   pkgs,
   config,
   ...
-}: {
-  xdg.configFile."nvim".source = config.lib.file.mkOutOfStoreSymlink "/home/xvantz/.dotfiles/config/nvim";
+}:
+let
+  dotfilesDir = "${config.home.homeDirectory}/.dotfiles";
+in {
+  xdg.configFile."nvim".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/config/nvim";
 
   programs.neovim = {
     enable = true;
