@@ -6,7 +6,7 @@
     shellAliases = {
       ls = "eza --icons";
       cd = "z";
-      update = "sudo nixos-rebuild switch --flake ~/.dotfiles#nixos";
+      update = "nh os switch";
     };
     initContent = ''
       eval "$(starship init zsh)"
