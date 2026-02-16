@@ -17,6 +17,12 @@
       selene
       lua-language-server
       stylua
+      zls
+      vtsls
+      gopls
+      rustfmt
+      rust-analyzer
+      csharp-ls
     ];
   };
 }

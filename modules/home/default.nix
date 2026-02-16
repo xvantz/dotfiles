@@ -12,5 +12,6 @@
     ./starship.nix
     ./neovim.nix
     ./git.nix
+    ./browser.nix
   ];
 }

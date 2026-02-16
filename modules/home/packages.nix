@@ -1,7 +1,6 @@
 {
   pkgs,
   customPkgs,
-  zen-browser-pkg,
   pkgs-unstable,
   ...
 }: {
@@ -25,7 +24,6 @@
     gnumake
     unzip
     ghostty
-    zen-browser-pkg
     waybar
     docker
     nbfc-linux
@@ -45,5 +43,10 @@
     nodePackages.pnpm
     customPkgs.codex
     customPkgs.gemini
+    tldr
+    ouch
+    procs
+    fzf
+    bat
   ];
 }

@@ -7,6 +7,10 @@
       ls = "eza --icons";
       cd = "z";
       update = "nh os switch";
+      ps = "procs";
+      pack = "ouch compress";
+      unpack = "ouch decompress";
+      cat = "bat --theme=\"Catppuccin Mocha\"";
     };
     initContent = ''
       eval "$(starship init zsh)"

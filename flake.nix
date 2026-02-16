@@ -11,7 +11,7 @@
     };
 
     zen-browser = {
-      url = "github:youwen5/zen-browser-flake";
+      url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -37,7 +37,6 @@
     nixpkgs,
     nixpkgs-unstable,
     home-manager,
-    zen-browser,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -60,7 +59,6 @@
           home-manager.useUserPackages = true;
           home-manager.extraSpecialArgs = {
             inherit inputs pkgs-unstable customPkgs selfPath;
-            zen-browser-pkg = zen-browser.packages."${system}".default;
           };
           home-manager.users.xvantz = {
             disabledModules = ["programs/anyrun.nix"];
