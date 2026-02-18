@@ -34,6 +34,7 @@
     xdg-desktop-portal-gtk
     xdg-desktop-portal-wlr
     nix-tree
+    easyeffects
   ];
 
   programs.nix-ld.enable = true;
