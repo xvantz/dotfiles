@@ -14,6 +14,5 @@
     ./services.nix
     ./nh.nix
     ./fonts.nix
-    ./snapper.nix
   ];
 }
