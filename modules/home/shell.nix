@@ -37,5 +37,7 @@
     HYPRCURSOR_THEME = "catppuccin-mocha-dark-cursors";
     HYPRCURSOR_SIZE = "24";
     COLOR_SCHEME = "prefer-dark";
+    EDITOR = "nvim";
+    VISUAL = "nvim";
   };
 }
