@@ -11,6 +11,9 @@
     };
     initrd.kernelModules = ["amdgpu"];
     kernelModules = ["hp-wmi" "ec_sys" "it87" "k10temp"];
+    extraModprobeConfig = ''
+      options ec_sys write_support=1
+    '';
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
       "acpi_enforce_resources=lax"
