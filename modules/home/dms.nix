@@ -20,7 +20,7 @@
 
     niri = {
       enableKeybinds = false;
-      enableSpawn = true;
+      enableSpawn = false;
 
       includes = {
         enable = true;
@@ -34,7 +34,10 @@
     enableClipboardPaste = true;
     enableAudioWavelength = true;
 
-    systemd.enable = false;
+    systemd = {
+      enable = true;
+      restartIfChanged = true;
+    };
 
     settings = {
       currentThemeName = "default";
@@ -117,4 +120,5 @@
       ];
     };
   };
+  systemd.user.services.niri-flake-polkit.enable = false;
 }
