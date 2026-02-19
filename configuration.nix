@@ -23,5 +23,10 @@
     package = pkgs.niri;
   };
 
+  fileSystems."/".options = ["compress=zstd" "space_cache=v2" "discard=async" "commit=15"];
+  fileSystems."/home".options = ["compress=zstd" "space_cache=v2" "discard=async" "commit=15"];
+  fileSystems."/nix".options = ["compress=zstd" "space_cache=v2" "discard=async" "commit=15"];
+  fileSystems."/var/log".options = ["compress=zstd" "space_cache=v2" "discard=async" "commit=15"];
+
   system.stateVersion = "25.11";
 }
