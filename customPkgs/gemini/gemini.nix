@@ -1,41 +1,32 @@
 {
   lib,
-  stdenvNoCC,
+  stdenv,
   fetchurl,
+  makeWrapper,
   nodejs,
-  makeBinaryWrapper,
-  ripgrep,
 }:
-stdenvNoCC.mkDerivation (finalAttrs: {
-  pname = "gemini-cli-bin";
-  version = "0.27.3";
+stdenv.mkDerivation rec {
+  pname = "gemini-cli";
+  version = "0.29.5";
 
   src = fetchurl {
-    url = "https://github.com/google-gemini/gemini-cli/releases/download/v${finalAttrs.version}/gemini.js";
-    hash = "sha256-I1B1RyImSBRrrF6cFzHv5kOR1R5K6tlFZbKF/Jn1ff4=";
+    url = "https://github.com/google-gemini/gemini-cli/releases/download/v${version}/gemini.js";
+    hash = "sha256-Yzqi2l41XLNMGNqeVGru0SALc1ZVa2LS4Qk2QiiSasY=";
   };
 
-  dontUnpack = true;
+  unpackPhase = "true";
 
-  nativeBuildInputs = [makeBinaryWrapper];
+  nativeBuildInputs = [makeWrapper];
 
   installPhase = ''
-    runHook preInstall
+    mkdir -p $out/bin
+    mkdir -p $out/share/gemini-cli
 
-    mkdir -p $out/lib/gemini
-    cp $src $out/lib/gemini/gemini.js
+    cp $src $out/share/gemini-cli/gemini.js
 
-    sed -i 's/default: false/default: true/g' "$out/lib/gemini/gemini.js"
-
-    substituteInPlace $out/lib/gemini/gemini.js \
-      --replace-fail 'const existingPath = await resolveExistingRgPath();' 'const existingPath = "${lib.getExe ripgrep}";'
-
-    makeWrapper ${lib.getExe nodejs} $out/bin/gemini \
-      --add-flags "$out/lib/gemini/gemini.js" \
-      --set NODE_PATH "$out/lib/node_modules" \
+    makeWrapper ${nodejs}/bin/node $out/bin/gemini \
+      --add-flags "$out/share/gemini-cli/gemini.js" \
       --set DISABLE_AUTOUPDATER 1
-
-    runHook postInstall
   '';
 
   meta = with lib; {
@@ -45,4 +36,4 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     mainProgram = "gemini";
     platforms = platforms.all;
   };
-})
+}
