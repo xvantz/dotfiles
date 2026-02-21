@@ -7,6 +7,7 @@
   programs.niri = {
     enable = true;
     package = pkgs.niri;
+    settings = {};
   };
 
   programs.hyprlock.enable = true;
