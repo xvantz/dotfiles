@@ -31,6 +31,8 @@
     };
 
     anyrun.url = "github:anyrun-org/anyrun";
+
+    coolcontrol.url = "github:xvantz/coolcontrol";
   };
 
   outputs = {
@@ -54,6 +56,7 @@
       modules = [
         ./configuration.nix
         home-manager.nixosModules.home-manager
+        inputs.coolcontrol.nixosModules.default
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;

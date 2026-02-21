@@ -14,5 +14,6 @@
     ./services.nix
     ./nh.nix
     ./fonts.nix
+    ./coolcontrol.nix
   ];
 }
