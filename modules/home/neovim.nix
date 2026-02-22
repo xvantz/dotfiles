@@ -20,7 +20,6 @@
       zls
       vtsls
       gopls
-      gofmt
       rustfmt
       rust-analyzer
       csharp-ls
