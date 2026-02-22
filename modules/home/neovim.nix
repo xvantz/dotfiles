@@ -20,9 +20,16 @@
       zls
       vtsls
       gopls
+      gofmt
       rustfmt
       rust-analyzer
       csharp-ls
+      vscode-langservers-extracted
+      marksman
+      prettierd
+      eslint_d
+      black
+      biome
     ];
   };
 }
