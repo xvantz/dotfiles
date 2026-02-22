@@ -5,7 +5,7 @@
 }: {
   programs.anyrun = {
     enable = true;
-    package = inputs.anyrun.packages.${pkgs.system}.anyrun;
+    package = inputs.anyrun.packages.${pkgs.stdenv.hostPlatform.system}.anyrun;
     config = {
       x = {fraction = 0.5;};
       y = {fraction = 0.3;};
@@ -19,10 +19,10 @@
       maxEntries = null;
 
       plugins = [
-        "${inputs.anyrun.packages.${pkgs.system}.applications}/lib/libapplications.so"
-        "${inputs.anyrun.packages.${pkgs.system}.rink}/lib/librink.so"
-        "${inputs.anyrun.packages.${pkgs.system}.shell}/lib/libshell.so"
-        "${inputs.anyrun.packages.${pkgs.system}.translate}/lib/libtranslate.so"
+        "${inputs.anyrun.packages.${pkgs.stdenv.hostPlatform.system}.applications}/lib/libapplications.so"
+        "${inputs.anyrun.packages.${pkgs.stdenv.hostPlatform.system}.rink}/lib/librink.so"
+        "${inputs.anyrun.packages.${pkgs.stdenv.hostPlatform.system}.shell}/lib/libshell.so"
+        "${inputs.anyrun.packages.${pkgs.stdenv.hostPlatform.system}.translate}/lib/libtranslate.so"
       ];
     };
 

@@ -1,8 +1,8 @@
 {
-  pkgs,
   inputs,
   config,
   selfPath,
+  pkgs,
   ...
 }: {
   imports = [
@@ -16,7 +16,7 @@
   programs.dank-material-shell = {
     enable = true;
 
-    dgop.package = inputs.dgop.packages.${pkgs.system}.default;
+    dgop.package = inputs.dgop.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
     niri = {
       enableKeybinds = false;
@@ -50,7 +50,7 @@
       monoFontFamily = "JetBrains Mono Nerd Font";
       cornerRadius = 12;
 
-      showWeather = true;
+      showWeather = false;
       showMusic = true;
       showClipboard = true;
       showCpuUsage = true;
@@ -118,6 +118,7 @@
           ];
         }
       ];
+      configVersion = 5;
     };
   };
 }
