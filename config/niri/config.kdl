@@ -86,13 +86,31 @@ animations {
 }
 
 window-rule {
-    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    match app-id=r#"(firefox|zen.*)"# title="^Picture-in-Picture$"
+    open-floating true
+}
+
+window-rule {
+    match app-id="^org.telegram.desktop$" title="^Media viewer$"
+    open-floating true
+}
+
+window-rule {
+        match app-id="^xdg-desktop-portal-gtk$"
+        open-floating true
+    }
+    
+window-rule {
+    match app-id="^xdg-desktop-portal-gnome$"
+    open-floating true
+}
+
+window-rule {
+    match title="^Open File$"
     open-floating true
 }
 
 binds {
-    Mod+Shift+Slash { show-hotkey-overlay; }
-
     Mod+T hotkey-overlay-title="Open a Terminal: ghostty" { spawn "ghostty"; }
     Mod+R hotkey-overlay-title="Run an Application: anyrun" { spawn "anyrun"; }
     Super+Alt+L hotkey-overlay-title="Lock the Screen" { spawn "dms" "ipc" "call" "lock" "lock"; }
