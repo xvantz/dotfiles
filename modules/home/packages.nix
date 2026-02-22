@@ -48,5 +48,6 @@
     procs
     fzf
     bat
+    gammastep
   ];
 }
