@@ -11,6 +11,10 @@
           install_url = "https://addons.mozilla.org/firefox/downloads/file/4664623/bitwarden_password_manager-2025.12.1.xpi";
           installation_mode = "force_installed";
         };
+        "vimium-c@gdh1995.cn" = {
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/vimium-c/latest.xpi";
+          installation_mode = "force_installed";
+        };
       };
     };
   };
