@@ -3,27 +3,27 @@
     enable = true;
     config = {
       fan_addresses = [44 45];
-      critical_temp = 85.0;
+      critical_temp = 92.0;
       fan_curve = [
         {
-          temp = 40.0;
-          speed = 30;
-        }
-        {
-          temp = 50.0;
+          temp = 45.0;
           speed = 50;
         }
         {
-          temp = 65.0;
-          speed = 110;
+          temp = 60.0;
+          speed = 90;
         }
         {
           temp = 75.0;
-          speed = 200;
+          speed = 160;
         }
         {
-          temp = 82.0;
-          speed = 255;
+          temp = 85.0;
+          speed = 210;
+        }
+        {
+          temp = 92.0;
+          speed = 254;
         }
       ];
     };
