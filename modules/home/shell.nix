@@ -39,5 +39,7 @@
     COLOR_SCHEME = "prefer-dark";
     EDITOR = "nvim";
     VISUAL = "nvim";
+    QT_QPA_PLATFORMTHEME = "xdgdesktopportal";
+    QT_QPA_PLATFORM = "wayland;xcb";
   };
 }
