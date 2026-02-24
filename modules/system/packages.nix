@@ -38,6 +38,15 @@
   ];
 
   programs.nix-ld.enable = true;
-  # programs.nix-ld.libraries = with pkgs; [
-  # ];
+  programs.nix-ld.libraries = with pkgs; [
+    openssl
+    openssl_1_1
+    stdenv.cc.cc.lib
+    libatomic_ops
+    gcc-unwrapped.lib
+
+    zlib
+    icu
+    krb5
+  ];
 }
