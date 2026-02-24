@@ -21,6 +21,10 @@
       "pcie_aspm=force"
       "usbcore.autosuspend=-1"
       "usbcore.quirks=342d:e487:g"
+      "amdgpu.gpu_recovery=1"
+      "amdgpu.runpm=0"
+      "amdgpu.dcdebugmask=0x10"
+      "amdgpu.dpm=1"
     ];
 
     kernel.sysctl = {
@@ -28,6 +32,7 @@
       "vm.watermark_boost_factor" = 0;
       "vm.watermark_scale_factor" = 125;
       "vm.page-cluster" = 0;
+      "kernel.sysrq" = 1;
     };
   };
   zramSwap = {
