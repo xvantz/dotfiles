@@ -94,6 +94,16 @@
     '';
   };
 
+  environment.etc."looking-glass-client.ini".text = ''
+    [win]
+    showFPS=yes
+
+    [input]
+    escapeKey=27
+
+    [spice]
+    alwaysShowCursor=yes
+  '';
   environment.etc."libvirt/qemu/win11.xml".text = ''
     <domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
       <name>win11</name>
@@ -170,7 +180,7 @@
             </disk>
             <disk type='file' device='cdrom'>
               <driver name='qemu' type='raw'/>
-              <source file='/var/lib/libvirt/images/win11.iso'/>
+              <source file='/var/lib/libvirt/images/win11_ltsc.iso'/>
               <target dev='sdb' bus='sata'/>
               <readonly/>
               <boot order='3'/>
