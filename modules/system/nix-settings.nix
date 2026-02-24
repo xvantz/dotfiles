@@ -1,5 +1,10 @@
 {...}: {
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config = {
+    allowUnfree = true;
+    permittedInsecurePackages = [
+      "openssl-1.1.1w"
+    ];
+  };
 
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
