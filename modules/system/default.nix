@@ -15,5 +15,6 @@
     ./nh.nix
     ./fonts.nix
     ./coolcontrol.nix
+    ./redis.nix
   ];
 }
