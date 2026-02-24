@@ -49,5 +49,6 @@
     fzf
     bat
     gammastep
+    pkgs-unstable.obsidian
   ];
 }

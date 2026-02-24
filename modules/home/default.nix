@@ -13,5 +13,6 @@
     ./neovim.nix
     ./git.nix
     ./browser.nix
+    ./redis.nix
   ];
 }
