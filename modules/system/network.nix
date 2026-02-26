@@ -20,6 +20,11 @@
       "1.1.1.1#cloudflare-dns.com"
       "9.9.9.9#dns.quad9.net"
     ];
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [22005 22006 3306 6379];
+      allowedUDPPorts = [22005 22006];
+    };
   };
 
   services.resolved = {

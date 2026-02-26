@@ -15,7 +15,7 @@
   boot.extraModulePackages = [config.boot.kernelPackages.kvmfr];
   boot.kernelModules = ["kvmfr"];
   boot.extraModprobeConfig = ''
-    options kvmfr static_size_mb=64
+    options kvmfr static_size_mb=256
     options vfio-pci ids=10de:25a0,10de:2291
   '';
   boot.blacklistedKernelModules = [
@@ -118,6 +118,7 @@
         <vcpu placement='static'>8</vcpu>
         <os firmware="efi">
           <type arch="x86_64" machine="q35">hvm</type>
+          <smbios mode='host'/>
         </os>
         <features>
           <acpi/>
@@ -343,7 +344,7 @@
         <qemu:arg value="-device"/>
         <qemu:arg value="{'driver':'ivshmem-plain','id':'shmem0','memdev':'looking-glass'}"/>
         <qemu:arg value="-object"/>
-        <qemu:arg value="{'qom-type':'memory-backend-file','id':'looking-glass','mem-path':'/dev/kvmfr0','size':67108864,'share':true}"/>
+        <qemu:arg value="{'qom-type':'memory-backend-file','id':'looking-glass','mem-path':'/dev/kvmfr0','size':268435456,'share':true}"/>
       </qemu:commandline>
     </domain>
   '';
