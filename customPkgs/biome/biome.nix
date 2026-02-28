@@ -1,72 +1,34 @@
 {
   lib,
-  rustPlatform,
-  fetchFromGitHub,
-  pkg-config,
-  libgit2,
-  rust-jemalloc-sys,
-  zlib,
-  gitMinimal,
+  stdenv,
+  fetchurl,
 }:
-rustPlatform.buildRustPackage (finalAttrs: {
+stdenv.mkDerivation rec {
   pname = "biome";
   version = "2.4.4";
 
-  src = fetchFromGitHub {
-    owner = "biomejs";
-    repo = "biome";
-    rev = "@biomejs/biome@${finalAttrs.version}";
-    hash = "sha256-wi0dkD9AlMYyGS/y96FMCOJKjRuo0b4pHpva+R1W3Yg=";
+  src = fetchurl {
+    url = "https://github.com/biomejs/biome/releases/download/%40biomejs%2Fbiome%40${version}/biome-linux-x64";
+    hash = "sha256-ulBzAX7AOnAOW5JwskVN99vsalEkYRu3hbaK5xdQbUU=";
   };
 
-  cargoHash = "sha256-GCwJdO43Q5cRw3w1omuIpSxvINN51dJez7Jq4/FQF+A=";
+  dontUnpack = true;
+  dontBuild = true;
+  dontConfigure = true;
 
-  nativeBuildInputs = [pkg-config];
-
-  buildInputs = [
-    libgit2
-    rust-jemalloc-sys
-    zlib
-  ];
-
-  nativeCheckInputs = [gitMinimal];
-
-  cargoBuildFlags = ["-p=biome_cli"];
-  cargoTestFlags =
-    finalAttrs.cargoBuildFlags
-    ++ [
-      "-- --skip=commands::check::print_json"
-      "--skip=commands::check::print_json_pretty"
-      "--skip=commands::explain::explain_logs"
-      "--skip=commands::format::print_json"
-      "--skip=commands::format::print_json_pretty"
-      "--skip=commands::format::should_format_files_in_folders_ignored_by_linter"
-      "--skip=cases::migrate_v2::should_successfully_migrate_sentry"
-    ];
-
-  env = {
-    BIOME_VERSION = finalAttrs.version;
-    LIBGIT2_NO_VENDOR = 1;
-    INSTA_UPDATE = "no";
-  };
-
-  preCheck = ''
-    # tests assume git repository
-    git init
-
-    # tests assume $BIOME_VERSION is unset
-    unset BIOME_VERSION
+  installPhase = ''
+    runHook preInstall
+    mkdir -p $out/bin
+    cp $src $out/bin/biome
+    chmod +x $out/bin/biome
+    runHook postInstall
   '';
 
-  meta = {
-    description = "Toolchain of the web";
+  meta = with lib; {
+    description = "Toolchain of the web (Binary version)";
     homepage = "https://biomejs.dev/";
-    changelog = "https://github.com/biomejs/biome/blob/${finalAttrs.src.rev}/CHANGELOG.md";
-    license = lib.licenses.mit;
-    maintainers = with lib.maintainers; [
-      isabelroses
-      wrbbz
-    ];
+    license = licenses.mit;
     mainProgram = "biome";
+    platforms = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
   };
-})
+}
