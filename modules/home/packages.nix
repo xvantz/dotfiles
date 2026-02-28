@@ -49,5 +49,6 @@
     bat
     gammastep
     pkgs-unstable.obsidian
+    pkgs-unstable.discord
   ];
 }
