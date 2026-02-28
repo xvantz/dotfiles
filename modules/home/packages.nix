@@ -15,7 +15,6 @@
     eza
     zoxide
     dotnet-sdk_8
-    tree-sitter
     neohtop
     cmake
     ripgrep

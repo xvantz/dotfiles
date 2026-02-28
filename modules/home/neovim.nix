@@ -1,7 +1,9 @@
 {
   pkgs,
+  pkgs-unstable,
   config,
   selfPath,
+  customPkgs,
   ...
 }: {
   xdg.configFile."nvim".source = config.lib.file.mkOutOfStoreSymlink "${selfPath}/config/nvim";
@@ -9,6 +11,9 @@
   programs.neovim = {
     enable = true;
     extraPackages = with pkgs; [
+      tree-sitter
+      pkgs-unstable.tree-sitter-grammars.tree-sitter-svelte
+      pkgs-unstable.tree-sitter-grammars.tree-sitter-typescript
       nodePackages.markdownlint-cli
       nodePackages.tailwindcss
       nodePackages.svelte-language-server
@@ -28,7 +33,7 @@
       prettierd
       eslint_d
       black
-      biome
+      customPkgs.biome
     ];
   };
 }
