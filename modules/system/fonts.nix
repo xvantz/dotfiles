@@ -22,5 +22,6 @@
     inter
     noto-fonts
     noto-fonts-color-emoji
+    google-fonts
   ];
 }
