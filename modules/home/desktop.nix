@@ -9,7 +9,7 @@
     enable = true;
     settings = {
       general = {
-        lock_cmd = "loginctl lock-session";
+        lock_cmd = "dms ipc call lock isLocked | grep -q 'true' || dms ipc call lock lock";
         before_sleep_cmd = "loginctl lock-session && playerctl pause";
         after_sleep_cmd = "niri msg action power-on-monitors";
       };
