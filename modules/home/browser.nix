@@ -24,6 +24,10 @@
           install_url = "https://addons.mozilla.org/firefox/downloads/latest/sponsorblock/latest.xpi";
           installation_mode = "force_installed";
         };
+        "{c2c003ee-bd69-42a2-b0e9-6f34222cb046}" = {
+          installation_mode = "force_installed";
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/auto-tab-discard/latest.xpi";
+        };
       };
       Preferences = {
         "browser.tabs.unloadOnLowMemory" = {
@@ -48,14 +52,6 @@
         };
         "browser.tabs.min_inactive_duration_before_unload" = {
           Value = 1200000;
-          Status = "locked";
-        };
-        "browser.tabs.exceed_soft_memory_limit" = {
-          Value = true;
-          Status = "locked";
-        };
-        "browser.tabs.soft_memory_limit_mb" = {
-          Value = 6144;
           Status = "locked";
         };
       };
