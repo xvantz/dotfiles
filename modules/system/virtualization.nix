@@ -99,7 +99,7 @@
     showFPS=yes
 
     [input]
-    escapeKey=27
+    escapeKey=123
 
     [spice]
     alwaysShowCursor=yes
@@ -115,7 +115,7 @@
         </metadata>
         <memory unit='KiB'>16384000</memory>
         <currentMemory unit='KiB'>16384000</currentMemory>
-        <vcpu placement='static'>8</vcpu>
+        <vcpu placement='static'>6</vcpu>
         <os firmware="efi">
           <type arch="x86_64" machine="q35">hvm</type>
           <smbios mode='host'/>
@@ -145,7 +145,7 @@
           <ioapic driver='kvm'/>
         </features>
         <cpu mode='host-passthrough' check='none' migratable='on'>
-          <topology sockets='1' dies='1' clusters='1' cores='4' threads='2'/>
+          <topology sockets='1' dies='1' clusters='1' cores='3' threads='2'/>
           <feature policy='require' name='topoext'/>
           <feature policy='disable' name='hypervisor'/>
         </cpu>
