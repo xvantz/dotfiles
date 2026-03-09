@@ -40,15 +40,22 @@
     };
 
     settings = {
-      currentThemeName = "default";
+      currentThemeName = "blue";
       currentThemeCategory = "generic";
       matugenScheme = "scheme-tonal-spot";
       runUserMatugenTemplates = true;
+      popupTransparency = 1;
+      dockTransparency = 1;
+
+      widgetBackgroundColor = "sch";
+      widgetColorMode = "default";
+
+      weatherEnabled = false;
 
       use24HourClock = true;
       fontFamily = "JetBrains Mono Nerd Font";
       monoFontFamily = "JetBrains Mono Nerd Font";
-      cornerRadius = 12;
+      cornerRadius = 16;
 
       showWeather = false;
       showMusic = true;
@@ -56,6 +63,9 @@
       showCpuUsage = true;
       showMemUsage = true;
       showBattery = true;
+
+      soundsEnabled = true;
+      soundNewNotification = false;
 
       notificationOverlayEnabled = true;
       notificationCompactMode = true;
