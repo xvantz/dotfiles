@@ -34,6 +34,7 @@
       eslint_d
       black
       customPkgs.biome
+      csharp-ls
     ];
   };
 }

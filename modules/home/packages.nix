@@ -14,7 +14,7 @@
     rustup
     eza
     zoxide
-    dotnet-sdk_8
+    dotnet-sdk_9
     neohtop
     cmake
     ripgrep
