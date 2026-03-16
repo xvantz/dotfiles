@@ -50,5 +50,6 @@
     gammastep
     pkgs-unstable.obsidian
     pkgs-unstable.discord
+    pkgs-unstable.opencode
   ];
 }
