@@ -99,7 +99,8 @@
     showFPS=yes
 
     [input]
-    escapeKey=123
+    escapeKey=KEY_F12
+    mouseSmoothing=no
 
     [spice]
     alwaysShowCursor=yes
@@ -150,8 +151,8 @@
           <feature policy='disable' name='hypervisor'/>
         </cpu>
         <clock offset='localtime'>
-          <timer name='rtc' tickpolicy='catchup'/>
-          <timer name='pit' tickpolicy='delay'/>
+          <timer name='rtc' tickpolicy='no'/>
+          <timer name='pit' tickpolicy='no'/>
           <timer name='hpet' present='no'/>
           <timer name='hypervclock' present='yes'/>
         </clock>
@@ -279,16 +280,8 @@
             <interface type="network">
               <source network="default"/>
               <mac address="52:54:00:9b:cf:43"/>
-              <model type="e1000e"/>
+              <model type="virtio"/>
             </interface>
-            <serial type='pty'>
-              <target type='isa-serial' port='0'>
-                <model name='isa-serial'/>
-              </target>
-            </serial>
-            <console type='pty'>
-              <target type='serial' port='0'/>
-            </console>
             <channel type='spicevmc'>
               <target type='virtio' name='com.redhat.spice.0'/>
               <address type='virtio-serial' controller='0' bus='0' port='1'/>
@@ -332,7 +325,6 @@
             <redirdev bus='usb' type='spicevmc'>
               <address type='usb' bus='0' port='4'/>
             </redirdev>
-            <watchdog model='itco' action='reset'/>
             <memballoon model='virtio'>
               <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
             </memballoon>
