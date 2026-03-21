@@ -35,6 +35,7 @@
       black
       customPkgs.biome
       csharp-ls
+      pkgs-unstable.buf
     ];
   };
 }
