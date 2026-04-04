@@ -9,6 +9,7 @@
     lazygit
     lazysql
     go
+    golangci-lint
     zig
     nodejs
     rustup
