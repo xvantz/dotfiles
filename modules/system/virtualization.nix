@@ -151,8 +151,8 @@
           <feature policy='disable' name='hypervisor'/>
         </cpu>
         <clock offset='localtime'>
-          <timer name='rtc' tickpolicy='no'/>
-          <timer name='pit' tickpolicy='no'/>
+          <timer name='rtc' tickpolicy='catchup'/>
+          <timer name='pit' tickpolicy='delay'/>
           <timer name='hpet' present='no'/>
           <timer name='hypervclock' present='yes'/>
         </clock>
@@ -166,7 +166,7 @@
         <devices>
           <emulator>${pkgs.qemu_kvm}/bin/qemu-system-x86_64</emulator>
             <disk type='file' device='disk'>
-              <driver name='qemu' type='qcow2' discard='unmap'/>
+              <driver name='qemu' type='qcow2' cache='none' io='io_uring' discard='unmap' io_thread='1' queues='6'/>
               <source file='/var/lib/libvirt/images/win11.qcow2'/>
               <target dev='vda' bus='virtio'/>
               <boot order='1'/>
@@ -343,7 +343,7 @@
 
   systemd.services.libvirt-sync-win11 = {
     description = "Sync Windows 11 VM definition";
-    after = ["libvirtd.service" "libvirtd.socket"];
+    after = ["libvirtd.service" "libvirtd.socket" "time-sync.target"];
     requires = ["libvirtd.service"];
     wantedBy = ["multi-user.target"];
 
