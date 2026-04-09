@@ -7,7 +7,13 @@
   services.timesyncd.enable = false;
   services.chrony = {
     enable = true;
-    servers = ["pool.ntp.org"];
+    servers = [
+      "pool.ntp.org"
+      "162.159.200.1"
+      "162.159.200.123"
+      "216.239.35.0"
+      "216.239.35.4"
+    ];
     extraConfig = "makestep 1.0 -1";
   };
 
