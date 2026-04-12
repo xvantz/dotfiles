@@ -24,6 +24,10 @@ gestures {
   }
 }
 
+hotkey-overlay {
+    skip-at-startup
+}
+
 output "DP-2" {
  
   mode "1920x1080@144.000"
