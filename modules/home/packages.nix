@@ -54,4 +54,9 @@
     pkgs-unstable.bun
     pkgs-unstable.qwen-code
   ];
+
+  services.udiskie = {
+    enable = true;
+    tray = "never";
+  };
 }

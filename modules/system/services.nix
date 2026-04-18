@@ -24,5 +24,4 @@
     package = pkgs-unstable.ollama-cpu;
   };
   services.udisks2.enable = true;
-  services.udiskie.enable = true;
 }
