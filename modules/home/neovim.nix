@@ -19,6 +19,7 @@
       nodePackages.svelte-language-server
       nodePackages.sass
       nodePackages.postcss
+      nodePackages.typescript
       selene
       lua-language-server
       stylua
