@@ -53,6 +53,8 @@
     pkgs-unstable.discord
     pkgs-unstable.bun
     pkgs-unstable.qwen-code
+    pkgs-unstable.vesktop
+    pkgs-unstable.zoom-us
   ];
 
   services.udiskie = {
