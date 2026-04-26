@@ -55,6 +55,7 @@
     pkgs-unstable.qwen-code
     pkgs-unstable.vesktop
     pkgs-unstable.zoom-us
+    customPkgs.pi-coding
   ];
 
   services.udiskie = {
