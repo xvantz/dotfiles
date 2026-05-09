@@ -14,5 +14,6 @@
     ./git.nix
     ./browser.nix
     ./opencode.nix
+    ./mutagen.nix
   ];
 }
