@@ -59,6 +59,7 @@
     enable = true;
     qemu = {
       package = pkgs.qemu_kvm;
+      runAsRoot = true;
       swtpm.enable = true;
       verbatimConfig = ''
         cgroup_device_acl = [
@@ -97,10 +98,12 @@
   environment.etc."looking-glass-client.ini".text = ''
     [win]
     showFPS=yes
+    fpsMin=144
 
     [input]
     escapeKey=KEY_F12
     mouseSmoothing=no
+    mouseRedraw=no
 
     [spice]
     alwaysShowCursor=yes
@@ -108,86 +111,86 @@
   environment.etc."libvirt/qemu/win11.xml".text = ''
     <domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
       <name>win11</name>
-        <uuid>87654321-4321-4321-4321-210987654321</uuid>
-        <metadata>
-          <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
-            <libosinfo:os id="http://microsoft.com/win/11"/>
-          </libosinfo:libosinfo>
-        </metadata>
-        <memory unit='KiB'>16384000</memory>
-        <currentMemory unit='KiB'>16384000</currentMemory>
-        <vcpu placement='static'>6</vcpu>
-        <os firmware="efi">
-          <type arch="x86_64" machine="q35">hvm</type>
-          <smbios mode='host'/>
-        </os>
-        <features>
-          <acpi/>
-          <apic/>
-          <hyperv mode='custom'>
-            <relaxed state='on'/>
-            <vapic state='on'/>
-            <spinlocks state='on' retries='8191'/>
-            <vpindex state='on'/>
-            <runtime state='on'/>
-            <synic state='on'/>
-            <stimer state='on'/>
-            <reset state='on'/>
-            <vendor_id state='on' value='GenuineIntel'/>
-            <frequencies state='on'/>
-            <tlbflush state='on'/>
-            <evmcs state='off'/>
-          </hyperv>
-          <kvm>
-            <hidden state='on'/>
-          </kvm>
-          <vmport state='off'/>
-          <smm state='on'/>
-          <ioapic driver='kvm'/>
-        </features>
-        <cpu mode='host-passthrough' check='none' migratable='on'>
-          <topology sockets='1' dies='1' clusters='1' cores='3' threads='2'/>
-          <feature policy='require' name='topoext'/>
-          <feature policy='disable' name='hypervisor'/>
-        </cpu>
-        <clock offset='localtime'>
-          <timer name='rtc' tickpolicy='catchup'/>
-          <timer name='pit' tickpolicy='delay'/>
-          <timer name='hpet' present='no'/>
-          <timer name='hypervclock' present='yes'/>
-        </clock>
-        <on_poweroff>destroy</on_poweroff>
-        <on_reboot>restart</on_reboot>
-        <on_crash>destroy</on_crash>
-        <pm>
-          <suspend-to-mem enabled='no'/>
-          <suspend-to-disk enabled='no'/>
-        </pm>
-        <devices>
-          <emulator>${pkgs.qemu_kvm}/bin/qemu-system-x86_64</emulator>
-            <disk type='file' device='disk'>
-              <driver name='qemu' type='qcow2' cache='none' io='io_uring' discard='unmap' io_thread='1' queues='6'/>
-              <source file='/var/lib/libvirt/images/win11.qcow2'/>
-              <target dev='vda' bus='virtio'/>
-              <boot order='1'/>
-              <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
-            </disk>
-            <disk type='file' device='cdrom'>
-              <driver name='qemu' type='raw'/>
-              <source file='/var/lib/libvirt/images/virtio-win.iso'/>
-              <target dev='sda' bus='sata'/>
-              <readonly/>
-              <boot order='2'/>
-              <address type='drive' controller='0' bus='0' target='0' unit='0'/>
-            </disk>
-            <disk type='file' device='cdrom'>
-              <driver name='qemu' type='raw'/>
-              <source file='/var/lib/libvirt/images/win11_ltsc.iso'/>
-              <target dev='sdb' bus='sata'/>
-              <readonly/>
-              <boot order='3'/>
-              <address type='drive' controller='0' bus='0' target='0' unit='1'/>
-            </disk>
+      <uuid>87654321-4321-4321-4321-210987654321</uuid>
+      <metadata>
+        <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
+        <libosinfo:os id="http://microsoft.com/win/11"/>
+        </libosinfo:libosinfo>
+      </metadata>
+      <memory unit='KiB'>16384000</memory>
+      <currentMemory unit='KiB'>16384000</currentMemory>
+      <vcpu placement='static'>6</vcpu>
+      <os firmware="efi">
+        <type arch="x86_64" machine="q35">hvm</type>
+        <smbios mode='host'/>
+      </os>
+      <features>
+        <acpi/>
+        <apic/>
+        <hyperv mode='custom'>
+          <relaxed state='on'/>
+          <vapic state='on'/>
+          <spinlocks state='on' retries='8191'/>
+          <vpindex state='on'/>
+          <runtime state='on'/>
+          <synic state='on'/>
+          <stimer state='on'/>
+          <reset state='on'/>
+          <vendor_id state='on' value='GenuineIntel'/>
+          <frequencies state='on'/>
+          <tlbflush state='on'/>
+          <evmcs state='off'/>
+        </hyperv>
+        <kvm>
+          <hidden state='on'/>
+        </kvm>
+        <vmport state='off'/>
+        <smm state='on'/>
+        <ioapic driver='kvm'/>
+      </features>
+      <cpu mode='host-passthrough' check='none' migratable='on'>
+        <topology sockets='1' dies='1' clusters='1' cores='3' threads='2'/>
+        <feature policy='require' name='topoext'/>
+        <feature policy='disable' name='hypervisor'/>
+      </cpu>
+      <clock offset='localtime'>
+        <timer name='rtc' tickpolicy='catchup'/>
+        <timer name='pit' tickpolicy='delay'/>
+        <timer name='hpet' present='no'/>
+        <timer name='hypervclock' present='yes'/>
+      </clock>
+      <on_poweroff>destroy</on_poweroff>
+      <on_reboot>restart</on_reboot>
+      <on_crash>destroy</on_crash>
+      <pm>
+        <suspend-to-mem enabled='no'/>
+        <suspend-to-disk enabled='no'/>
+      </pm>
+      <devices>
+        <emulator>${pkgs.qemu_kvm}/bin/qemu-system-x86_64</emulator>
+        <disk type='file' device='disk'>
+          <driver name='qemu' type='qcow2' cache='none' io='io_uring' discard='unmap' io_thread='1' queues='6'/>
+          <source file='/var/lib/libvirt/images/win11.qcow2'/>
+          <target dev='vda' bus='virtio'/>
+          <boot order='1'/>
+          <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
+        </disk>
+        <disk type='file' device='cdrom'>
+          <driver name='qemu' type='raw'/>
+          <source file='/var/lib/libvirt/images/virtio-win.iso'/>
+          <target dev='sda' bus='sata'/>
+          <readonly/>
+          <boot order='2'/>
+          <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+        </disk>
+        <disk type='file' device='cdrom'>
+          <driver name='qemu' type='raw'/>
+          <source file='/var/lib/libvirt/images/win11_ltsc.iso'/>
+          <target dev='sdb' bus='sata'/>
+          <readonly/>
+          <boot order='3'/>
+          <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+        </disk>
             <controller type='usb' index='0' model='qemu-xhci' ports='15'>
               <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
             </controller>
