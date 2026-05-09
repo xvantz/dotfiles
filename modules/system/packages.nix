@@ -13,12 +13,6 @@
     xwayland-satellite
     pciutils
     lm_sensors
-    (catppuccin-sddm.override {
-      flavor = "mocha";
-      accent = "mauve";
-      font = "JetBrainsMono Nerd Font";
-      fontSize = "12";
-    })
     mission-center
     mesa-demos
     vulkan-tools
