@@ -17,6 +17,7 @@
       set -g renumber-windows on
       set -g focus-events on
       set -g status-interval 1
+      set -g extended-keys
       set -s set-clipboard on
 
       bind -r h select-pane -L

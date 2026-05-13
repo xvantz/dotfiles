@@ -1,84 +1,68 @@
 {
+  pkgs,
   lib,
-  buildNpmPackage,
-  fetchFromGitHub,
-  makeWrapper,
-  ripgrep,
-  nodejs,
-  typescript,
-  plugins ? [],
-}:
-buildNpmPackage (finalAttrs: {
-  pname = "pi-coding-agent";
-  version = "0.67.68";
-
-  src = fetchFromGitHub {
-    owner = "badlogic";
-    repo = "pi-mono";
-    tag = "v${finalAttrs.version}";
-    hash = "sha256-1k9tHb5Dle37a5qHm8xT14vI5cQZOb8ASGQ1KxzPCr4=";
-  };
-
-  npmDepsHash = "sha256-xQQZECkDuiCdu0FlKbAKgk6EatLf2jMIXKDfRRwN/gA=";
-
-  npmWorkspace = "packages/coding-agent";
-  npmRebuildFlags = ["--ignore-scripts"];
-
-  nativeBuildInputs = [makeWrapper];
-
-  runtimeDeps =
+  extensions ? [],
+}: let
+  runtimeDeps = with pkgs;
     [
-      ripgrep
       nodejs
-      typescript
+      git
+      ripgrep
+      fd
+      jq
     ]
-    ++ plugins;
+    ++ lib.flatten (
+      map (x: x.runtimeDeps or []) extensions
+    );
+in
+  pkgs.stdenvNoCC.mkDerivation rec {
+    pname = "pi";
+    version = "0.74.0";
 
-  buildPhase = ''
-    runHook preBuild
+    src = pkgs.fetchurl {
+      url = "https://github.com/earendil-works/pi/releases/download/v${version}/pi-linux-x64.tar.gz";
 
-    npx tsgo -p packages/ai/tsconfig.build.json
-    npx tsgo -p packages/tui/tsconfig.build.json
-    npx tsgo -p packages/agent/tsconfig.build.json
-    npm run build --workspace=packages/coding-agent
+      hash = "sha256-1nZXow1JyfrKgIaNKkvbpN/KwEcCiT9FptFLJJNF640=";
+    };
 
-    runHook postBuild
-  '';
+    nativeBuildInputs = [
+      pkgs.makeWrapper
+    ];
 
-  postInstall = ''
-    local nm="$out/lib/node_modules/pi-monorepo/node_modules"
+    dontBuild = true;
 
-    for ws in @mariozechner/pi-ai:packages/ai \
-              @mariozechner/pi-agent-core:packages/agent \
-              @mariozechner/pi-tui:packages/tui; do
-      IFS=: read -r pkg src <<< "$ws"
-      rm "$nm/$pkg"
-      cp -r "$src" "$nm/$pkg"
-    done
+    unpackPhase = ''
+      mkdir source
+      tar -xzf $src -C source --strip-components=1
+      cd source
+    '';
 
-    find "$nm" -type l -lname '*/packages/*' -delete
-    find "$nm/.bin" -xtype l -delete
+    installPhase = ''
+      runHook preInstall
 
-    mkdir -p $out/share/pi/extensions
+      mkdir -p $out/bin
+      mkdir -p $out/share/pi
 
-    ${lib.concatMapStringsSep "\n" (plugin: ''
-        echo "Linking plugin: ${plugin.name or "unnamed-plugin"}"
-        ln -s ${plugin} $out/share/pi/extensions/${lib.removePrefix "pi-ext-" (plugin.pname or "ext")}
-      '')
-      plugins}
-  '';
+      cp -r ./* $out/share/pi/
 
-  postFixup = ''
-    wrapProgram $out/bin/pi \
-      --prefix PATH : ${lib.makeBinPath finalAttrs.runtimeDeps} \
-      --set PI_NIX_EXTENSIONS "$out/share/pi/extensions" \
-      --add-flags "--extension $out/share/pi/extensions"
-  '';
+      chmod +x $out/share/pi/pi
 
-  meta = {
-    description = "Extensible Coding agent CLI (Nix-optimized)";
-    homepage = "https://shittycodingagent.ai/";
-    license = lib.licenses.mit;
-    mainProgram = "pi";
-  };
-})
+      runHook postInstall
+    '';
+
+    postFixup = ''
+      makeWrapper $out/share/pi/pi $out/bin/pi \
+        --prefix PATH : ${lib.makeBinPath runtimeDeps}
+    '';
+
+    passthru = {
+      inherit extensions;
+    };
+
+    meta = {
+      mainProgram = "pi";
+      description = "Pi coding agent";
+      homepage = "https://github.com/earendil-works/pi";
+      license = lib.licenses.mit;
+    };
+  }
