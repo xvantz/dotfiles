@@ -37,6 +37,9 @@
       customPkgs.biome
       csharp-ls
       pkgs-unstable.buf
+      gotools
+      ruff
+      pkgs-unstable.ty
     ];
   };
 }

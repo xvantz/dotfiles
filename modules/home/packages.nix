@@ -52,10 +52,11 @@
     pkgs-unstable.obsidian
     pkgs-unstable.discord
     pkgs-unstable.bun
-    pkgs-unstable.qwen-code
     pkgs-unstable.vesktop
     pkgs-unstable.zoom-us
     customPkgs.pi-coding
+    python3
+    uv
   ];
 
   services.udiskie = {
