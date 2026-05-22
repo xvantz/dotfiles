@@ -26,4 +26,17 @@
   services.udisks2.enable = true;
 
   services.tailscale.enable = true;
+
+  services.navidrome = {
+    enable = true;
+
+    settings = {
+      MusicFolder = "/srv/music";
+      Address = "0.0.0.0";
+      Port = 4533;
+
+      EnableSharing = true;
+      ScanSchedule = "@every 1m";
+    };
+  };
 }
