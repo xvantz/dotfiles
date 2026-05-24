@@ -25,7 +25,6 @@
     unzip
     ghostty
     waybar
-    docker
     nbfc-linux
     spotify
     libnotify
