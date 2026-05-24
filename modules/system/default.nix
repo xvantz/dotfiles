@@ -17,5 +17,6 @@
     ./coolcontrol.nix
     ./redis.nix
     ./hardware.nix
+    ./hermes.nix
   ];
 }

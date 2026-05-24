@@ -15,6 +15,5 @@
     ./browser.nix
     ./opencode.nix
     ./mutagen.nix
-    ./hermes.nix
   ];
 }

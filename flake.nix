@@ -33,6 +33,8 @@
     anyrun.url = "github:anyrun-org/anyrun";
 
     coolcontrol.url = "github:xvantz/coolcontrol";
+
+    hermes-agent.url = "github:NousResearch/hermes-agent";
   };
 
   outputs = {
@@ -57,6 +59,7 @@
         ./configuration.nix
         home-manager.nixosModules.home-manager
         inputs.coolcontrol.nixosModules.default
+        inputs.hermes-agent.nixosModules.default
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
