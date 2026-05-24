@@ -39,4 +39,8 @@
       ScanSchedule = "@every 1m";
     };
   };
+
+  services.logind = {
+    lidSwitchExternalPower = "ignore";
+  };
 }
