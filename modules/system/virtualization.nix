@@ -4,11 +4,25 @@
   selfPath,
   ...
 }: {
-  virtualisation.docker.enable = true;
+  virtualisation = {
+    oci-containers = {
+      backend = "podman";
+    };
+    containers.enable = true;
+    podman = {
+      enable = true;
+      dockerCompat = true;
+      defaultNetwork.settings = {dns_enabled = true;};
+    };
+  };
+  # virtualisation.docker.enable = true;
+  #
+  # virtualisation.docker.autoPrune.enable = true;
 
-  virtualisation.docker.autoPrune.enable = true;
-
-  users.users.xvantz.extraGroups = ["docker" "libvirtd" "kvm"];
+  users.users.xvantz = {
+    linger = true;
+    extraGroups = ["podman" "libvirtd" "kvm"];
+  };
 
   boot.initrd.kernelModules = ["vfio_pci" "vfio" "vfio_iommu_type1"];
   boot.kernelParams = ["amd_iommu=on" "iommu=pt" "vfio-pci.ids=10de:25a0,10de:2291"];
@@ -76,6 +90,7 @@
     virt-manager
     looking-glass-client
     virtio-win
+    podman-compose
   ];
 
   systemd.tmpfiles.rules = [
