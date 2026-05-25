@@ -63,6 +63,8 @@
       showCpuUsage = true;
       showMemUsage = true;
       showBattery = true;
+      acMonitorTimeout = 900;
+      acLockTimeout = 600;
 
       soundsEnabled = true;
       soundNewNotification = false;

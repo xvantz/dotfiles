@@ -40,7 +40,11 @@
     };
   };
 
-  services.logind = {
-    lidSwitchExternalPower = "ignore";
+  services.logind.settings = {
+    Login = {
+      HandleLidSwitch = "ignore";
+      HandleLidSwitchExternalPower = "ignore";
+      LidSwitchIgnoreInhibit = "no";
+    };
   };
 }

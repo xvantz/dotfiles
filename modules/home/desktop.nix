@@ -5,28 +5,28 @@
     settings = {};
   };
 
-  services.hypridle = {
-    enable = true;
-    settings = {
-      general = {
-        lock_cmd = "dms ipc call lock isLocked | grep -q 'true' || dms ipc call lock lock";
-        before_sleep_cmd = "loginctl lock-session && playerctl pause";
-        after_sleep_cmd = "niri msg action power-on-monitors";
-      };
-
-      listener = [
-        {
-          timeout = 600;
-          on-timeout = "loginctl lock-session";
-        }
-        {
-          timeout = 1000;
-          on-timeout = "niri msg action power-off-monitors";
-          on-resume = "niri msg action power-on-monitors";
-        }
-      ];
-    };
-  };
+  # services.hypridle = {
+  #   enable = true;
+  #   settings = {
+  #     general = {
+  #       lock_cmd = "dms ipc call lock isLocked | grep -q 'true' || dms ipc call lock lock";
+  #       before_sleep_cmd = "loginctl lock-session";
+  #       after_sleep_cmd = "niri msg action power-on-monitors";
+  #     };
+  #
+  #     listener = [
+  #       {
+  #         timeout = 600;
+  #         on-timeout = "dms ipc call lock lock";
+  #       }
+  #       {
+  #         timeout = 1000;
+  #         on-timeout = "niri msg action power-off-monitors";
+  #         on-resume = "niri msg action power-on-monitors";
+  #       }
+  #     ];
+  #   };
+  # };
 
   xdg.portal = {
     enable = true;
