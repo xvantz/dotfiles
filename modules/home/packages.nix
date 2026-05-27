@@ -56,6 +56,7 @@
     customPkgs.pi-coding
     python3
     uv
+    imagemagick
   ];
 
   services.udiskie = {
