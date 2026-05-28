@@ -94,6 +94,154 @@
           end
         '';
       };
+
+      input = {
+        enable = true;
+        icon = " ";
+        icon_hl = "SnacksInputIcon";
+        icon_pos = "left";
+        prompt_pos = "title";
+        win = {style = "input";};
+        expand = true;
+      };
+
+      lazygit = {
+        enable = true;
+        configure = true;
+        config = {
+          os = {editPreset = "nvim-remote";};
+          gui = {
+            nerdFontsVersion = "3";
+          };
+        };
+        theme = {
+          activeBorderColor = {
+            fg = "MatchParen";
+            bold = true;
+          };
+          cherryPickedCommitBgColor = {fg = "Identifier";};
+          cherryPickedCommitFgColor = {fg = "Function";};
+          defaultFgColor = {fg = "Normal";};
+          inactiveBorderColor = {fg = "FloatBorder";};
+          optionsTextColor = {fg = "Function";};
+          searchingActiveBorderColor = {
+            fg = "MatchParen";
+            bold = true;
+          };
+          selectedLineBgColor = {bg = "Visual";};
+          unstagedChangesColor = {fg = "DiagnosticError";};
+        };
+        win = {
+          style = "lazygit";
+        };
+      };
+
+      dashboard = {
+        enable = true;
+        width = 60;
+        pane_gap = 4;
+        autokeys = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        preset = {
+          keys = [
+            {
+              icon = " ";
+              key = "f";
+              desc = "Find File";
+              action = ":lua Snacks.dashboard.pick('files')";
+            }
+            {
+              icon = " ";
+              key = "n";
+              desc = "New File";
+              action = ":ene | startinsert";
+            }
+            {
+              icon = " ";
+              key = "g";
+              desc = "Find Text";
+              action = ":lua Snacks.dashboard.pick('live_grep')";
+            }
+            {
+              icon = " ";
+              key = "r";
+              desc = "Recent Files";
+              action = ":lua Snacks.dashboard.pick('oldfiles')";
+            }
+            {
+              icon = " ";
+              key = "c";
+              desc = "Config";
+              action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})";
+            }
+            {
+              icon = " ";
+              key = "s";
+              desc = "Restore Session";
+              section = "session";
+            }
+            {
+              icon = "󰒲 ";
+              key = "L";
+              desc = "Lazy";
+              action = ":Lazy";
+              enabled.__raw = "package.loaded.lazy ~= nil";
+            }
+            {
+              icon = " ";
+              key = "q";
+              desc = "Quit";
+              action = ":qa";
+            }
+          ];
+          header = ''
+            ██╗  ██╗██╗   ██╗ █████╗ ███╗   ██╗████████╗███████╗
+            ╚██╗██╔╝██║   ██║██╔══██╗████╗  ██║╚══██╔══╝╚══███╔╝
+             ╚███╔╝ ██║   ██║███████║██╔██╗ ██║   ██║     ███╔╝
+             ██╔██╗ ╚██╗ ██╔╝██╔══██║██║╚██╗██║   ██║    ███╔╝
+            ██╔╝ ██╗ ╚████╔╝ ██║  ██║██║ ╚████║   ██║   ███████╗
+            ╚═╝  ╚═╝  ╚═══╝  ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
+                          ✦  x v a n t z . n v i m  ✦
+          '';
+        };
+
+        formats = {
+          icon.__raw = ''
+            function(item)
+              if item.file and (item.icon == "file" or item.icon == "directory") then
+                return Snacks.dashboard.icon(item.file, item.icon)
+              end
+              return { item.icon, width = 2, hl = "icon" }
+            end
+          '';
+          file.__raw = ''
+            function(item, ctx)
+              local fname = vim.fn.fnamemodify(item.file, ":~")
+              fname = ctx.width and #fname > ctx.width and vim.fn.pathshorten(fname) or fname
+              if #fname > ctx.width then
+                local dir = vim.fn.fnamemodify(fname, ":h")
+                local file = vim.fn.fnamemodify(fname, ":t")
+                if dir and file then
+                  file = file:sub(-(ctx.width - #dir - 2))
+                  fname = dir .. "/…" .. file
+                end
+              end
+              local dir, file = fname:match("^(.*)/(.+)$")
+              return dir and { { dir .. "/", hl = "dir" }, { file, hl = "file" } } or { { fname, hl = "file" } }
+            end
+          '';
+        };
+
+        sections = [
+          {section = "header";}
+          {
+            section = "keys";
+            gap = 1;
+            padding = 1;
+          }
+          {section = "startup";}
+        ];
+      };
     };
   };
 }
