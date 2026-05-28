@@ -1,5 +1,5 @@
 {...}: {
-  import = [
+  imports = [
     ./lualine.nix
     ./diffview.nix
     ./lsp.nix
@@ -8,5 +8,6 @@
     ./treesitter.nix
     ./snacks.nix
     ./smart-splits.nix
+    ./icons.nix
   ];
 }
