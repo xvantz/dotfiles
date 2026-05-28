@@ -7,5 +7,6 @@
     ./autopairs.nix
     ./treesitter.nix
     ./snacks.nix
+    ./smart-splits.nix
   ];
 }
