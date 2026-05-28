@@ -10,7 +10,8 @@
     ./yazi.nix
     ./tmux.nix
     ./starship.nix
-    ./neovim.nix
+    # ./neovim.nix
+    ./neovim
     ./git.nix
     ./browser.nix
     ./opencode.nix

@@ -35,6 +35,10 @@
     coolcontrol.url = "github:xvantz/coolcontrol";
 
     hermes-agent.url = "github:NousResearch/hermes-agent";
+
+    nixvim = {
+      url = "github:nix-community/nixvim";
+    };
   };
 
   outputs = {
