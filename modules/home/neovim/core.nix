@@ -58,7 +58,7 @@
       pkgs-unstable.tree-sitter
       markdownlint-cli
       sass
-      nodePackages.postcss
+      postcss
       selene
       stylua
       prettierd
