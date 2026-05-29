@@ -17,20 +17,31 @@
         formatters_by_ft = {
           lua = ["stylua"];
           python = ["ruff_format"];
-          javascript = ["biome" "prettierd"];
-          typescript = ["biome" "prettierd"];
-          javascriptreact = ["biome" "prettierd"];
-          typescriptreact = ["biome" "prettierd"];
-          json = ["biome" "prettierd"];
-          svelte = ["prettierd"];
-          html = ["prettierd"];
-          css = ["prettierd"];
+
+          typescript = ["biome-organize-imports" "biome-check"];
+          javascript = ["biome-organize-imports" "biome-check"];
+          typescriptreact = ["biome-organize-imports" "biome-check"];
+          javascriptreact = ["biome-organize-imports" "biome-check"];
+          json = ["biome-organize-imports" "biome-check"];
+          svelte = ["biome-organize-imports" "biome-check"];
+
+          html = {
+            __unkeyed-1 = "biome-check";
+            __unkeyed-2 = "prettierd";
+            stop_after_first = true;
+          };
+          css = {
+            __unkeyed-1 = "biome-check";
+            __unkeyed-2 = "prettierd";
+            stop_after_first = true;
+          };
+
           markdown = ["prettierd"];
           yaml = ["prettierd"];
           rust = ["rustfmt"];
           go = ["goimports" "gofmt"];
           nix = ["alejandra"];
-          proto = ["buf_format"];
+          proto = ["buf"];
         };
 
         formatters = {
@@ -43,7 +54,7 @@
       keys = [
         {
           mode = "n";
-          key = "<leader>f";
+          key = "<leader>fo";
           action.__raw = ''
             function()
               require("conform").format({ async = false, timeout_ms = 3000 })
@@ -53,42 +64,5 @@
         }
       ];
     };
-
-    extraConfigLua = ''
-      local conform = require("conform")
-
-      conform.formatters.biome = {
-        command = "biome",
-        args = { "check", "--write", "$FILENAME" },
-        stdin = false,
-        condition = function(_, ctx)
-          return vim.fs.find({ "biome.json", "biome.jsonc" }, { upward = true, path = ctx.filename })[1]
-        end,
-      }
-
-      conform.formatters.prettierd = {
-        condition = function(_, ctx)
-          local has_biome = vim.fs.find({ "biome.json", "biome.jsonc" }, { upward = true, path = ctx.filename })[1]
-          return not has_biome or vim.bo[ctx.buf].filetype == "svelte"
-        end,
-      }
-
-      vim.api.nvim_create_autocmd("User", {
-        pattern = "ConformSetupPost",
-        callback = function()
-          local ft_list = { "javascript", "typescript", "javascriptreact", "typescriptreact", "json" }
-          for _, ft in ipairs(ft_list) do
-            local list = conform.formatters_by_ft[ft]
-            if list then
-              for i, fmt in ipairs(list) do
-                if fmt == "biome" or fmt == "prettierd" then
-                  list[i] = { name = fmt, stop_after_first = true }
-                end
-              end
-            end
-          end
-        end,
-      })
-    '';
   };
 }
