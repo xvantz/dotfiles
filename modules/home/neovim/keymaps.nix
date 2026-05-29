@@ -30,7 +30,7 @@
     {
       mode = "n";
       key = "K";
-      action.__raw = "vim.lsp.buf.hover";
+      action.__raw = "function() vim.lsp.buf.hover({ border = 'rounded' }) end";
       options = {
         desc = "Hover";
         silent = true;
