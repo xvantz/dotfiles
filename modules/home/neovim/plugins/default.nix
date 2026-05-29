@@ -22,6 +22,5 @@
     ./leap.nix
     ./blink.nix
     ./noice.nix
-    ./hover.nix
   ];
 }
