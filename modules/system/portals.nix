@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   xdg.portal = {
     enable = true;
     wlr.enable = true;
@@ -21,7 +25,8 @@
         "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
       };
       niri = {
-        default = ["gtk"];
+        default = lib.mkForce ["gtk"];
+
         "org.freedesktop.impl.portal.Settings" = ["gtk"];
         "org.freedesktop.impl.portal.FileChooser" = ["gtk"];
         "org.freedesktop.impl.portal.Screenshot" = ["wlr"];

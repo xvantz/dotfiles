@@ -39,7 +39,7 @@
     nixd
     alejandra
     pkgs-unstable.telegram-desktop
-    nodePackages.pnpm
+    pnpm
     customPkgs.codex
     customPkgs.gemini
     tldr

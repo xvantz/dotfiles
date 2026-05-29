@@ -1,6 +1,8 @@
 {...}: {
   programs.nixvim.plugins = {
-    mini-icons.enable = true;
-    web-devicons.mockDevIcons = true;
+    mini-icons = {
+      enable = true;
+      mockDevIcons = true;
+    };
   };
 }

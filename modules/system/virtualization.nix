@@ -24,7 +24,8 @@
     extraGroups = ["podman" "libvirtd" "kvm"];
   };
 
-  boot.initrd.kernelModules = ["vfio_pci" "vfio" "vfio_iommu_type1"];
+  # boot.initrd.kernelModules = ["vfio_pci" "vfio" "vfio_iommu_type1"];
+  boot.initrd.availableKernelModules = ["vfio" "vfio_pci" "vfio_iommu_type1"];
   boot.kernelParams = ["amd_iommu=on" "iommu=pt" "vfio-pci.ids=10de:25a0,10de:2291"];
   boot.extraModulePackages = [config.boot.kernelPackages.kvmfr];
   boot.kernelModules = ["kvmfr"];
@@ -40,12 +41,6 @@
     "nvidia_uvm"
     "nova_core"
   ];
-  boot.initrd.preDeviceCommands = ''
-    DEVS="0000:01:00.0 0000:01:00.1"
-    for DEV in $DEVS; do
-      echo "vfio-pci" > /sys/bus/pci/devices/$DEV/driver_override
-    done
-  '';
 
   systemd.services.kvmfr-options = {
     description = "Set permissions for /dev/kvmfr0";

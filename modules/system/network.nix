@@ -29,16 +29,19 @@
 
   services.resolved = {
     enable = true;
-    dnssec = "false";
-    dnsovertls = "true";
-    fallbackDns = [
-      "1.0.0.1#cloudflare-dns.com"
-      "149.112.112.112#dns.quad9.net"
-    ];
-    llmnr = "false";
-    extraConfig = ''
-      Cache=yes
-      Domains=~.
-    '';
+
+    settings = {
+      Resolve = {
+        Cache = "yes";
+        Domains = "~.";
+        DNSSEC = "false";
+        DNSOverTLS = "true";
+        LLMNR = "false";
+        FallbackDNS = [
+          "1.0.0.1#cloudflare-dns.com"
+          "149.112.112.112#dns.quad9.net"
+        ];
+      };
+    };
   };
 }

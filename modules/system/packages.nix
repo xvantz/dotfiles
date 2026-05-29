@@ -29,6 +29,7 @@
     xdg-desktop-portal-wlr
     nix-tree
     easyeffects
+    brightnessctl
   ];
 
   programs.nix-ld.enable = true;
