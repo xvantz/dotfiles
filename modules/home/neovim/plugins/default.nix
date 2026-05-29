@@ -20,5 +20,7 @@
     ./markdown.nix
     ./lint.nix
     ./leap.nix
+    ./blink.nix
+    ./noice.nix
   ];
 }
