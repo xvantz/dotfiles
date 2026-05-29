@@ -1,5 +1,5 @@
 {...}: {
-  programs.nixvim.plugins.nvim-treesitter = {
+  programs.nixvim.plugins.treesitter = {
     enable = true;
     grammars = [
       "go"
@@ -19,6 +19,7 @@
       "typst"
       "rust"
       "zig"
+      "norg"
     ];
   };
 }
