@@ -13,6 +13,20 @@
         callback.__raw = "function() local ok, conform = pcall(require, 'conform'); if ok then conform.format({ lsp_fallback = true, timeout_ms = 2000 }) end end";
         desc = "Format buffer on save";
       }
+      {
+        event = ["FileType"];
+        group = "Core";
+        callback.__raw = "function(args)
+          if vim.bo[args.buf].buftype == '' then
+            vim.treesitter.start(args.buf)
+
+            vim.wo[0][0].foldmethod = 'expr'
+            vim.wo[0][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+            vim.wo[0][0].foldlevel = 99
+          end
+        end";
+        desc = "Treesitter highlight";
+      }
     ];
 
     extraConfigVim = ''
