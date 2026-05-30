@@ -38,10 +38,17 @@
       expandtab = true;
       shiftwidth = 2;
       tabstop = 2;
-      smartindent = true;
       updatetime = 200;
       timeoutlen = 400;
+      smoothscroll = true;
       clipboard = "unnamedplus";
+      scrolloff = 8;
+      sidescrolloff = 8;
+      undofile = true;
+      pumblend = 10;
+      winblend = 10;
+      swapfile = false;
+      inccommand = "split";
     };
 
     diagnostic.settings = {
