@@ -24,26 +24,26 @@
           "branch"
           "diff"
           {
-            diagnostics = {
-              sources = ["nvim_diagnostic"];
-              symbols = {
-                error = " ";
-                warn = " ";
-                info = " ";
-                hint = "󰌶 ";
-              };
+            __unkeyed-1 = "diagnostics";
+
+            sources = ["nvim_diagnostic"];
+            symbols = {
+              error = " ";
+              warn = " ";
+              info = " ";
+              hint = "󰌶 ";
             };
           }
         ];
         lualine_c = [
           {
-            filename = {
-              path = 1;
-              symbols = {
-                modified = "󰆓";
-                readonly = "";
-                unnamed = "[No Name]";
-              };
+            __unkeyed-1 = "filename";
+
+            path = 1;
+            symbols = {
+              modified = "󰆓";
+              readonly = "";
+              unnamed = "[No Name]";
             };
           }
         ];
