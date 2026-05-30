@@ -23,18 +23,35 @@
         };
         menu = {
           auto_show = true;
-          draw = {
-            treesitter = ["lsp"];
-            columns = [
-              ["label" "label_description"]
-              ["kind_icon" "kind"]
-            ];
-          };
+          draw.__raw = ''
+            {
+              treesitter = { "lsp" },
+              columns = {
+                { "kind_icon", gap = 1 },
+                { "label", "label_description", gap = 1 },
+              },
+              padding = { 0, 1 },
+              components = {
+                label = {
+                  width = { fill = true }
+                },
+                label_description = { highlight = "BlinkCmpLabelDescription" },
+              }
+            }
+          '';
         };
         documentation = {
           auto_show = true;
           auto_show_delay_ms = 200;
+          draw.__raw = ''
+            function(opts)
+              opts.default_implementation()
+            end
+          '';
           treesitter_highlighting = true;
+          window = {
+            border = "rounded";
+          };
         };
       };
 

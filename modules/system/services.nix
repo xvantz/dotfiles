@@ -1,4 +1,4 @@
-{pkgs-unstable, ...}: {
+{pkgs, ...}: {
   programs.dconf.enable = true;
   services.dbus.enable = true;
   services.dbus.implementation = "broker";
@@ -21,7 +21,7 @@
 
   services.ollama = {
     enable = true;
-    package = pkgs-unstable.ollama-cpu;
+    package = pkgs.ollama-cpu;
   };
   services.udisks2.enable = true;
 

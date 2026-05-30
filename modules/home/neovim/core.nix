@@ -1,13 +1,23 @@
 {
   pkgs,
-  pkgs-unstable,
   customPkgs,
+  inputs,
   ...
 }: {
   programs.nixvim = {
     enable = true;
+    nixpkgs = {
+      source = inputs.nixpkgs;
+    };
+
+    version = {
+      enableNixpkgsReleaseCheck = false;
+    };
+
     globals.mapleader = " ";
-    colorschemes.tokyonight.enable = true;
+    colorschemes.tokyonight = {
+      enable = true;
+    };
 
     opts = {
       fileformats = "unix,dos";
@@ -43,7 +53,7 @@
       update_in_insert = false;
       float = {
         border = "rounded";
-        source = "if_many";
+        source = "always";
       };
       severity_sort = true;
       signs.text = {
@@ -55,7 +65,7 @@
     };
 
     extraPackages = with pkgs; [
-      pkgs-unstable.tree-sitter
+      tree-sitter
       markdownlint-cli
       sass
       postcss

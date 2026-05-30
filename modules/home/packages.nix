@@ -1,7 +1,6 @@
 {
   pkgs,
   customPkgs,
-  pkgs-unstable,
   ...
 }: {
   home.packages = with pkgs; [
@@ -38,7 +37,7 @@
     bitwarden-desktop
     nixd
     alejandra
-    pkgs-unstable.telegram-desktop
+    telegram-desktop
     pnpm
     customPkgs.codex
     customPkgs.gemini
@@ -48,11 +47,11 @@
     fzf
     bat
     gammastep
-    pkgs-unstable.obsidian
-    pkgs-unstable.discord
-    pkgs-unstable.bun
-    pkgs-unstable.vesktop
-    pkgs-unstable.zoom-us
+    obsidian
+    discord
+    bun
+    vesktop
+    zoom-us
     customPkgs.pi-coding
     python3
     uv

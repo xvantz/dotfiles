@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -17,7 +16,7 @@
 
     dms = {
       url = "github:AvengeMedia/DankMaterialShell/stable";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     niri = {
@@ -49,37 +48,34 @@
   } @ inputs: let
     system = "x86_64-linux";
     selfPath = "/home/xvantz/.dotfiles";
+
     pkgs = import nixpkgs {
       inherit system;
       config.allowUnfree = true;
+      config.permittedInsecurePackages = ["openssl-1.1.1w"];
     };
-    pkgs-unstable = pkgs;
+
     customPkgs = import ./customPkgs/default.nix pkgs;
+
+    sharedArgs = {inherit inputs pkgs customPkgs selfPath;};
   in {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       inherit system;
-      specialArgs = {inherit inputs pkgs-unstable customPkgs selfPath;};
+      specialArgs = sharedArgs;
       modules = [
         ./configuration.nix
-        home-manager.nixosModules.home-manager
         inputs.coolcontrol.nixosModules.default
         inputs.hermes-agent.nixosModules.default
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.extraSpecialArgs = {
-            inherit inputs pkgs-unstable customPkgs selfPath;
-          };
-          home-manager.users.xvantz = {
-            disabledModules = ["programs/anyrun.nix"];
-
-            imports = [
-              inputs.anyrun.homeManagerModules.default
-              ./home.nix
-            ];
-          };
-        }
       ];
+    };
+
+    homeConfigurations.xvantz = home-manager.lib.homeManagerConfiguration {
+      inherit pkgs;
+      modules = [
+        ./home.nix
+        inputs.anyrun.homeManagerModules.default
+      ];
+      extraSpecialArgs = sharedArgs;
     };
   };
 }
