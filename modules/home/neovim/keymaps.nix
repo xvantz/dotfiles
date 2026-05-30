@@ -154,5 +154,41 @@
       action.__raw = "function() Snacks.picker.todo_comments() end";
       options = {desc = "Todo comments";};
     }
+    {
+      mode = "n";
+      key = "<C-h>";
+      action.__raw = "require('smart-splits').move_cursor_left";
+      options = {
+        desc = "Go to left split";
+        silent = true;
+      };
+    }
+    {
+      mode = "n";
+      key = "<C-j>";
+      action.__raw = "require('smart-splits').move_cursor_down";
+      options = {
+        desc = "Go to bottom split";
+        silent = true;
+      };
+    }
+    {
+      mode = "n";
+      key = "<C-k>";
+      action.__raw = "require('smart-splits').move_cursor_up";
+      options = {
+        desc = "Go to top split";
+        silent = true;
+      };
+    }
+    {
+      mode = "n";
+      key = "<C-l>";
+      action.__raw = "require('smart-splits').move_cursor_right";
+      options = {
+        desc = "Go to right split";
+        silent = true;
+      };
+    }
   ];
 }
