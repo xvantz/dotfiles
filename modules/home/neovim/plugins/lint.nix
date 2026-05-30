@@ -1,4 +1,4 @@
-{...}: {
+{pkgs, ...}: {
   programs.nixvim = {
     plugins.lint = {
       enable = true;
@@ -6,6 +6,7 @@
 
       settings = {
         linters_by_ft = {
+          nix = ["statix"];
           python = ["ruff" "check"];
           lua = ["selene"];
           markdown = ["markdownlint"];
@@ -13,6 +14,8 @@
         };
       };
     };
+
+    extraPackages = [pkgs.statix];
 
     extraConfigLua = ''
       local lint = require("lint")
