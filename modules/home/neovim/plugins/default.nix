@@ -21,5 +21,6 @@
     ./lint.nix
     ./leap.nix
     ./blink.nix
+    ./mini-ai.nix
   ];
 }
