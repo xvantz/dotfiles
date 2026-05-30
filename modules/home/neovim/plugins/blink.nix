@@ -21,6 +21,12 @@
         trigger = {
           show_on_keyword = true;
         };
+
+        ghost_text = {enabled = true;};
+        list.selection = {
+          preselect = true;
+          auto_insert = false;
+        };
         menu = {
           auto_show = true;
           draw.__raw = ''
