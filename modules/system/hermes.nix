@@ -29,10 +29,8 @@
       };
 
       auxiliary.vision = {
-        provider = "openai";
-        model = "qwen3-vl:4b-instruct-q4_K_M";
-        base_url = "http://localhost:11434/v1";
-        api_key = "ollama";
+        provider = "gemini";
+        model = "gemini-3.1-flash-lite";
       };
 
       messaging.discord.enabled = true;
