@@ -82,6 +82,7 @@
       modules = [
         ./home.nix
         inputs.anyrun.homeManagerModules.default
+        inputs.sops-nix.homeManagerModules.sops
       ];
       extraSpecialArgs = sharedArgs;
     };

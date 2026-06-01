@@ -30,6 +30,7 @@
     nix-tree
     easyeffects
     brightnessctl
+    sops
   ];
 
   programs.nix-ld.enable = true;
