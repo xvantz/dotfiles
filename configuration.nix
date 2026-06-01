@@ -6,8 +6,12 @@
   imports = [
     ./hardware-configuration.nix
     inputs.dms.nixosModules.greeter
+    inputs.sops-nix.nixosModules.sops
     ./modules/system
   ];
+
+  sops.defaultSopsFile = ./secrets.yaml;
+  sops.age.sshKeyPaths = ["/home/xvantz/.ssh/id_ed25519"];
 
   users.users.xvantz = {
     isNormalUser = true;
