@@ -1,0 +1,7 @@
+keys:
+  - &xvantz age1u98kxy0cvqy3sfpsxdc9e2m5djxsv6re96v8c7349aeuce67nges8wdmlw
+creation_rules:
+  - path_regex: secrets.yaml$
+    key_groups:
+      - age:
+          - *xvantz
