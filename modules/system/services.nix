@@ -22,6 +22,14 @@
   services.ollama = {
     enable = true;
     package = pkgs.ollama-cpu;
+
+    loadModels = [
+      "qwen3-vl:4b-instruct-q4_K_M"
+      "qwen3-vl:4b-thinking-q4_K_M"
+    ];
+    environmentVariables = {
+      OLLAMA_HOST = "0.0.0.0:11434";
+    };
   };
   services.udisks2.enable = true;
 

@@ -1,7 +1,18 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  config,
+  ...
+}: {
+  sops.secrets.hermes_env = {
+    owner = "hermes";
+  };
+
   services.hermes-agent = {
     enable = true;
     addToSystemPackages = true;
+    user = "xvantz";
+    group = "users";
+    createUser = false;
 
     container = {
       enable = true;
@@ -9,14 +20,6 @@
       image = "ubuntu:24.04";
       hostUsers = ["xvantz"];
     };
-
-    extraPythonPackages = [
-      pkgs.python312Packages.discordpy
-    ];
-
-    extraPackages = [
-      pkgs.python312Packages.discordpy
-    ];
 
     extraDependencyGroups = ["messaging"];
 
@@ -26,6 +29,13 @@
         provider = "opencode-go";
         base_url = "https://opencode.ai/zen/go/v1";
         api_mode = "chat_completions";
+      };
+
+      auxiliary.vision = {
+        provider = "openai";
+        model = "qwen3-vl:4b-instruct-q4_K_M";
+        base_url = "http://localhost:11434/v1";
+        api_key = "ollama";
       };
 
       messaging.discord.enabled = true;
@@ -86,7 +96,7 @@
         server_actions = "";
       };
 
-      worktree = false;
+      worktree = true;
 
       platform_toolsets = {
         cli = "hermes-cli";
@@ -111,10 +121,11 @@
 
       terminal = {
         backend = "local";
+        cwd = ".";
       };
     };
 
-    environmentFiles = ["/var/lib/hermes/env"];
+    environmentFiles = [config.sops.secrets.hermes_env.path];
     # authFile = "/home/xvantz/hermes/work/auth.json";
 
     mcpServers.filesystem-obsidian = {
@@ -123,9 +134,19 @@
       args = ["-y" "@modelcontextprotocol/server-filesystem" "/brain"];
     };
 
+    mcpServers.filesystem-projects = {
+      enabled = true;
+      command = "${pkgs.nodejs}/bin/npx";
+      args = ["-y" "@modelcontextprotocol/server-filesystem" "/projects"];
+    };
+
     container.extraVolumes = [
       "/home/xvantz/Documents/Obsidian:/brain:Z"
+      "/home/xvantz/projects/.hermes_share:/projects:rw"
     ];
+
+    restart = "always";
+    restartSec = 5;
   };
 
   security.sudo.extraRules = [
