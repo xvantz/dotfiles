@@ -4,15 +4,12 @@
   ...
 }: {
   sops.secrets.hermes_env = {
-    owner = "hermes";
+    owner = "xvantz";
   };
 
   services.hermes-agent = {
     enable = true;
     addToSystemPackages = true;
-    user = "xvantz";
-    group = "users";
-    createUser = false;
 
     container = {
       enable = true;
