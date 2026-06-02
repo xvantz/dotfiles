@@ -152,9 +152,16 @@
       args = ["-y" "@modelcontextprotocol/server-filesystem" "/projects"];
     };
 
+    mcpServers.filesystem-dotfiles = {
+      enabled = true;
+      command = "${pkgs.nodejs}/bin/npx";
+      args = ["-y" "@modelcontextprotocol/server-filesystem" "/dotfiles"];
+    };
+
     container.extraVolumes = [
       "/home/xvantz/Documents/Obsidian:/brain:Z"
       "/home/xvantz/projects/public:/projects:rw"
+      "/home/xvantz/.dotfiles:/dotfiles:ro"
     ];
 
     restart = "always";
