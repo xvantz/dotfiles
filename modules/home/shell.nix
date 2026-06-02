@@ -3,8 +3,9 @@
     enable = true;
     enableCompletion = true;
     syntaxHighlighting.enable = true;
+    autosuggestion.enable = true;
     shellAliases = {
-      ls = "eza --icons";
+      ls = "eza --icons -la";
       cd = "z";
       update = "nh os switch";
       update-home = "nh home switch";
