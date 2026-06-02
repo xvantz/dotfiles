@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -57,20 +57,39 @@
     system = "x86_64-linux";
     selfPath = "/home/xvantz/.dotfiles";
 
-    pkgs = import nixpkgs {
-      inherit system;
-      config.allowUnfree = true;
-      config.permittedInsecurePackages = ["openssl-1.1.1w"];
-    };
+    makePkgs = src: extConfig:
+      import src {
+        inherit system;
+        config =
+          {
+            allowUnfree = true;
+            permittedInsecurePackages = ["openssl-1.1.1w" "electron-39.8.10"];
+          }
+          // extConfig;
 
-    customPkgs = import ./customPkgs/default.nix pkgs;
+        overlays = [
+          (final: prev: {
+            inherit
+              (prev.lixPackageSets.stable)
+              nix-eval-jobs
+              nix-fast-build
+              nix-direnv
+              ;
+          })
+          (import ./customPkgs/default.nix)
+        ];
+      };
 
-    sharedArgs = {inherit inputs pkgs customPkgs selfPath;};
+    nixosPkgs = makePkgs nixpkgs {};
+    homePkgs = makePkgs home-manager.inputs.nixpkgs {};
+
+    sharedArgs = {inherit inputs selfPath;};
   in {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = sharedArgs;
       modules = [
+        {nixpkgs.pkgs = nixosPkgs;}
         ./configuration.nix
         inputs.coolcontrol.nixosModules.default
         inputs.hermes-agent.nixosModules.default
@@ -78,7 +97,7 @@
     };
 
     homeConfigurations.xvantz = home-manager.lib.homeManagerConfiguration {
-      inherit pkgs;
+      pkgs = homePkgs;
       modules = [
         ./home.nix
         inputs.anyrun.homeManagerModules.default

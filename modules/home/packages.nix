@@ -1,8 +1,4 @@
-{
-  pkgs,
-  customPkgs,
-  ...
-}: {
+{pkgs, ...}: {
   home.packages = with pkgs; [
     usbutils
     lazygit
@@ -39,8 +35,8 @@
     alejandra
     telegram-desktop
     pnpm
-    customPkgs.codex
-    customPkgs.gemini
+    xv-codex
+    xv-gemini
     tldr
     ouch
     procs
@@ -52,7 +48,7 @@
     bun
     vesktop
     zoom-us
-    customPkgs.pi-coding
+    xv-pi-coding
     python3
     uv
     imagemagick

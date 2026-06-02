@@ -1,6 +1,5 @@
 {
   pkgs,
-  customPkgs,
   inputs,
   ...
 }: {
@@ -82,7 +81,7 @@
       prettierd
       eslint_d
       black
-      customPkgs.biome
+      xv-biome
       buf
       gotools
       ruff
