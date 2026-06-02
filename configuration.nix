@@ -1,6 +1,7 @@
 {
   pkgs,
   inputs,
+  lib,
   ...
 }: {
   imports = [
@@ -14,10 +15,11 @@
   sops.age.sshKeyPaths = ["/home/xvantz/.ssh/id_ed25519"];
 
   users.users.xvantz = {
-    isNormalUser = true;
+    isNormalUser = lib.mkForce true;
+    isSystemUser = lib.mkForce false;
     description = "Ivan R.";
     extraGroups = ["networkmanager" "wheel" "video"];
-    shell = pkgs.zsh;
+    shell = lib.mkForce pkgs.zsh;
   };
 
   programs.zsh.enable = true;
