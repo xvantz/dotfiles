@@ -92,17 +92,23 @@ animations {
 window-rule {
     match app-id=r#"(firefox|zen.*)"# title="^Picture-in-Picture$"
     open-floating true
+    background-effect { 
+    blur true
+  }
 }
 
 window-rule {
     match app-id="^org.telegram.desktop$" title="^Media viewer$"
     open-floating true
+    background-effect { 
+    blur true
+  }
 }
 
 window-rule {
-        match app-id="^xdg-desktop-portal-gtk$"
-        open-floating true
-    }
+    match app-id="^xdg-desktop-portal-gtk$"
+    open-floating true
+}
     
 window-rule {
     match app-id="^xdg-desktop-portal-gnome$"
@@ -114,10 +120,41 @@ window-rule {
     open-floating true
 }
 
+window-rule {
+    match app-id="^ghostty$"
+    background-effect { 
+    blur true
+  }
+}
+
+window-rule {
+    match app-id="^com\\.gabm\\.satty$"
+    open-floating true
+}
+
+window-rule {
+    match app-id=".*"
+    popups {
+        geometry-corner-radius 12
+        opacity 0.92
+        background-effect { 
+        blur true
+      }
+    }
+}
+
+layer-rule {
+    match layer="overlay"
+    match layer="top"
+    background-effect {
+        xray false
+    }
+}
+
 binds {
-    Mod+T hotkey-overlay-title="Open a Terminal: ghostty" { spawn "ghostty"; }
-    Mod+R hotkey-overlay-title="Run an Application: anyrun" { spawn "anyrun"; }
-    Super+Alt+L hotkey-overlay-title="Lock the Screen" { spawn "dms" "ipc" "call" "lock" "lock"; }
+    Mod+T repeat=false hotkey-overlay-title="Open a Terminal: ghostty" { spawn "ghostty"; }
+    Mod+R repeat=false hotkey-overlay-title="Run an Application: anyrun" { spawn "anyrun"; }
+    Mod+Shift+BackSpace repeat=false hotkey-overlay-title="Lock the Screen" { spawn "dms" "ipc" "call" "lock" "lock"; }
 
     XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.02+"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.02-"; }
@@ -129,14 +166,12 @@ binds {
 
     Mod+O repeat=false { toggle-overview; }
 
-    Mod+Escape   { close-window; }
+    Mod+Escape repeat=false   { close-window; }
 
     Mod+H { focus-column-left; }
     Mod+L { focus-column-right; }
     Mod+J { focus-workspace-down; }
     Mod+K { focus-workspace-up; }
-    Mod+Alt+H { focus-monitor-left; }
-    Mod+Alt+L { focus-monitor-right; }
 
     Mod+Shift+H { move-column-left; }
     Mod+Shift+L { move-column-right; }
@@ -179,5 +214,5 @@ binds {
 
     Mod+V       { toggle-window-floating; }
 
-    Home { spawn "sh" "-c" "grim -g \"$(slurp)\" - | satty --filename - --early-exit --disable-notifications --copy-command wl-copy"; }
+    Home  repeat=false{ spawn "sh" "-c" "grim -g \"$(slurp)\" - | satty --filename - --early-exit --disable-notifications --copy-command wl-copy"; }
 }
