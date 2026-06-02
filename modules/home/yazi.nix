@@ -2,6 +2,7 @@
   programs.yazi = {
     enable = true;
     shellWrapperName = "y";
+    enableZshIntegration = true;
     settings = {
       mgr = {
         sort_by = "alphabetical";
