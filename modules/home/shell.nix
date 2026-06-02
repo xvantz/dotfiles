@@ -35,5 +35,6 @@
     VISUAL = "nvim";
     QT_QPA_PLATFORMTHEME = "xdgdesktopportal";
     QT_QPA_PLATFORM = "wayland;xcb";
+    NH_NOM = "1";
   };
 }
