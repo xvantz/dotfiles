@@ -10,7 +10,7 @@
   services.hermes-agent = {
     enable = true;
     addToSystemPackages = true;
-    user = "xvantx";
+    user = "hermes";
     group = "users";
 
     container = {
