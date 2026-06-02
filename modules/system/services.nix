@@ -55,4 +55,8 @@
       LidSwitchIgnoreInhibit = "no";
     };
   };
+  services.earlyoom = {
+    enable = true;
+    enableNotifications = true;
+  };
 }
