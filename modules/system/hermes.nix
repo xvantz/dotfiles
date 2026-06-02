@@ -10,17 +10,29 @@
   services.hermes-agent = {
     enable = true;
     addToSystemPackages = true;
+    user = "xvantx";
+    group = "users";
 
     container = {
       enable = true;
       backend = "podman";
       image = "ubuntu:24.04";
       hostUsers = ["xvantz"];
+      extraOptions = [
+        "--env"
+        "HERMES_UID=1000"
+        "--env"
+        "HERMES_GID=100"
+        "-p"
+        "9119:9119"
+      ];
     };
 
     extraDependencyGroups = ["messaging"];
 
     settings = {
+      dashboard.enable = true;
+
       model = {
         default = "deepseek-v4-flash";
         provider = "opencode-go";
@@ -31,6 +43,12 @@
       auxiliary.vision = {
         provider = "gemini";
         model = "gemini-3.1-flash-lite";
+      };
+
+      web = {
+        backend = "tavily";
+        search_backend = "tavily";
+        extract_backend = "tavily";
       };
 
       messaging.discord.enabled = true;
@@ -121,7 +139,6 @@
     };
 
     environmentFiles = [config.sops.secrets.hermes_env.path];
-    # authFile = "/home/xvantz/hermes/work/auth.json";
 
     mcpServers.filesystem-obsidian = {
       enabled = true;
@@ -137,7 +154,7 @@
 
     container.extraVolumes = [
       "/home/xvantz/Documents/Obsidian:/brain:Z"
-      "/home/xvantz/projects/.hermes_share:/projects:rw"
+      "/home/xvantz/projects/public:/projects:rw"
     ];
 
     restart = "always";
