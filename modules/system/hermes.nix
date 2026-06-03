@@ -29,6 +29,15 @@
     };
 
     extraDependencyGroups = ["messaging"];
+    extraPackages = with pkgs; [go zig bun buf golangci-lint];
+
+    documents = {
+      "USER.md" = ''
+        Hermes Agent persistent storage:
+        - Memory: /brain/3. Resources/Hermes Agent/Memory.md
+        - Skills: /brain/3. Resources/Hermes Agent/Skills/
+      '';
+    };
 
     settings = {
       dashboard.enable = true;
