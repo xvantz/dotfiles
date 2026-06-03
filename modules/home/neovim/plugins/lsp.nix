@@ -17,6 +17,7 @@
       marksman.enable = true;
       csharp_ls.enable = true;
       tailwindcss.enable = true;
+      nixd.enable = true;
     };
   };
 }
