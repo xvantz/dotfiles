@@ -149,22 +149,43 @@
 
     environmentFiles = [config.sops.secrets.hermes_env.path];
 
-    mcpServers.filesystem-obsidian = {
-      enabled = true;
-      command = "${pkgs.nodejs}/bin/npx";
-      args = ["-y" "@modelcontextprotocol/server-filesystem" "/brain"];
-    };
+    mcpServers = {
+      filesystem-obsidian = {
+        enabled = true;
+        command = "${pkgs.nodejs}/bin/npx";
+        args = ["-y" "@modelcontextprotocol/server-filesystem" "/brain"];
+      };
 
-    mcpServers.filesystem-projects = {
-      enabled = true;
-      command = "${pkgs.nodejs}/bin/npx";
-      args = ["-y" "@modelcontextprotocol/server-filesystem" "/projects"];
-    };
+      filesystem-projects = {
+        enabled = true;
+        command = "${pkgs.nodejs}/bin/npx";
+        args = ["-y" "@modelcontextprotocol/server-filesystem" "/projects"];
+      };
 
-    mcpServers.filesystem-dotfiles = {
-      enabled = true;
-      command = "${pkgs.nodejs}/bin/npx";
-      args = ["-y" "@modelcontextprotocol/server-filesystem" "/dotfiles"];
+      filesystem-dotfiles = {
+        enabled = true;
+        command = "${pkgs.nodejs}/bin/npx";
+        args = ["-y" "@modelcontextprotocol/server-filesystem" "/dotfiles"];
+      };
+
+      playwright = {
+        enabled = true;
+        command = "${pkgs.nodejs}/bin/npx";
+        args = ["-y" "@playwright/mcp@latest" "--headless"];
+      };
+
+      github = {
+        enabled = true;
+        command = "${pkgs.nodejs}/bin/npx";
+        args = ["-y" "@modelcontextprotocol/server-github"];
+        env.GITHUB_PERSONAL_ACCESS_TOKEN = "\${GITHUB_TOKEN}";
+      };
+
+      sequential-thinking = {
+        enabled = true;
+        command = "${pkgs.nodejs}/bin/npx";
+        args = ["-y" "@modelcontextprotocol/server-sequential-thinking"];
+      };
     };
 
     container.extraVolumes = [

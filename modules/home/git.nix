@@ -8,6 +8,9 @@
       };
       init.defaultBranch = "main";
       pull.rebase = true;
+      url = {
+        "git@github.com:" = {insteadOf = "https://github.com/";};
+      };
     };
   };
 }
