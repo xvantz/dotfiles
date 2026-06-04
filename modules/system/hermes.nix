@@ -105,7 +105,7 @@
       toolsets = ["all"];
 
       discord = {
-        require_mention = true;
+        require_mention = false;
         free_response_channels = "";
         allowed_channels = "";
         auto_thread = true;
@@ -118,7 +118,7 @@
         server_actions = "";
       };
 
-      worktree = true;
+      worktree = false;
 
       platform_toolsets = {
         cli = "hermes-cli";
@@ -179,12 +179,6 @@
         command = "${pkgs.nodejs}/bin/npx";
         args = ["-y" "@modelcontextprotocol/server-github"];
         env.GITHUB_PERSONAL_ACCESS_TOKEN = "\${GITHUB_TOKEN}";
-      };
-
-      sequential-thinking = {
-        enabled = true;
-        command = "${pkgs.nodejs}/bin/npx";
-        args = ["-y" "@modelcontextprotocol/server-sequential-thinking"];
       };
     };
 
