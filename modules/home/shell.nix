@@ -13,6 +13,7 @@
       pack = "ouch compress";
       unpack = "ouch decompress";
       cat = "bat --theme=\"Catppuccin Mocha\"";
+      hermes = "sudo podman exec -it hermes-agent /data/current-package/bin/hermes";
     };
     initContent = ''
       eval "$(starship init zsh)"
