@@ -180,6 +180,12 @@
         args = ["-y" "@modelcontextprotocol/server-github"];
         env.GITHUB_PERSONAL_ACCESS_TOKEN = "\${GITHUB_TOKEN}";
       };
+
+      fetch = {
+        enabled = true;
+        command = "${pkgs.uv}/bin/uvx";
+        args = ["mcp-server-fetch"];
+      };
     };
 
     container.extraVolumes = [
