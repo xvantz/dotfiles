@@ -18,5 +18,6 @@
     ./redis.nix
     ./hardware.nix
     ./hermes.nix
+    ./forgejo.nix
   ];
 }
