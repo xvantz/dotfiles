@@ -20,5 +20,6 @@
     ./hermes.nix
     ./forgejo.nix
     ./adguard.nix
+    ./caddy.nix
   ];
 }
