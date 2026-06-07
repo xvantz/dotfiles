@@ -19,18 +19,4 @@
       allowedUDPPorts = [53 22005 22006];
     };
   };
-
-  services.resolved = {
-    enable = true;
-    extraConfig = ''
-      DNS=127.0.0.1
-      DNSStubListener=no
-    '';
-    settings = {
-      Resolve = {
-        Domains = "~.";
-        LLMNR = "false";
-      };
-    };
-  };
 }
