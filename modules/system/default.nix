@@ -19,5 +19,6 @@
     ./hardware.nix
     ./hermes.nix
     ./forgejo.nix
+    ./adguard.nix
   ];
 }
