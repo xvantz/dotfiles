@@ -7,6 +7,10 @@
     owner = "xvantz";
   };
 
+  sops.secrets.forgejo_env = {
+    owner = "xvantz";
+  };
+
   services.hermes-agent = {
     enable = true;
     addToSystemPackages = true;
@@ -147,7 +151,7 @@
       };
     };
 
-    environmentFiles = [config.sops.secrets.hermes_env.path];
+    environmentFiles = [config.sops.secrets.hermes_env.path config.sops.secrets.forgejo_env.path];
 
     mcpServers = {
       filesystem-obsidian = {
