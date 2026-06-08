@@ -27,8 +27,6 @@
         "HERMES_UID=1000"
         "--env"
         "HERMES_GID=100"
-        "-p"
-        "9119:9119"
       ];
     };
 
@@ -41,11 +39,46 @@
         - Memory: /brain/3. Resources/Hermes Agent/Memory.md
         - Skills: /brain/3. Resources/Hermes Agent/Skills/
       '';
+      "GRAPHIFY.md" = ''
+        ---
+        name: graphify
+        ---
+        # Graphify — Knowledge Graph Builder
+
+        You have `uvx graphifyy` available inside the container. Use it to build
+        and query per-project knowledge graphs.
+
+        ## When to build
+
+        When you enter a project directory
+        and `.graphify/graph.json` does not exist — build the graph.
+
+        ## Commands
+
+        - `uvx graphifyy build .`
+          Build a knowledge graph for the current project (5–30s, local tree-sitter AST, zero LLM cost for pure-code repos).
+
+        - `uvx graphifyy query "question"`
+          Query the graph instead of reading source files when asked about project structure, architecture, or code relationships (71× fewer tokens).
+
+        - `uvx graphifyy path "ComponentA" "ComponentB"`
+          Find the relationship paths between two components.
+
+        - `uvx graphifyy explain "Component"`
+          Get a summary of what a component does and its role in the system.
+
+        ## Graph location
+
+        Graph files live in `<project>/.graphify/`. They are safe to commit to git.
+
+        ## Incremental rebuild
+
+        Graphify uses SHA256 caching — subsequent builds are faster.
+        Rebuild after making significant code changes.
+      '';
     };
 
     settings = {
-      dashboard.enable = true;
-
       model = {
         default = "deepseek-v4-flash";
         provider = "opencode-go";
@@ -190,12 +223,18 @@
         command = "${pkgs.uv}/bin/uvx";
         args = ["mcp-server-fetch"];
       };
+
+      headroom = {
+        enabled = true;
+        command = "${pkgs.uv}/bin/uvx";
+        args = ["headroom-ai[mcp]" "mcp" "serve"];
+      };
     };
 
     container.extraVolumes = [
       "/home/xvantz/Documents/Obsidian:/brain:Z"
       "/home/xvantz/projects/public:/projects:rw"
-      "/home/xvantz/.dotfiles:/dotfiles:ro"
+      "/home/xvantz/.dotfiles:/dotfiles:rw"
     ];
 
     restart = "always";
