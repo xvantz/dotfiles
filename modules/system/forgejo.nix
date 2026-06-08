@@ -6,6 +6,7 @@
       DOMAIN = "git.xvantz.me";
       ROOT_URL = "https://git.xvantz.me";
       HTTP_PORT = 2000;
+      HTTP_ADDR = "127.0.0.1";
     };
   };
 }
