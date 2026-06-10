@@ -190,5 +190,36 @@
         silent = true;
       };
     }
+    {
+      mode = "n";
+      key = "<leader>rr";
+      action = "<cmd>OverseerRun<CR>";
+      options.desc = "Overseer: Run task";
+    }
+    {
+      mode = "n";
+      key = "<leader>rt";
+      action = "<cmd>OverseerToggle!<CR>";
+      options.desc = "Overseer: Toggle panel";
+    }
+    {
+      mode = "n";
+      key = "<leader>rs";
+      action.__raw = ''
+        function()
+          vim.ui.input({
+            prompt = "Overseer shell> ",
+            default = "",
+          }, function(cmdline)
+            if cmdline == nil or cmdline:match("^%s*$") then
+              print("Task cancelled or empty.")
+              return
+            end
+            vim.cmd("OverseerShell " .. cmdline)
+          end)
+        end
+      '';
+      options.desc = "Overseer: run shell command";
+    }
   ];
 }
