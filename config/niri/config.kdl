@@ -152,7 +152,7 @@ layer-rule {
 
 binds {
     Mod+T repeat=false hotkey-overlay-title="Open a Terminal: ghostty" { spawn "ghostty"; }
-    Mod+R repeat=false hotkey-overlay-title="Run an Application: anyrun" { spawn "anyrun"; }
+    Mod+R repeat=false hotkey-overlay-title="Run an Application" { spawn "dms" "ipc" "call" "spotlight" "toggle"; }
     Mod+Shift+BackSpace repeat=false hotkey-overlay-title="Lock the Screen" { spawn "dms" "ipc" "call" "lock" "lock"; }
 
     XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.02+"; }
