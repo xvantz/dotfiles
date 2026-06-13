@@ -1,10 +1,39 @@
-{...}: {
+{
+  pkgs,
+  config,
+  ...
+}: let
+  caddyWithCloudflare = pkgs.caddy.withPlugins {
+    plugins = ["github.com/caddy-dns/cloudflare@v0.2.4"];
+    hash = "sha256-bzMqxWTqrJ1skZmRTXyEMCKStXpljbqe5r0Ve2cnBfM=";
+  };
+in {
+  sops.secrets.cloudflare_env = {
+    owner = "caddy";
+  };
+
   services.caddy = {
     enable = true;
-    virtualHosts."git.xvantz.me" = {
+    package = caddyWithCloudflare;
+    environmentFile = config.sops.secrets.cloudflare_env.path;
+
+    virtualHosts."git.827482.xyz" = {
       extraConfig = ''
-        tls internal
+        tls {
+          dns cloudflare {env.CLOUDFLARE_TOKEN}
+          resolvers 1.1.1.1
+        }
         reverse_proxy http://127.0.0.1:2000
+      '';
+    };
+
+    virtualHosts."navidrome.827482.xyz" = {
+      extraConfig = ''
+        tls {
+          dns cloudflare {env.CLOUDFLARE_TOKEN}
+          resolvers 1.1.1.1
+        }
+        reverse_proxy http://127.0.0.1:4533
       '';
     };
   };
