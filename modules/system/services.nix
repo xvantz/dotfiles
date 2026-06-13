@@ -17,7 +17,9 @@
     extraConfig = "makestep 1.0 -1";
   };
 
-  systemd.user.extraConfig = "DefaultTimeoutStopSec=10s";
+  systemd.user.settings = {
+    Manager.DefaultTimeoutStopSec = "10s";
+  };
 
   services.ollama = {
     enable = true;
