@@ -15,6 +15,5 @@
   };
 
   services.upower.enable = true;
-  programs.coolercontrol.enable = true;
   services.power-profiles-daemon.enable = false;
 }
