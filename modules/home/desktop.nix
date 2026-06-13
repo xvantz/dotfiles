@@ -16,6 +16,7 @@
       pkgs.niri
       pkgs.xdg-desktop-portal-gtk
       pkgs.xdg-desktop-portal-wlr
+      pkgs.xdg-desktop-portal-gnome
     ];
     config = {
       common = {
@@ -23,14 +24,14 @@
         "org.freedesktop.impl.portal.Settings" = ["gtk"];
         "org.freedesktop.impl.portal.FileChooser" = ["gtk"];
         "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
-        "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
+        "org.freedesktop.impl.portal.ScreenCast" = ["gnome"];
       };
       niri = {
         default = ["gtk"];
         "org.freedesktop.impl.portal.Settings" = ["gtk"];
         "org.freedesktop.impl.portal.FileChooser" = ["gtk"];
         "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
-        "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
+        "org.freedesktop.impl.portal.ScreenCast" = ["gnome"];
       };
     };
   };
