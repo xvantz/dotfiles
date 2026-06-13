@@ -47,7 +47,6 @@
     discord
     bun
     vesktop
-    zoom-us
     xv-pi-coding
     python3
     uv
