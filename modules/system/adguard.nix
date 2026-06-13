@@ -50,6 +50,11 @@ in {
     };
   };
 
+  systemd.services.adguardhome = {
+    after = [ "network-online.target" "tailscaled.service" ];
+    wants = [ "network-online.target" "tailscaled.service" ];
+  };
+
   services.resolved = {
     enable = true;
     settings = {
