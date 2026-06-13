@@ -7,11 +7,10 @@
     golangci-lint
     zig
     nodejs
-    rustup
     eza
     zoxide
     dotnet-sdk_9
-    neohtop
+    bottom
     cmake
     ripgrep
     gcc
@@ -20,10 +19,8 @@
     unzip
     ghostty
     waybar
-    nbfc-linux
     spotify
     libnotify
-    pulseaudio
     pavucontrol
     playerctl
     grim
@@ -44,7 +41,6 @@
     bat
     gammastep
     obsidian
-    discord
     bun
     vesktop
     xv-pi-coding
