@@ -223,12 +223,6 @@
         command = "${pkgs.uv}/bin/uvx";
         args = ["mcp-server-fetch"];
       };
-
-      headroom = {
-        enabled = true;
-        command = "${pkgs.uv}/bin/uvx";
-        args = ["headroom-ai[mcp]" "mcp" "serve"];
-      };
     };
 
     container.extraVolumes = [
