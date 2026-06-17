@@ -26,7 +26,7 @@ in {
         blocking_ipv6 = "::";
         rewrites = [
           {
-            domain = "forgejo.827482.xyz";
+            domain = "git.827482.xyz";
             answer = hostIP;
             enabled = true;
           }
@@ -51,8 +51,8 @@ in {
   };
 
   systemd.services.adguardhome = {
-    after = [ "network-online.target" "tailscaled.service" ];
-    wants = [ "network-online.target" "tailscaled.service" ];
+    after = ["network-online.target" "tailscaled.service"];
+    wants = ["network-online.target" "tailscaled.service"];
   };
 
   services.resolved = {
