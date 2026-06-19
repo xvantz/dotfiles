@@ -3,10 +3,10 @@
   config,
   ...
 }: let
-  cfg = config.services.forgejo;
-  srv = cfg.settings.server;
-  defaultActUrl = "https://data.forgejo.org";
+  srv = config.services.forgejo.settings.server;
 in {
+  sops.secrets.forgejo_runner_token = {};
+
   services.forgejo = {
     enable = true;
     database.type = "postgres";
@@ -18,7 +18,6 @@ in {
         HTTP_PORT = 2000;
         HTTP_ADDR = "127.0.0.1";
       };
-
       actions = {
         ENABLED = true;
         DEFAULT_ACTIONS_URL = "github";
@@ -28,21 +27,19 @@ in {
 
   services.gitea-actions-runner = {
     package = pkgs.forgejo-runner;
-
     instances.default = {
       enable = true;
-      name = "nixos-native-runner";
-
-      url = defaultActUrl;
-
+      name = "nixos-runner";
+      url = "http://127.0.0.1:2000/";
+      tokenFile = config.sops.secrets.forgejo_runner_token.path;
+      labels = ["ubuntu-latest:docker://node:20-bookworm"];
       settings = {
-        runner = {
-          labels = [
-            "ubuntu-latest:docker://node:20-alpine"
-            "docker:docker://node:20-alpine"
-            "native:host"
-          ];
+        container = {
+          network = "";
+          privileged = false;
+          options = "--memory=4g --cpus=2";
         };
+        log.level = "info";
       };
     };
   };
