@@ -29,11 +29,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    anyrun = {
-      url = "github:anyrun-org/anyrun";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     coolcontrol.url = "github:xvantz/coolcontrol";
 
     hermes-agent.url = "github:NousResearch/hermes-agent";
@@ -100,7 +95,6 @@
       pkgs = homePkgs;
       modules = [
         ./home.nix
-        inputs.anyrun.homeManagerModules.default
         inputs.sops-nix.homeManagerModules.sops
       ];
       extraSpecialArgs = sharedArgs;
