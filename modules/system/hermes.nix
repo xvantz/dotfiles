@@ -223,6 +223,13 @@
         command = "${pkgs.uv}/bin/uvx";
         args = ["mcp-server-fetch"];
       };
+
+      figma = {
+        enabled = true;
+        command = "${pkgs.nodejs}/bin/npx";
+        args = ["-y" "figma-developer-mcp" "--stdio"];
+        env.FIGMA_API_KEY = "\${FIGMA_API_KEY}";
+      };
     };
 
     container.extraVolumes = [
