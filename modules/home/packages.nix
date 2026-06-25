@@ -18,7 +18,6 @@
     gnumake
     unzip
     ghostty
-    waybar
     spotify
     libnotify
     pavucontrol
@@ -47,6 +46,7 @@
     python3
     uv
     imagemagick
+    yarn-berry_4
   ];
 
   services.udiskie = {
