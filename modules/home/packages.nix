@@ -47,6 +47,7 @@
     uv
     imagemagick
     yarn-berry_4
+    obs-studio
   ];
 
   services.udiskie = {
