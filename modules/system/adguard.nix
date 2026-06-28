@@ -9,15 +9,15 @@ in {
 
     settings = {
       dns = {
-        bind_hosts = ["127.0.0.1" "100.95.144.120"];
+        bind_hosts = ["127.0.0.1" "::1" "100.95.144.120"];
         port = 53;
 
         upstream_dns = [
           "https://cloudflare-dns.com/dns-query"
           "https://dns.quad9.net/dns-query"
         ];
-        bootstrap_dns = ["1.1.1.1" "9.9.9.9"];
-        fallback_dns = ["1.0.0.1" "149.112.112.112"];
+        bootstrap_dns = ["1.1.1.1" "9.9.9.9" "2606:4700:4700::1111" "2620:fe::fe"];
+        fallback_dns = ["1.0.0.1" "149.112.112.112" "2606:4700:4700::1001" "2620:fe::10"];
       };
 
       filtering = {
@@ -59,7 +59,7 @@ in {
     enable = true;
     settings = {
       Resolve = {
-        DNS = "127.0.0.1 9.9.9.9 1.1.1.1";
+        DNS = "127.0.0.1 9.9.9.9 1.1.1.1 2606:4700:4700::1111 2620:fe::fe";
         DNSStubListener = false;
         Domains = "~.";
         LLMNR = false;

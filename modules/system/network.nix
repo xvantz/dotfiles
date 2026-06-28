@@ -4,10 +4,10 @@
     networkmanager = {
       enable = true;
       wifi.powersave = false;
-      insertNameservers = ["127.0.0.1" "9.9.9.9" "1.1.1.1"];
+      insertNameservers = ["127.0.0.1" "9.9.9.9" "1.1.1.1" "2606:4700:4700::1111" "2620:fe::fe"];
     };
 
-    enableIPv6 = false;
+    enableIPv6 = true;
 
     useDHCP = false;
     dhcpcd.enable = false;
