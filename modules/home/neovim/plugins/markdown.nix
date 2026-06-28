@@ -2,15 +2,17 @@
   programs.nixvim.plugins.render-markdown = {
     enable = true;
 
-    lazy = [{ft = "markdown";}];
+    lazyLoad = {
+      enable = true;
+      settings = {
+        ft = "markdown";
+      };
+    };
 
-    keys = [
-      {
-        mode = "n";
-        key = "<leader>rm";
-        action = "<cmd>RenderMarkdown toggle<CR>";
-        options.desc = "Toggle Markdown Preview";
-      }
-    ];
+    luaConfig = {
+      content = ''
+        vim.keymap.set("n", "<leader>rm", "<cmd>RenderMarkdown toggle<CR>", { desc = "Toggle Markdown Preview" })
+      '';
+    };
   };
 }

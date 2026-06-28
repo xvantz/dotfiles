@@ -1,7 +1,6 @@
 {...}: {
   programs.nixvim.plugins.lualine = {
     enable = true;
-    lazy = [{event = "VeryLazy";}];
 
     settings = {
       options = {

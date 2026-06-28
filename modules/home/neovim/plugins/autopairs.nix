@@ -1,7 +1,12 @@
 {...}: {
   programs.nixvim.plugins.mini-pairs = {
     enable = true;
-    lazy = [{event = "InsertEnter";}];
+    lazyLoad = {
+      enable = true;
+      settings = {
+        event = ["InsertEnter"];
+      };
+    };
 
     settings = {
       modes = {

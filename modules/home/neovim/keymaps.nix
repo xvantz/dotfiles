@@ -221,5 +221,30 @@
       '';
       options.desc = "Overseer: run shell command";
     }
+    {
+      mode = "n";
+      key = "<leader>fo";
+      action.__raw = ''
+        function()
+          require("conform").format({ async = false, timeout_ms = 3000 })
+        end
+      '';
+      options = {
+        desc = "Format Buffer";
+        silent = true;
+      };
+    }
+    {
+      mode = ["n" "x" "o"];
+      key = "s";
+      action = "<Plug>(leap)";
+      options = {desc = "Leap forward to";};
+    }
+    {
+      mode = "n";
+      key = "S";
+      action = "<Plug>(leap-from-window)";
+      options = {desc = "Leap from window";};
+    }
   ];
 }

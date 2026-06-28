@@ -1,3 +1,3 @@
 {...}: {
-  programs.nixvim.plugins.nvim-ts-autotag.enable = true;
+  programs.nixvim.plugins.ts-autotag.enable = true;
 }

@@ -3,10 +3,13 @@
     plugins.conform-nvim = {
       enable = true;
 
-      lazy = [
-        {event = "BufWritePre";}
-        {command = "ConformInfo";}
-      ];
+      lazyLoad = {
+        enable = true;
+        settings = {
+          event = ["BufWritePre"];
+          cmd = ["ConformInfo"];
+        };
+      };
 
       settings = {
         format_on_save = {
@@ -50,19 +53,6 @@
           };
         };
       };
-
-      keys = [
-        {
-          mode = "n";
-          key = "<leader>fo";
-          action.__raw = ''
-            function()
-              require("conform").format({ async = false, timeout_ms = 3000 })
-            end
-          '';
-          options.desc = "Format Buffer";
-        }
-      ];
     };
   };
 }

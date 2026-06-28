@@ -8,21 +8,6 @@
         safe_labels = "sfjklhodweiraumbcvgt";
         labels = "sfnjklhodweiraumbcvgt";
       };
-
-      keys = [
-        {
-          mode = ["n" "x" "o"];
-          key = "s";
-          action = "<Plug>(leap)";
-          options.desc = "Leap forward to";
-        }
-        {
-          mode = "n";
-          key = "S";
-          action = "<Plug>(leap-from-window)";
-          options.desc = "Leap from window";
-        }
-      ];
     };
 
     extraConfigLua = ''

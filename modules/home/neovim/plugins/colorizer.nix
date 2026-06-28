@@ -1,7 +1,12 @@
 {...}: {
   programs.nixvim.plugins.colorizer = {
     enable = true;
-    lazy = [{event = "BufReadPre";}];
+    lazyLoad = {
+      enable = true;
+      settings = {
+        event = ["BufReadPre"];
+      };
+    };
 
     settings = {
       filetypes = ["*" "!lazy" "!netrw" "!toggleterm" "!Prompt"];
