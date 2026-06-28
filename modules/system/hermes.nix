@@ -155,6 +155,20 @@
         server_actions = "";
       };
 
+      telegram = {
+        require_mention = false;
+        free_response_channels = "";
+        allowed_channels = "";
+        auto_thread = true;
+        thread_require_mention = false;
+        history_backfill = true;
+        history_backfill_limit = 50;
+        reactions = true;
+        channel_prompts = {};
+        dm_role_auth_guild = "";
+        server_actions = "";
+      };
+
       worktree = false;
 
       platform_toolsets = {
@@ -178,9 +192,19 @@
         servers = {};
       };
 
+      approvals = {
+        mode = "smart";
+      };
+
       terminal = {
         backend = "local";
         cwd = ".";
+      };
+
+      compression = {
+        enabled = true;
+        threshold = 0.50;
+        target_ratio = 0.20;
       };
     };
 
