@@ -6,6 +6,17 @@
   srv = config.services.forgejo.settings.server;
 in {
   sops.secrets.forgejo_runner_token = {};
+  sops.secrets.forgejo_ssh_key = {
+    path = "/var/lib/forgejo/.ssh/id_ed25519";
+    owner = "forgejo";
+  };
+  sops.secrets.github_admin_env = {
+    owner = "xvantz";
+  };
+
+  sops.secrets.forgejo_admin_env = {
+    owner = "xvantz";
+  };
 
   services.forgejo = {
     enable = true;
@@ -22,8 +33,18 @@ in {
         ENABLED = true;
         DEFAULT_ACTIONS_URL = "github";
       };
+      mirror = {
+        SSH_KEY_FILE = "/var/lib/forgejo/.ssh/id_ed25519";
+      };
+      webhook = {
+        ALLOWED_HOST_LIST = "127.0.0.1, localhost";
+      };
     };
   };
+
+  systemd.services.forgejo.postStart = ''
+    ${pkgs.openssh}/bin/ssh-keyscan github.com 2>/dev/null >> /var/lib/forgejo/.ssh/known_hosts || true
+  '';
 
   services.gitea-actions-runner = {
     package = pkgs.forgejo-runner;
@@ -43,4 +64,28 @@ in {
       };
     };
   };
+
+  services.forgejo-sync = {
+    enable = true;
+
+    forgejo = {
+      url = "http://localhost:2000";
+      tokenFile = config.sops.secrets.forgejo_admin_env.path;
+    };
+
+    platforms.github = {
+      enable = true;
+      tokenFile = config.sops.secrets.github_admin_env.path;
+    };
+
+    import = {
+      enable = true;
+      schedule = "hourly";
+    };
+
+    pushMirrors.enable = true;
+    autoCreate.enable = true;
+  };
+
+  environment.systemPackages = [config.services.forgejo-sync.package];
 }

@@ -31,6 +31,8 @@
 
     coolcontrol.url = "github:xvantz/coolcontrol";
 
+    sync-agent.url = "git+http://localhost:2000/xvantz/sync-agent.git";
+
     hermes-agent.url = "github:NousResearch/hermes-agent";
 
     nixvim = {
@@ -70,6 +72,7 @@
               nix-fast-build
               nix-direnv
               ;
+            sync-agent = inputs.sync-agent.packages.${system}.default;
           })
           (import ./customPkgs/default.nix)
         ];
@@ -87,6 +90,7 @@
         {nixpkgs.pkgs = nixosPkgs;}
         ./configuration.nix
         inputs.coolcontrol.nixosModules.default
+        inputs.sync-agent.nixosModules.default
         inputs.hermes-agent.nixosModules.default
       ];
     };
