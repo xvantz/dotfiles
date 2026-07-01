@@ -19,7 +19,7 @@
       };
 
       autoCmd = {
-        event = ["BufWritePost" "BufReadPost" "InsertLeave"];
+        event = ["BufWritePost" "BufReadPost"];
         callback.__raw = ''
           function()
             local ft = vim.bo.filetype
