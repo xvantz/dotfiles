@@ -26,12 +26,7 @@ in {
         blocking_ipv6 = "::";
         rewrites = [
           {
-            domain = "git.827482.xyz";
-            answer = hostIP;
-            enabled = true;
-          }
-          {
-            domain = "navidrome.827482.xyz";
+            domain = "*.827482.xyz";
             answer = hostIP;
             enabled = true;
           }
