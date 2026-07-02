@@ -56,9 +56,10 @@ in {
       labels = ["ubuntu-latest:docker://node:20-bookworm"];
       settings = {
         container = {
-          network = "";
+          network = "host";
           privileged = false;
           options = "--memory=4g --cpus=2";
+          docker_host = "automount";
         };
         log.level = "info";
       };
