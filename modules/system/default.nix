@@ -21,5 +21,6 @@
     ./forgejo.nix
     ./adguard.nix
     ./caddy.nix
+    ./k3s.nix
   ];
 }

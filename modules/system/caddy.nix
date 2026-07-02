@@ -36,5 +36,29 @@ in {
         reverse_proxy http://127.0.0.1:4533
       '';
     };
+
+    virtualHosts."argocd.827482.xyz" = {
+      extraConfig = ''
+        tls {
+          dns cloudflare {env.CLOUDFLARE_TOKEN}
+          resolvers 1.1.1.1
+        }
+        reverse_proxy http://127.0.0.1:30080 {
+          header_up X-Forwarded-Proto https
+        }
+      '';
+    };
+
+    virtualHosts."animark.827482.xyz" = {
+      extraConfig = ''
+        tls {
+          dns cloudflare {env.CLOUDFLARE_TOKEN}
+          resolvers 1.1.1.1
+        }
+        reverse_proxy http://127.0.0.1:30080 {
+          header_up X-Forwarded-Proto https
+        }
+      '';
+    };
   };
 }
