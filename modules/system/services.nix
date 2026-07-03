@@ -36,6 +36,14 @@
     extraUpFlags = ["--accept-dns=false"];
   };
 
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+    };
+  };
+
   services.navidrome = {
     enable = true;
 
