@@ -517,11 +517,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1783074387,
-        "narHash": "sha256-M18aoXkY0IudCSJfDYXz112vEcCPvg/anwYzfGYBRyU=",
+        "lastModified": 1783075800,
+        "narHash": "sha256-N7hpK5d4egQ2Wc0DbH2t267jPR/ntLQi1yXQhShPwbs=",
         "ref": "refs/heads/main",
-        "rev": "99a86b7c4f51be32d16ac740fa612cc694c98310",
-        "revCount": 39,
+        "rev": "b8255b62d07bdfbe2da46a72811ae1e90ca0f254",
+        "revCount": 40,
         "type": "git",
         "url": "http://localhost:2000/xvantz/sync-agent.git"
       },
