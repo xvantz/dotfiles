@@ -55,7 +55,10 @@ in {
         name = "nixos-runner";
         url = "http://127.0.0.1:2000/";
         tokenFile = config.sops.secrets.forgejo_runner_token.path;
-        labels = ["ubuntu-latest:docker://node:20-bookworm"];
+        labels = [
+          "ubuntu-latest:docker://node:20-bookworm"
+          "ubuntu-22.04:docker://node:20"
+        ];
         settings = {
           container = {
             network = "host";
