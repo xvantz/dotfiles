@@ -31,50 +31,13 @@
     };
 
     extraDependencyGroups = ["messaging"];
-    extraPackages = with pkgs; [go zig bun buf golangci-lint];
+    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server];
 
     documents = {
       "USER.md" = ''
         Hermes Agent persistent storage:
         - Memory: /brain/3. Resources/Hermes Agent/Memory.md
         - Skills: /brain/3. Resources/Hermes Agent/Skills/
-      '';
-      "GRAPHIFY.md" = ''
-        ---
-        name: graphify
-        ---
-        # Graphify — Knowledge Graph Builder
-
-        You have `uvx graphifyy` available inside the container. Use it to build
-        and query per-project knowledge graphs.
-
-        ## When to build
-
-        When you enter a project directory
-        and `.graphify/graph.json` does not exist — build the graph.
-
-        ## Commands
-
-        - `uvx graphifyy build .`
-          Build a knowledge graph for the current project (5–30s, local tree-sitter AST, zero LLM cost for pure-code repos).
-
-        - `uvx graphifyy query "question"`
-          Query the graph instead of reading source files when asked about project structure, architecture, or code relationships (71× fewer tokens).
-
-        - `uvx graphifyy path "ComponentA" "ComponentB"`
-          Find the relationship paths between two components.
-
-        - `uvx graphifyy explain "Component"`
-          Get a summary of what a component does and its role in the system.
-
-        ## Graph location
-
-        Graph files live in `<project>/.graphify/`. They are safe to commit to git.
-
-        ## Incremental rebuild
-
-        Graphify uses SHA256 caching — subsequent builds are faster.
-        Rebuild after making significant code changes.
       '';
     };
 
@@ -84,6 +47,11 @@
         provider = "opencode-go";
         base_url = "https://opencode.ai/zen/go/v1";
         api_mode = "chat_completions";
+      };
+      models = {
+        "mimo-v2.5" = {
+          provider = "opencode-go";
+        };
       };
 
       auxiliary.vision = {
@@ -179,9 +147,7 @@
       group_sessions_per_user = true;
 
       session_reset = {
-        mode = "both";
-        idle_minutes = 1440;
-        at_hour = 4;
+        mode = "none";
       };
 
       lsp = {
@@ -203,8 +169,8 @@
 
       compression = {
         enabled = true;
-        threshold = 0.50;
-        target_ratio = 0.20;
+        threshold = 0.70;
+        target_ratio = 0.40;
       };
     };
 
@@ -254,10 +220,24 @@
         args = ["-y" "figma-developer-mcp" "--stdio"];
         env.FIGMA_API_KEY = "\${FIGMA_API_KEY}";
       };
+
+      forgejo = {
+        enabled = true;
+        command = "${pkgs.gitea-mcp-server}/bin/gitea-mcp";
+        args = [
+          "-t"
+          "stdio"
+          "-H"
+          "https://git.827482.xyz"
+          "-T"
+          "\${FORGEJO_TOKEN}"
+        ];
+      };
     };
 
     container.extraVolumes = [
       "/home/xvantz/Documents/Obsidian:/brain:Z"
+      ''"/home/xvantz/Documents/Obsidian/3. Resources/Hermes Agent/SOUL.md:/data/.hermes/SOUL.md:Z"''
       "/home/xvantz/projects/public:/projects:rw"
       "/home/xvantz/.dotfiles:/dotfiles:rw"
     ];
