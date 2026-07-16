@@ -45,7 +45,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    ncalayer.url = "git+https://git.827482.xyz/xvantz/ncalayer";
   };
 
   outputs = {
@@ -94,7 +93,6 @@
         inputs.coolcontrol.nixosModules.default
         inputs.sync-agent.nixosModules.default
         inputs.hermes-agent.nixosModules.default
-        inputs.ncalayer.nixosModules.default
       ];
     };
 
