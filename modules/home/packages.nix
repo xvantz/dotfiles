@@ -48,6 +48,7 @@
     imagemagick
     yarn-berry_4
     obs-studio
+    yandex-cloud
   ];
 
   services.udiskie = {
