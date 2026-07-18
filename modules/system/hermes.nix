@@ -30,7 +30,7 @@
       ];
     };
 
-    extraDependencyGroups = ["messaging"];
+    extraDependencyGroups = ["messaging" "voice"];
     extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server];
 
     documents = {
@@ -171,6 +171,14 @@
         enabled = true;
         threshold = 0.70;
         target_ratio = 0.40;
+      };
+
+      stt = {
+        enabled = true;
+        provider = "local";
+        local = {
+          model = "base";
+        };
       };
     };
 
