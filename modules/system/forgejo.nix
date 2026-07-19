@@ -56,8 +56,11 @@ in {
         url = "http://127.0.0.1:2000/";
         tokenFile = config.sops.secrets.forgejo_runner_token.path;
         labels = [
-          "ubuntu-latest:docker://node:20-bookworm"
-          "ubuntu-22.04:docker://node:20"
+          "ubuntu-latest:docker://node:lts-bookworm"
+          "ubuntu-22.04:docker://node:lts-bookworm"
+          "node:docker://node:lts-bookworm"
+          "python:docker://python:3.12-bookworm"
+          "go:docker://golang:1.23-bookworm"
         ];
         settings = {
           container = {
