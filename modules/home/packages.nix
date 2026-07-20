@@ -49,6 +49,7 @@
     yarn-berry_4
     obs-studio
     yandex-cloud
+    keepassxc
   ];
 
   services.udiskie = {
