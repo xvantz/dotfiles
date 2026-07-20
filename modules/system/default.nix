@@ -21,6 +21,7 @@
     ./forgejo.nix
     ./adguard.nix
     ./caddy.nix
+    ./syncthing.nix
     ./k3s
   ];
 }
