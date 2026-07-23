@@ -46,4 +46,5 @@
     "d /var/lib/slskd/incomplete 0750 slskd slskd - -"
   ];
   users.users.xvantz.extraGroups = ["navidrome-collector"];
+  users.groups.navidrome.members = ["navidrome-collector"];
 }

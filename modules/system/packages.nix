@@ -31,6 +31,7 @@
     easyeffects
     brightnessctl
     sops
+    yt-dlp
   ];
 
   programs.nix-ld.enable = true;
