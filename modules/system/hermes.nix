@@ -27,14 +27,16 @@
         "HERMES_UID=1000"
         "--env"
         "HERMES_GID=100"
+        "--env"
+        "GIT_ASKPASS=${pkgs.writeShellScript "git-askpass" "echo $FORGEJO_TOKEN"}"
       ];
     };
 
     extraDependencyGroups = ["messaging" "voice"];
-    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server];
+    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nil];
 
     documents = {
-      "USER.md" = ''
+      "OBSIDIAN_MEMORY.md" = ''
         Hermes Agent persistent storage:
         - Memory: /brain/3. Resources/Hermes Agent/Memory.md
         - Skills: /brain/3. Resources/Hermes Agent/Skills/
@@ -47,11 +49,6 @@
         provider = "opencode-go";
         base_url = "https://opencode.ai/zen/go/v1";
         api_mode = "chat_completions";
-      };
-      models = {
-        "mimo-v2.5" = {
-          provider = "opencode-go";
-        };
       };
 
       auxiliary.vision = {
@@ -241,11 +238,32 @@
           "\${FORGEJO_TOKEN}"
         ];
       };
+
+      ts-docs-mcp = {
+        enabled = true;
+        command = "${pkgs.nodejs}/bin/npx";
+        args = ["-y" "ts-docs-mcp"];
+        env.GITHUB_TOKEN = "\${GITHUB_TOKEN}";
+      };
+
+      agent-lsp = {
+        enabled = true;
+        command = "${pkgs.xv-agent-lsp}/bin/agent-lsp";
+        args = [
+          "go:gopls"
+          "typescript:typescript-language-server,--stdio"
+          "python:pyright-langserver,--stdio"
+          "rust:rust-analyzer"
+          "zig:zls"
+          "nix:nil"
+        ];
+      };
     };
 
     container.extraVolumes = [
       "/home/xvantz/Documents/Obsidian:/brain:Z"
       ''"/home/xvantz/Documents/Obsidian/3. Resources/Hermes Agent/SOUL.md:/data/.hermes/SOUL.md:Z"''
+      ''"/home/xvantz/Documents/Obsidian/3. Resources/Hermes Agent/USER.md:/data/workspace/USER.md:Z"''
       "/home/xvantz/projects/public:/projects:rw"
       "/home/xvantz/.dotfiles:/dotfiles:rw"
     ];
