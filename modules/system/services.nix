@@ -55,4 +55,8 @@
     enable = true;
     enableNotifications = true;
   };
+  services.pm = {
+    enable = true;
+    dataDir = "/home/xvantz/Documents/pm";
+  };
 }

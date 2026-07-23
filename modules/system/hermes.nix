@@ -258,6 +258,12 @@
           "nix:nil"
         ];
       };
+
+      pm = {
+        enabled = true;
+        command = "${config.services.pm.package}/bin/pm-mcp";
+        env.PM_DIR = config.services.pm.dataDir;
+      };
     };
 
     container.extraVolumes = [
