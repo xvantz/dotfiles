@@ -45,6 +45,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    pm.url = "git+https://git.827482.xyz/xvantz/pm.git";
+    navidrome-collector.url = "git+http://git.827482.xyz/xvantz/navidrome-collector.git";
   };
 
   outputs = {
@@ -93,6 +95,8 @@
         inputs.coolcontrol.nixosModules.default
         inputs.sync-agent.nixosModules.default
         inputs.hermes-agent.nixosModules.default
+        inputs.pm.nixosModules.default
+        inputs.navidrome-collector.nixosModules.default
       ];
     };
 

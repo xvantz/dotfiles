@@ -22,6 +22,8 @@
     ./adguard.nix
     ./caddy.nix
     ./syncthing.nix
+    ./dozzle.nix
     ./k3s
+    ./music.nix
   ];
 }

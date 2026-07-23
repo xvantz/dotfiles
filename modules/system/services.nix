@@ -44,19 +44,6 @@
     };
   };
 
-  services.navidrome = {
-    enable = true;
-
-    settings = {
-      MusicFolder = "/srv/music";
-      Address = "0.0.0.0";
-      Port = 4533;
-
-      EnableSharing = true;
-      ScanSchedule = "@every 1m";
-    };
-  };
-
   services.logind.settings = {
     Login = {
       HandleLidSwitch = "ignore";
