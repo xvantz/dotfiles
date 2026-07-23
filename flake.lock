@@ -226,17 +226,17 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1784813789,
-        "narHash": "sha256-nKPfF09OVstvZIBL+3KIOmSPY+46u08sR2ZXChMNJCI=",
+        "lastModified": 1784836250,
+        "narHash": "sha256-R5DZHNTedSifhGIPbILlgywTF1isULkWuohHEALu5QU=",
         "ref": "refs/heads/main",
-        "rev": "94dbadc3e605d3dad1fbeec4a791f3ebd743bad4",
-        "revCount": 16,
+        "rev": "ef3a25764b41a6aefcd3fc24c252c3244b092757",
+        "revCount": 24,
         "type": "git",
-        "url": "http://git.827482.xyz/xvantz/navidrome-collector.git"
+        "url": "https://git.827482.xyz/xvantz/navidrome-collector.git"
       },
       "original": {
         "type": "git",
-        "url": "http://git.827482.xyz/xvantz/navidrome-collector.git"
+        "url": "https://git.827482.xyz/xvantz/navidrome-collector.git"
       }
     },
     "niri": {
@@ -457,11 +457,11 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1784830708,
-        "narHash": "sha256-U9PUKMv5YWKhBU/12g7lXfKwCPofGgJdn9tZFU3aVJA=",
+        "lastModified": 1784832731,
+        "narHash": "sha256-WHA8+oKaU0yqBZaU5voRJV05z5DgH/QFkSn0V6y/Gxw=",
         "ref": "refs/heads/main",
-        "rev": "b7781d3eb9639b656ab2fe1c75cc00552d225e09",
-        "revCount": 31,
+        "rev": "8d419d0c712feb11456be928c3550296d6de8652",
+        "revCount": 37,
         "type": "git",
         "url": "https://git.827482.xyz/xvantz/pm.git"
       },

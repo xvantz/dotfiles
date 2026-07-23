@@ -46,7 +46,7 @@
     };
 
     pm.url = "git+https://git.827482.xyz/xvantz/pm.git";
-    navidrome-collector.url = "git+http://git.827482.xyz/xvantz/navidrome-collector.git";
+    navidrome-collector.url = "git+https://git.827482.xyz/xvantz/navidrome-collector.git";
   };
 
   outputs = {
