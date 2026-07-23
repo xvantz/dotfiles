@@ -42,6 +42,16 @@ in {
       '';
     };
 
+    virtualHosts."docker.827482.xyz" = {
+      extraConfig = ''
+        tls {
+          dns cloudflare {env.CLOUDFLARE_TOKEN}
+          resolvers 1.1.1.1
+        }
+        reverse_proxy http://127.0.0.1:9999
+      '';
+    };
+
     virtualHosts."*.827482.xyz" = {
       extraConfig = ''
         tls {
