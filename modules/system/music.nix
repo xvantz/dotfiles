@@ -23,6 +23,7 @@
     slskd = {
       enable = true;
       environmentFile = config.sops.secrets.slskd_env.path;
+      openFirewall = true;
       settings = {
         directories.downloads = "/var/lib/slskd/downloads";
         directories.incomplete = "/var/lib/slskd/incomplete";
