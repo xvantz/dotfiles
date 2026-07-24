@@ -33,7 +33,7 @@
     };
 
     extraDependencyGroups = ["messaging" "voice"];
-    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nil];
+    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nil yt-dlp];
 
     documents = {
       "OBSIDIAN_MEMORY.md" = ''
@@ -210,7 +210,7 @@
         enabled = true;
         command = "${pkgs.nodejs}/bin/npx";
         args = ["-y" "@modelcontextprotocol/server-github"];
-        env.GITHUB_PERSONAL_ACCESS_TOKEN = ''${GITHUB_TOKEN}'';
+        env.GITHUB_PERSONAL_ACCESS_TOKEN = "\${GITHUB_TOKEN}";
       };
 
       fetch = {
@@ -223,7 +223,7 @@
         enabled = true;
         command = "${pkgs.nodejs}/bin/npx";
         args = ["-y" "figma-developer-mcp" "--stdio"];
-        env.FIGMA_API_KEY = ''${FIGMA_API_KEY}'';
+        env.FIGMA_API_KEY = "\${FIGMA_API_KEY}";
       };
 
       forgejo = {
@@ -235,7 +235,7 @@
           "-H"
           "https://git.827482.xyz"
           "-T"
-          ''${FORGEJO_TOKEN}''
+          "\${FORGEJO_TOKEN}"
         ];
       };
 
@@ -243,7 +243,7 @@
         enabled = true;
         command = "${pkgs.nodejs}/bin/npx";
         args = ["-y" "ts-docs-mcp"];
-        env.GITHUB_TOKEN = ''${GITHUB_TOKEN}'';
+        env.GITHUB_TOKEN = "\${GITHUB_TOKEN}";
       };
 
       agent-lsp = {
