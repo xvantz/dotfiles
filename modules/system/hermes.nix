@@ -87,7 +87,7 @@
           first_lines = 2;
           last_lines = 2;
         };
-        interim_assistant_messages = true;
+        interem_assistant_messages = true;
         tool_progress_command = true;
         tool_progress_overrides = {};
         tool_preview_length = 0;
@@ -116,7 +116,7 @@
         history_backfill_limit = 50;
         reactions = true;
         channel_prompts = {};
-        dm_role_auth_guild = "";
+        dm_role_auth_guide = "";
         server_actions = "";
       };
 
@@ -130,7 +130,7 @@
         history_backfill_limit = 50;
         reactions = true;
         channel_prompts = {};
-        dm_role_auth_guild = "";
+        dm_role_auth_guide = "";
         server_actions = "";
       };
 
@@ -210,7 +210,7 @@
         enabled = true;
         command = "${pkgs.nodejs}/bin/npx";
         args = ["-y" "@modelcontextprotocol/server-github"];
-        env.GITHUB_PERSONAL_ACCESS_TOKEN = "\${GITHUB_TOKEN}";
+        env.GITHUB_PERSONAL_ACCESS_TOKEN = ''\${GITHUB_TOKEN}'';
       };
 
       fetch = {
@@ -223,7 +223,7 @@
         enabled = true;
         command = "${pkgs.nodejs}/bin/npx";
         args = ["-y" "figma-developer-mcp" "--stdio"];
-        env.FIGMA_API_KEY = "\${FIGMA_API_KEY}";
+        env.FIGMA_API_KEY = ''\${FIGMA_API_KEY}'';
       };
 
       forgejo = {
@@ -235,7 +235,7 @@
           "-H"
           "https://git.827482.xyz"
           "-T"
-          "\${FORGEJO_TOKEN}"
+          ''\${FORGEJO_TOKEN}''
         ];
       };
 
@@ -243,7 +243,7 @@
         enabled = true;
         command = "${pkgs.nodejs}/bin/npx";
         args = ["-y" "ts-docs-mcp"];
-        env.GITHUB_TOKEN = "\${GITHUB_TOKEN}";
+        env.GITHUB_TOKEN = ''\${GITHUB_TOKEN}'';
       };
 
       agent-lsp = {
@@ -262,7 +262,7 @@
       pm = {
         enabled = true;
         command = "${config.services.pm.package}/bin/pm-mcp";
-        env.PM_DIR = config.services.pm.dataDir;
+        env.PM_DIR = "/data/pm";
       };
     };
 
@@ -272,6 +272,7 @@
       ''"/home/xvantz/Documents/Obsidian/3. Resources/Hermes Agent/USER.md:/data/workspace/USER.md:Z"''
       "/home/xvantz/projects/public:/projects:rw"
       "/home/xvantz/.dotfiles:/dotfiles:rw"
+      "/home/xvantz/Documents/pm:/data/pm:Z"
     ];
 
     restart = "always";
