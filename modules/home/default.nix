@@ -14,5 +14,6 @@
     ./browser.nix
     ./opencode.nix
     ./mutagen.nix
+    ./keepassxc.nix
   ];
 }
