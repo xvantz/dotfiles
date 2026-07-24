@@ -273,7 +273,6 @@
       "/home/xvantz/projects/public:/projects:rw"
       "/home/xvantz/.dotfiles:/dotfiles:rw"
       "/home/xvantz/Documents/pm:/data/pm:Z"
-      "${pkgs.nodejs}/bin/node:/usr/bin/node:ro"
     ];
 
     restart = "always";
