@@ -33,7 +33,7 @@
     };
 
     extraDependencyGroups = ["messaging" "voice"];
-    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nil yt-dlp];
+    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp];
 
     documents = {
       "OBSIDIAN_MEMORY.md" = ''
@@ -247,7 +247,7 @@
       };
 
       agent-lsp = {
-        enabled = true;
+        enabled = false;
         command = "${pkgs.xv-agent-lsp}/bin/agent-lsp";
         args = [
           "go:gopls"
@@ -273,6 +273,7 @@
       "/home/xvantz/projects/public:/projects:rw"
       "/home/xvantz/.dotfiles:/dotfiles:rw"
       "/home/xvantz/Documents/pm:/data/pm:Z"
+      "${pkgs.nodejs}/bin/node:/usr/bin/node:ro"
     ];
 
     restart = "always";
