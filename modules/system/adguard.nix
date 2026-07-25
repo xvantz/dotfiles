@@ -1,6 +1,7 @@
 {...}: let
   hostIP = "100.95.144.120";
 in {
+  boot.kernel.sysctl."net.ipv4.ip_nonlocal_bind" = 1;
   services.adguardhome = {
     enable = true;
     openFirewall = false;
