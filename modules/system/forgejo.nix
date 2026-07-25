@@ -43,6 +43,11 @@ in {
     };
   };
 
+  systemd.services.forgejo = {
+    after = ["sops-install-secrets.service"];
+    wants = ["sops-install-secrets.service"];
+  };
+
   systemd.services.forgejo.postStart = ''
     ${pkgs.openssh}/bin/ssh-keyscan github.com 2>/dev/null >> /var/lib/forgejo/.ssh/known_hosts || true
   '';
@@ -95,6 +100,16 @@ in {
       pushMirrors.enable = true;
       autoCreate.enable = true;
     };
+  };
+
+  systemd.services.gitea-runner-default = {
+    after = ["sops-install-secrets.service"];
+    wants = ["sops-install-secrets.service"];
+  };
+
+  systemd.services.forgejo-sync = {
+    after = ["sops-install-secrets.service"];
+    wants = ["sops-install-secrets.service"];
   };
 
   environment.systemPackages = [config.services.forgejo-sync.package];

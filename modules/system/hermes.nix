@@ -262,7 +262,7 @@
       pm = {
         enabled = true;
         command = "${config.services.pm.package}/bin/pm-mcp";
-        env.PM_DIR = "/data/pm";
+        args = ["--dir" "/data/pm"];
       };
     };
 
@@ -277,6 +277,11 @@
 
     restart = "always";
     restartSec = 5;
+  };
+
+  systemd.services.hermes-agent = {
+    after = ["sops-install-secrets.service"];
+    wants = ["sops-install-secrets.service"];
   };
 
   security.sudo.extraRules = [

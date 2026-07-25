@@ -13,8 +13,8 @@ in {
   };
 
   systemd.services.caddy = {
-    after = ["time-sync.target"];
-    wants = ["time-sync.target"];
+    after = ["time-sync.target" "sops-install-secrets.service"];
+    wants = ["time-sync.target" "sops-install-secrets.service"];
   };
 
   services.caddy = {

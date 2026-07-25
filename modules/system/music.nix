@@ -41,6 +41,16 @@
     };
   };
 
+  systemd.services.slskd = {
+    after = ["sops-install-secrets.service"];
+    wants = ["sops-install-secrets.service"];
+  };
+
+  systemd.services.navidrome-collector = {
+    after = ["sops-install-secrets.service"];
+    wants = ["sops-install-secrets.service"];
+  };
+
   systemd.tmpfiles.rules = [
     "d /var/lib/slskd/downloads 0750 slskd slskd - -"
     "d /var/lib/slskd/incomplete 0750 slskd slskd - -"
