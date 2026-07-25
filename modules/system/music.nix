@@ -47,8 +47,8 @@
   };
 
   systemd.services.navidrome-collector = {
-    after = ["sops-install-secrets.service"];
-    wants = ["sops-install-secrets.service"];
+    after = ["sops-install-secrets.service" "slskd.service"];
+    wants = ["sops-install-secrets.service" "slskd.service"];
   };
 
   systemd.tmpfiles.rules = [
