@@ -26,7 +26,6 @@
     slurp
     satty
     fastfetch
-    bitwarden-desktop
     nixd
     alejandra
     telegram-desktop
