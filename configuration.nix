@@ -12,7 +12,7 @@
   ];
 
   sops.defaultSopsFile = ./secrets.yaml;
-  sops.age.sshKeyPaths = ["/home/xvantz/.ssh/id_ed25519"];
+  sops.age.keyFile = "/home/xvantz/.dotfiles/sops-keys.txt";
   sops.useSystemdActivation = true;
 
   users.users.xvantz = {

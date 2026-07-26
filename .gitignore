@@ -1,1 +1,3 @@
 config/hypr/*.log
+sops-keys.txt
+
