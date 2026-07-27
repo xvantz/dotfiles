@@ -261,8 +261,16 @@
 
       pm = {
         enabled = true;
-        command = "${config.services.pm.package}/bin/pm-mcp";
-        args = ["--dir" "/data/pm"];
+        command = "${pkgs.writeShellScriptBin "pm-diag" ''
+          echo "=== DIAG: starting pm-mcp ===" >&2
+          echo "PWD: $(pwd)" >&2
+          echo "PM_DIR: ${builtins.getEnv "PM_DIR"}" >&2
+          echo "PATH: $PATH" >&2
+          echo "HOME: $HOME" >&2
+          echo "USER: $USER" >&2
+          env >&2
+          exec ${config.services.pm.package}/bin/pm-mcp --dir /data/pm
+        ''}/bin/pm-diag";
       };
     };
 

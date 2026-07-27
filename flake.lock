@@ -418,11 +418,11 @@
         "systems": "systems_2"
       },
       "locked": {
-        "lastModified": 1784814601,
-        "narHash": "sha256-T32JXjZ7kIbhBn8/Har171yGg6IBdl97cxAWameqZDE=",
+        "lastModified": 1785001306,
+        "narHash": "sha256-xWqmquUtqKXLeDZ1oQUO+rV4sjA9TShIJhLL8M5Bozo=",
         "owner": "nix-community",
         "repo": "nixvim",
-        "rev": "f316e949e0ed9df0e1e0bf645c6dce721d4e230e",
+        "rev": "48409beb41e8e28b64e8160ca82d8a93fb628963",
         "type": "github"
       },
       "original": {
@@ -457,11 +457,11 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1784916831,
-        "narHash": "sha256-fgoepPFTFuR381G+mclxiZbFyncQdCfuWdXBHKK3/KA=",
+        "lastModified": 1785079040,
+        "narHash": "sha256-9V0UZRtiRJXt0DZtwCWKJU3Ri2cOh5mlMN0/Pq/HVsc=",
         "ref": "refs/heads/main",
-        "rev": "20622ddd577e4eb470c765b936fd951abdcbf358",
-        "revCount": 38,
+        "rev": "f22339ff89a52d28da74ab2fd6336cda0b11e2d7",
+        "revCount": 42,
         "type": "git",
         "url": "https://git.827482.xyz/xvantz/pm.git"
       },
@@ -688,11 +688,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784834038,
-        "narHash": "sha256-7kFP+NUILPvdhO7mQk90h2MnseMNvYzGPpclhmJEKF0=",
+        "lastModified": 1785039979,
+        "narHash": "sha256-vZjuRK0UgvChYGMeQ8daxiETJ5KQyGx+8u8YHdw5e/g=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "35443b74c3481fb963ee0a53175ab0e8001f2967",
+        "rev": "6f5e680db7d105ecf02b4e0d752d48d9083da6c9",
         "type": "github"
       },
       "original": {
