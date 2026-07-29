@@ -29,11 +29,15 @@
         "HERMES_GID=100"
         "--env"
         "GIT_ASKPASS=${pkgs.writeShellScript "git-askpass" "echo $FORGEJO_TOKEN"}"
+        "--env"
+        "SEARXNG_URL=http://localhost:8888"
+        "--env"
+        "FIRECRAWL_API_URL=http://localhost:8889"
       ];
     };
 
-    extraDependencyGroups = ["messaging" "voice"];
-    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp];
+    extraDependencyGroups = ["messaging" "voice" "firecrawl"];
+    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium];
 
     documents = {
       "OBSIDIAN_MEMORY.md" = ''
@@ -57,9 +61,9 @@
       };
 
       web = {
-        backend = "tavily";
-        search_backend = "tavily";
-        extract_backend = "tavily";
+        backend = "searxng";
+        search_backend = "searxng";
+        extract_backend = "firecrawl";
       };
 
       messaging.discord.enabled = true;
@@ -203,7 +207,7 @@
       playwright = {
         enabled = true;
         command = "${pkgs.nodejs}/bin/npx";
-        args = ["-y" "@playwright/mcp@latest" "--headless"];
+        args = ["-y" "@playwright/mcp@latest" "--headless" "--executable-path" "${pkgs.chromium}/bin/chromium"];
       };
 
       github = {
@@ -246,19 +250,6 @@
         env.GITHUB_TOKEN = "\${GITHUB_TOKEN}";
       };
 
-      agent-lsp = {
-        enabled = false;
-        command = "${pkgs.xv-agent-lsp}/bin/agent-lsp";
-        args = [
-          "go:gopls"
-          "typescript:typescript-language-server,--stdio"
-          "python:pyright-langserver,--stdio"
-          "rust:rust-analyzer"
-          "zig:zls"
-          "nix:nil"
-        ];
-      };
-
       pm = {
         enabled = true;
         command = "${pkgs.writeShellScriptBin "pm-diag" ''
@@ -271,6 +262,15 @@
           env >&2
           exec ${config.services.pm.package}/bin/pm-mcp --dir /data/pm
         ''}/bin/pm-diag";
+      };
+
+      crw = {
+        enabled = true;
+        command = "${pkgs.nodejs}/bin/npx";
+        args = ["-y" "crw-mcp"];
+        env = {
+          CRW_API_URL = "http://localhost:8889";
+        };
       };
     };
 
