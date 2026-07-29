@@ -78,6 +78,18 @@
             sync-agent = inputs.sync-agent.packages.${system}.default;
           })
           (import ./customPkgs/default.nix)
+          (final: prev: {
+            libdisplay-info = prev.libdisplay-info.overrideAttrs (old: {
+              version = "0.3.0";
+              src = final.fetchFromGitLab {
+                domain = "gitlab.freedesktop.org";
+                owner = "emersion";
+                repo = "libdisplay-info";
+                rev = "0.3.0";
+                hash = "sha256-nXf2KGovNKvcchlHlzKBkAOeySMJXgxMpbi5z9gLrdc=";
+              };
+            });
+          })
         ];
       };
 
