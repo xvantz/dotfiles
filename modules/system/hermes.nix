@@ -217,12 +217,6 @@
         env.GITHUB_PERSONAL_ACCESS_TOKEN = "\${GITHUB_TOKEN}";
       };
 
-      fetch = {
-        enabled = true;
-        command = "${pkgs.uv}/bin/uvx";
-        args = ["mcp-server-fetch"];
-      };
-
       figma = {
         enabled = true;
         command = "${pkgs.nodejs}/bin/npx";
@@ -262,15 +256,6 @@
           env >&2
           exec ${config.services.pm.package}/bin/pm-mcp --dir /data/pm
         ''}/bin/pm-diag";
-      };
-
-      crw = {
-        enabled = true;
-        command = "${pkgs.nodejs}/bin/npx";
-        args = ["-y" "crw-mcp"];
-        env = {
-          CRW_API_URL = "http://localhost:8889";
-        };
       };
     };
 
