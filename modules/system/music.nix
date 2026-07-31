@@ -1,4 +1,8 @@
-{config, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   sops.secrets.slskd_env = {
     owner = "xvantz";
   };
@@ -49,9 +53,15 @@
   systemd.services.navidrome-collector = {
     after = ["sops-install-secrets.service" "slskd.service"];
     wants = ["sops-install-secrets.service" "slskd.service"];
+    serviceConfig = {
+      ExecStartPre = [
+        "${pkgs.bash}/bin/bash -c 'for i in {1..30}; do exec 3<>/dev/tcp/127.0.0.1/5030 2>/dev/null && exec 3<&- && exit 0; sleep 1; done; exit 1'"
+      ];
+    };
   };
 
   systemd.tmpfiles.rules = [
+    "d /srv/slskd/downloads 0750 slskd slskd - -"
     "d /var/lib/slskd/downloads 0750 slskd slskd - -"
     "d /var/lib/slskd/incomplete 0750 slskd slskd - -"
   ];
