@@ -20,7 +20,7 @@
     container = {
       enable = true;
       backend = "podman";
-      image = "ubuntu:24.04";
+      image = "docker.io/library/ubuntu:26.04";
       hostUsers = ["xvantz"];
       extraOptions = [
         "--env"
@@ -33,11 +33,13 @@
         "SEARXNG_URL=http://localhost:8888"
         "--env"
         "FIRECRAWL_API_URL=http://localhost:8889"
+        "--env"
+        "PATH=${pkgs.lib.makeBinPath config.services.hermes-agent.extraPackages}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       ];
     };
 
-    extraDependencyGroups = ["messaging" "voice" "firecrawl"];
-    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium];
+    extraDependencyGroups = ["messaging" "voice" "edge-tts" "firecrawl"];
+    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium docker-client docker-compose];
 
     documents = {
       "OBSIDIAN_MEMORY.md" = ''
@@ -266,6 +268,7 @@
       "/home/xvantz/projects/public:/projects:rw"
       "/home/xvantz/.dotfiles:/dotfiles:rw"
       "/home/xvantz/Documents/pm:/data/pm:Z"
+      "/run/user/1001/podman/podman.sock:/var/run/docker.sock"
     ];
 
     restart = "always";
