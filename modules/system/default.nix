@@ -25,6 +25,7 @@
     ./searx.nix
     ./crw.nix
     ./dozzle.nix
+    ./containers.nix
     ./k3s
     ./music.nix
   ];
