@@ -7,6 +7,7 @@
 
       grammarPackages = with config.programs.nixvim.plugins.treesitter.package.builtGrammars; [
         bash
+        dockerfile
         go
         gomod
         javascript
