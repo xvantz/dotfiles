@@ -18,7 +18,10 @@
         group = "Core";
         callback.__raw = "function(args)
           if vim.bo[args.buf].buftype == '' then
-            vim.treesitter.start(args.buf)
+            local ok = pcall(vim.treesitter.start, args.buf)
+            if not ok then
+              return
+            end
 
             vim.wo[0][0].foldmethod = 'expr'
             vim.wo[0][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
