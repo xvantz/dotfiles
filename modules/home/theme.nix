@@ -10,11 +10,6 @@
 
   gtk = {
     enable = true;
-    gtk4.theme = null;
-    theme = {
-      name = "Tokyonight-Dark";
-      package = pkgs.tokyonight-gtk-theme;
-    };
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
@@ -30,12 +25,4 @@
       gtk-application-prefer-dark-theme = 1;
     };
   };
-
-  xdg.configFile."gtk-4.0/gtk.css".text = ''
-    @import url("file://${pkgs.tokyonight-gtk-theme}/share/themes/Tokyonight-Dark/gtk-4.0/gtk.css");
-  '';
-
-  xdg.configFile."gtk-3.0/gtk.css".text = ''
-    @import url("file://${pkgs.tokyonight-gtk-theme}/share/themes/Tokyonight-Dark/gtk-3.0/gtk.css");
-  '';
 }

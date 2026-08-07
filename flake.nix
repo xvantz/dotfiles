@@ -26,7 +26,6 @@
 
     dgop = {
       url = "github:AvengeMedia/dgop";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     coolcontrol.url = "github:xvantz/coolcontrol";
