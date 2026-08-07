@@ -34,7 +34,21 @@
         "--env"
         "FIRECRAWL_API_URL=http://localhost:8889"
         "--env"
-        "AGENT_BROWSER_EXECUTABLE_PATH=${pkgs.chromium}/bin/chromium"
+        "AGENT_BROWSER_EXECUTABLE_PATH=${pkgs.writeShellScriptBin "agent-browser-chromium" ''
+          args=("$@")
+          has_url=0
+          for a in "''${args[@]}"; do
+            case "$a" in
+              -*) ;;
+              *) has_url=1 ;;
+            esac
+          done
+          if [ "$has_url" -eq 0 ]; then
+            exec ${pkgs.chromium}/bin/chromium --remote-allow-origins=* "$@" "about:blank"
+          else
+            exec ${pkgs.chromium}/bin/chromium --remote-allow-origins=* "$@"
+          fi
+        ''}/bin/agent-browser-chromium"
         "--env"
         "PATH=${pkgs.lib.makeBinPath config.services.hermes-agent.extraPackages}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       ];
