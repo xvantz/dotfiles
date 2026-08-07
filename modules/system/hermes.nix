@@ -34,6 +34,8 @@
         "--env"
         "FIRECRAWL_API_URL=http://localhost:8889"
         "--env"
+        "AGENT_BROWSER_EXECUTABLE_PATH=${pkgs.chromium}/bin/chromium"
+        "--env"
         "PATH=${pkgs.lib.makeBinPath config.services.hermes-agent.extraPackages}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       ];
     };
