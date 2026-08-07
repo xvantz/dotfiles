@@ -25,7 +25,8 @@
     };
 
     dgop = {
-      url = "github:AvengeMedia/dgop";
+      url = "github:AvengeMedia/dgop/267c9d25adb784a4ac2daa90eae0c281074ea03f";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     coolcontrol.url = "github:xvantz/coolcontrol";
