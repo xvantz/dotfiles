@@ -35,11 +35,11 @@
 
   systemd.user.services.podman-system-service = {
     wantedBy = ["default.target"];
+    unitConfig.ConditionUser = "containers";
     serviceConfig = {
-      ExecStart = "${pkgs.podman}/bin/podman system-service --time=0";
+      ExecStart = "${pkgs.podman}/bin/podman system service --time=0";
       Restart = "always";
       ExecStartPost = "${pkgs.bash}/bin/bash -c 'for i in $(seq 1 30); do [ -S /run/user/1001/podman/podman.sock ] && break; sleep 1; done; chmod 666 /run/user/1001/podman/podman.sock'";
-      ConditionUser = "containers";
     };
   };
 }
