@@ -54,10 +54,10 @@
         "--env"
         "PATH=${pkgs.lib.makeBinPath config.services.hermes-agent.extraPackages}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
         "--env"
-        "PYTHONPATH=${pkgs.lib.makeSearchPath pkgs.python312.sitePackages (with pkgs.python312Packages; [
+        "PYTHONPATH=${pkgs.lib.makeSearchPath pkgs.python312.sitePackages (pkgs.python312.pkgs.requiredPythonModules (with pkgs.python312Packages; [
           razdel
           pymorphy3
-        ])}"
+        ]))}"
       ];
     };
 
