@@ -17,7 +17,7 @@
     ./coolcontrol.nix
     ./redis.nix
     ./hardware.nix
-    ./hermes.nix
+    ./hermes
     ./forgejo.nix
     ./adguard.nix
     ./caddy.nix
