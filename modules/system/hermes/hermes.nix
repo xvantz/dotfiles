@@ -53,15 +53,16 @@
         ''}/bin/agent-browser-chromium"
         "--env"
         "PATH=${pkgs.lib.makeBinPath config.services.hermes-agent.extraPackages}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        "--env"
+        "PYTHONPATH=${pkgs.lib.makeSearchPath pkgs.python312.sitePackages (with pkgs.python312Packages; [
+          razdel
+          pymorphy3
+        ])}"
       ];
     };
 
     extraDependencyGroups = ["messaging" "voice" "edge-tts" "firecrawl"];
     extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium docker-client docker-compose pnpm fontconfig dejavu_fonts];
-    extraPythonPackages = with pkgs.python312Packages; [
-      razdel
-      pymorphy3
-    ];
 
     documents = {
       "OBSIDIAN_MEMORY.md" = ''
