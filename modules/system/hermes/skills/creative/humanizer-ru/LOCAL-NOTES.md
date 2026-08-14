@@ -4,27 +4,25 @@
 
 ## Запуск сканера
 
-- venv с зависимостями: `/data/.hermes/venvs/humanizer-ru` (razdel, pymorphy3)
-- Команда: `/data/.hermes/venvs/humanizer-ru/bin/python3 <папка скилла>/scripts/scan.py файл.txt`
+Сканер работает на системном python3 контейнера. Зависимости (razdel, pymorphy3,
+dawg2, dicts-ru, dicts-uk) приходят через PYTHONPATH, который задан в
+`services.hermes-agent.container.extraOptions` (см. /dotfiles/modules/system/hermes/hermes.nix):
 
-## Баг Hermes 0.20.0: terminal guard NUL-баг
-
-Вызов `python3 .../scan.py` через terminal tool падает с
-`ValueError: open: embedded null character in path` в
-`cron/lifecycle_guard.py` -> `_read_referenced_script`.
-Guard парсит команду, находит `python3 ... .py` как referenced script
-и падает на собственной обработке пути.
-
-Обход: запускать через execute_code с subprocess:
-
-```python
-import subprocess
-r = subprocess.run([
-    "/data/.hermes/venvs/humanizer-ru/bin/python3",
-    "/data/.hermes/skills/creative/humanizer-ru/scripts/scan.py",
-    "файл.txt",
-], capture_output=True, text=True)
-print(r.stdout)
+```nix
+"--env"
+"PYTHONPATH=${pkgs.lib.makeSearchPath pkgs.python312.sitePackages (pkgs.python312.pkgs.requiredPythonModules (with pkgs.python312Packages; [ razdel pymorphy3 ]))}"
 ```
 
-Это безопасно (сканер не трогает gateway), просто обход бага guard'а.
+Команда: `python3 <папка скилла>/scripts/scan.py файл.txt`
+
+## Важно: extraPythonPackages НЕ работает (баг v2026.8.3)
+
+`services.hermes-agent.extraPythonPackages` игнорируется: override пакета не
+попадает в активируемый systemd unit (effectivePackage остаётся старым),
+поэтому razdel/pymorphy3 никогда не собираются в closure. Обход — PYTHONPATH
+через container.extraOptions (см. выше). НЕ использовать extraPythonPackages.
+
+## Прочее
+
+- venv /data/.hermes/venvs/humanizer-ru удалён (больше не нужен)
+- /tmp сбрасывается при пересоздании контейнера (writable layer)

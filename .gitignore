@@ -1,3 +1,5 @@
 config/hypr/*.log
 sops-keys.txt
+**/__pycache__/
+*.pyc
 
