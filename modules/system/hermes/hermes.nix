@@ -118,7 +118,6 @@
         };
         interem_assistant_messages = true;
         tool_progress_command = true;
-        tool_progress_overrides = {};
         tool_preview_length = 0;
         ephemeral_system_ttl = 0;
         platforms = {};
