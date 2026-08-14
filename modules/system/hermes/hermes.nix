@@ -1,17 +1,8 @@
 {
   pkgs,
   config,
-  inputs,
   ...
-}:
-let
-  hermesWithPython = inputs.hermes-agent.packages.${pkgs.system}.default.override {
-    extraPythonPackages = with pkgs.python312Packages; [
-      razdel
-      pymorphy3
-    ];
-  };
-in {
+}: {
   sops.secrets.hermes_env = {
     owner = "xvantz";
   };
@@ -22,10 +13,14 @@ in {
 
   services.hermes-agent = {
     enable = true;
-    package = hermesWithPython;
     addToSystemPackages = true;
     user = "hermes";
     group = "users";
+
+    extraPythonPackages = with pkgs.python312Packages; [
+      razdel
+      pymorphy3
+    ];
 
     container = {
       enable = true;
