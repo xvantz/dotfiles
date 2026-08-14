@@ -26,6 +26,14 @@
 
   programs.zoxide.enableZshIntegration = true;
 
+  programs.atuin = {
+    enable = true;
+    flags = ["--disable-up-arrow"];
+    settings = {
+      search_mode = "fuzzy";
+    };
+  };
+
   home.sessionVariables = {
     XCURSOR_THEME = "catppuccin-mocha-dark-cursors";
     XCURSOR_SIZE = "24";
