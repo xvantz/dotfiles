@@ -1,8 +1,17 @@
 {
   pkgs,
   config,
+  inputs,
   ...
-}: {
+}:
+let
+  hermesWithPython = inputs.hermes-agent.packages.${pkgs.system}.default.override {
+    extraPythonPackages = with pkgs.python312Packages; [
+      razdel
+      pymorphy3
+    ];
+  };
+in {
   sops.secrets.hermes_env = {
     owner = "xvantz";
   };
@@ -13,6 +22,7 @@
 
   services.hermes-agent = {
     enable = true;
+    package = hermesWithPython;
     addToSystemPackages = true;
     user = "hermes";
     group = "users";
@@ -23,6 +33,8 @@
       image = "docker.io/library/ubuntu:26.04";
       hostUsers = ["xvantz"];
       extraOptions = [
+        "--shm-size"
+        "512m"
         "--env"
         "HERMES_UID=1000"
         "--env"
@@ -55,7 +67,7 @@
     };
 
     extraDependencyGroups = ["messaging" "voice" "edge-tts" "firecrawl"];
-    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium docker-client docker-compose pnpm];
+    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium docker-client docker-compose pnpm fontconfig dejavu_fonts];
 
     documents = {
       "OBSIDIAN_MEMORY.md" = ''
@@ -127,6 +139,12 @@
       };
 
       toolsets = ["all"];
+
+      skills = {
+        external_dirs = [
+          "/dotfiles/modules/system/hermes/skills"
+        ];
+      };
 
       discord = {
         require_mention = false;
@@ -225,7 +243,17 @@
       playwright = {
         enabled = true;
         command = "${pkgs.nodejs}/bin/npx";
-        args = ["-y" "@playwright/mcp@latest" "--headless" "--executable-path" "${pkgs.chromium}/bin/chromium"];
+        args = [
+          "-y"
+          "@playwright/mcp@latest"
+          "--headless"
+          # "--config"
+          # "/data/.hermes/playwright-mcp.json"
+          "--executable-path"
+          "${pkgs.chromium}/bin/chromium"
+        ];
+        env.FONTCONFIG_FILE = "${pkgs.fontconfig}/etc/fonts/fonts.conf";
+        env.XDG_DATA_DIRS = "${pkgs.dejavu_fonts}/share";
       };
 
       github = {
