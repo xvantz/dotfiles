@@ -33,7 +33,7 @@
 
     sync-agent.url = "git+http://localhost:2000/xvantz/sync-agent.git";
 
-    hermes-agent.url = "github:NousResearch/hermes-agent/v2026.8.3";
+    hermes-agent.url = "github:NousResearch/hermes-agent";
 
     nixvim = {
       url = "github:nix-community/nixvim";

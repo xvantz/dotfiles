@@ -62,6 +62,7 @@
     };
 
     extraDependencyGroups = ["messaging" "voice" "edge-tts" "firecrawl"];
+    extraPlugins = ["disk-cleanup"];
     extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium docker-client docker-compose pnpm fontconfig dejavu_fonts];
 
     documents = {
@@ -74,7 +75,7 @@
 
     settings = {
       model = {
-        default = "deepseek-v4-flash";
+        default = "mimo-v2.5";
         provider = "opencode-go";
         base_url = "https://opencode.ai/zen/go/v1";
         api_mode = "chat_completions";
@@ -130,6 +131,13 @@
       memory = {
         memory_enabled = true;
         user_profile_enabled = true;
+        provider = "hindsight";
+        hindsight = {
+          api_url = "http://localhost:8891";
+          bank_id = "hermes:xvantz";
+          memory_mode = "hybrid";
+          prefetch_method = "recall";
+        };
       };
 
       toolsets = ["all"];

@@ -29,5 +29,6 @@
     ./containers.nix
     ./k3s
     ./music.nix
+    ./hindsight.nix
   ];
 }
