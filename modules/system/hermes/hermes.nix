@@ -61,8 +61,7 @@
       ];
     };
 
-    extraDependencyGroups = ["messaging" "voice" "edge-tts" "firecrawl"];
-    extraPlugins = ["disk-cleanup"];
+    extraDependencyGroups = ["messaging" "voice" "edge-tts" "firecrawl" "hindsight"];
     extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium docker-client docker-compose pnpm fontconfig dejavu_fonts];
 
     documents = {
@@ -90,6 +89,10 @@
         backend = "searxng";
         search_backend = "searxng";
         extract_backend = "firecrawl";
+      };
+
+      plugins = {
+        enabled = ["disk-cleanup"];
       };
 
       messaging.discord.enabled = true;
@@ -133,6 +136,7 @@
         user_profile_enabled = true;
         provider = "hindsight";
         hindsight = {
+          mode = "local_external";
           api_url = "http://localhost:8891";
           bank_id = "hermes:xvantz";
           memory_mode = "hybrid";
