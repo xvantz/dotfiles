@@ -14,6 +14,7 @@
   services.hermes-agent = {
     enable = true;
     addToSystemPackages = true;
+    workingDirectory = "/data/.hermes";
     user = "hermes";
     group = "users";
 
