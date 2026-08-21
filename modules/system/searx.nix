@@ -28,7 +28,7 @@
   };
 
   systemd.services.searx = {
-    after = ["sops-install-secrets.service"];
-    wants = ["sops-install-secrets.service"];
+    after = ["sops-install-secrets.service" "redis-searx.service"];
+    wants = ["sops-install-secrets.service" "redis-searx.service"];
   };
 }
