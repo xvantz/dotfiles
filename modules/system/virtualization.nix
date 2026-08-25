@@ -24,8 +24,7 @@
     extraGroups = ["podman" "libvirtd" "kvm"];
   };
 
-  # boot.initrd.kernelModules = ["vfio_pci" "vfio" "vfio_iommu_type1"];
-  boot.initrd.availableKernelModules = ["vfio" "vfio_pci" "vfio_iommu_type1"];
+  boot.initrd.kernelModules = ["vfio" "vfio_pci" "vfio_iommu_type1"];
   boot.kernelParams = ["amd_iommu=on" "iommu=pt" "vfio-pci.ids=10de:25a0,10de:2291"];
   boot.extraModulePackages = [config.boot.kernelPackages.kvmfr];
   boot.kernelModules = ["kvmfr"];
