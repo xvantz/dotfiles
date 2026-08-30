@@ -61,8 +61,8 @@ in {
         url = "http://127.0.0.1:2000/";
         tokenFile = config.sops.secrets.forgejo_runner_token.path;
         labels = [
-          "ubuntu-latest:docker://node:lts-bookworm"
-          "ubuntu-22.04:docker://node:lts-bookworm"
+          "ubuntu-latest:docker://ghcr.io/catthehacker/ubuntu:act-latest"
+          "ubuntu-22.04:docker://ghcr.io/catthehacker/ubuntu:act-latest"
           "node:docker://node:lts-bookworm"
           "python:docker://python:3.12-bookworm"
           "go:docker://golang:1.23-bookworm"
@@ -71,10 +71,12 @@ in {
           container = {
             network = "host";
             privileged = false;
-            options = "--memory=4g --cpus=2";
+            options = "--memory=6g --cpus=4";
             docker_host = "automount";
           };
           log.level = "info";
+          runner.capacity = 4;
+          cache.enabled = true;
         };
       };
     };
