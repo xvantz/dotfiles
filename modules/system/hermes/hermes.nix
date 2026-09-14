@@ -75,18 +75,11 @@
 
     settings = {
       model = {
-        default = "deepseek/deepseek-v4-flash-0731";
-        provider = "openrouter";
+        default = "muse-spark-1.3-contributor";
+        provider = "opencode-go";
+        context_length = 1000000;
       };
       fallback_providers = [
-        {
-          provider = "openrouter";
-          model = "z-ai/glm-5.2:free";
-        }
-        {
-          provider = "openrouter";
-          model = "minimax/minimax-m3:free";
-        }
       ];
 
       auxiliary.vision = {
@@ -299,7 +292,7 @@
       };
 
       ts-docs-mcp = {
-        enabled = true;
+        enabled = false;
         command = "${pkgs.nodejs}/bin/npx";
         args = ["-y" "ts-docs-mcp"];
         env.GITHUB_TOKEN = "\${GITHUB_TOKEN}";
