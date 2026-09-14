@@ -6,7 +6,7 @@
 }: {
   imports = [
     ./hardware-configuration.nix
-    inputs.dms.nixosModules.greeter
+    inputs.dank-greeter.nixosModules.default
     inputs.sops-nix.nixosModules.sops
     ./modules/system
   ];

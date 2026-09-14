@@ -2,9 +2,10 @@
   services.xserver.enable = true;
   services.xserver.videoDrivers = ["amdgpu"];
 
-  programs.dank-material-shell.greeter = {
+  programs.dms-greeter = {
     enable = true;
     compositor.name = "niri";
+    configHome = "/home/xvantz";
   };
 
   hardware.graphics = {
