@@ -19,12 +19,6 @@
       allowedUDPPorts = [53 22005 22006];
     };
 
-    # MSS clamp под реальный path MTU: чинит TCP на битых path
-    # (PMTU blackhole), где большие сегменты дохнут молча.
-    # Замеренный потолок path - 1400 байт, MSS 1360 = 1400 - 40
-    # на IP+TCP заголовки. Только уменьшает, поэтому безопасно
-    # на любой сети. Адаптивность под другие сети дает
-    # tcp_mtu_probing ниже. Аналог галки mtu_fix=1 в OpenWrt.
     nftables.enable = true;
     nftables.tables.mss-clamp = {
       family = "inet";
@@ -41,8 +35,5 @@
     };
   };
 
-  # Самолечение TCP при PMTU blackhole: ядро само щупает
-  # меньший MSS при затыке. 1 = включать при детекте blackhole.
-  # См. docs.kernel.org, networking/ip-sysctl, tcp_mtu_probing.
   boot.kernel.sysctl."net.ipv4.tcp_mtu_probing" = 1;
 }
