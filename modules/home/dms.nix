@@ -16,8 +16,6 @@
   programs.dank-material-shell = {
     enable = true;
 
-    dgop.package = inputs.dgop.packages.${pkgs.stdenv.hostPlatform.system}.default;
-
     niri = {
       enableKeybinds = false;
       enableSpawn = false;
