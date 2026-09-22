@@ -250,22 +250,6 @@
         args = ["-y" "@modelcontextprotocol/server-filesystem" "/dotfiles"];
       };
 
-      playwright = {
-        enabled = true;
-        command = "${pkgs.nodejs}/bin/npx";
-        args = [
-          "-y"
-          "@playwright/mcp@latest"
-          "--headless"
-          # "--config"
-          # "/data/.hermes/playwright-mcp.json"
-          "--executable-path"
-          "${pkgs.chromium}/bin/chromium"
-        ];
-        env.FONTCONFIG_FILE = "${pkgs.fontconfig}/etc/fonts/fonts.conf";
-        env.XDG_DATA_DIRS = "${pkgs.dejavu_fonts}/share";
-      };
-
       github = {
         enabled = true;
         command = "${pkgs.nodejs}/bin/npx";
