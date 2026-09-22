@@ -1,3 +1,3 @@
 {...}: {
-  imports = [ ./hermes.nix ];
+  imports = [ ./hermes.nix ./chrome-headless.nix ];
 }
