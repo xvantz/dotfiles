@@ -1,14 +1,17 @@
 {
   pkgs,
   config,
+  lib,
   ...
 }: {
   sops.secrets.hermes_env = {
     owner = "xvantz";
+    restartUnits = ["hermes-agent.service"];
   };
 
   sops.secrets.forgejo_env = {
     owner = "xvantz";
+    restartUnits = ["hermes-agent.service"];
   };
 
   services.hermes-agent = {
@@ -308,6 +311,31 @@
   systemd.services.hermes-agent = {
     after = ["sops-install-secrets.service"];
     wants = ["sops-install-secrets.service"];
+    serviceConfig.ExecStartPre = let
+      hermesCfg = config.services.hermes-agent;
+      destPath = "${hermesCfg.stateDir}/.hermes/.env";
+      owner = "${hermesCfg.user}:${hermesCfg.group}";
+      base = pkgs.writeText "hermes-env-base" (
+        lib.concatStringsSep "\n" (lib.mapAttrsToList (k: v: "${k}=${v}") hermesCfg.environment)
+        + lib.optionalString (hermesCfg.environment != {}) "\n"
+      );
+    in [
+      "+${pkgs.writeShellScript "hermes-env-refresh" ''
+        set -eu
+        INSTALL=${pkgs.coreutils}/bin/install
+        CHOWN=${pkgs.coreutils}/bin/chown
+        CAT=${pkgs.coreutils}/bin/cat
+
+        $INSTALL -m 0640 ${base} "${destPath}"
+        for f in ${lib.escapeShellArgs hermesCfg.environmentFiles}; do
+          if [ -r "$f" ]; then
+            printf '\n' >> "${destPath}"
+            $CAT "$f" >> "${destPath}"
+          fi
+        done
+        $CHOWN ${owner} "${destPath}"
+      ''}"
+    ];
   };
 
   security.sudo.extraRules = [
