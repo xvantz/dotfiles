@@ -96,7 +96,10 @@
         extract_backend = "firecrawl";
       };
 
-      browser.cdp_url = "http://127.0.0.1:9222";
+      browser = {
+        cdp_url = "http://127.0.0.1:9222";
+        allow_private_urls = true;
+      };
 
       plugins = {
         enabled = ["disk-cleanup"];
