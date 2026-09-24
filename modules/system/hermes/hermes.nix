@@ -101,6 +101,8 @@
         allow_private_urls = true;
       };
 
+      security.allow_private_urls = true;
+
       plugins = {
         enabled = ["disk-cleanup"];
       };
