@@ -73,6 +73,7 @@ in {
             privileged = false;
             options = "--memory=6g --cpus=4";
             docker_host = "automount";
+            workdir_parent = "/run/act";
           };
           log.level = "info";
           runner.capacity = 4;
