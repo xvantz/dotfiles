@@ -34,7 +34,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    coolcontrol.url = "github:xvantz/coolcontrol";
+    coolcontrol.url = "git+https://git.827482.xyz/xvantz/coolcontrol";
 
     sync-agent.url = "git+http://localhost:2000/xvantz/sync-agent.git";
 
