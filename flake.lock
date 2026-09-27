@@ -5,17 +5,17 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1771665817,
-        "narHash": "sha256-YWeMnri0TGKbaJP/mAaPhDitJjxrpiOnllIlrMxglOo=",
-        "owner": "xvantz",
-        "repo": "coolcontrol",
-        "rev": "fda9f69fc00e454bdbc9559f9dd655642a164237",
-        "type": "github"
+        "lastModified": 1790286612,
+        "narHash": "sha256-cG4SfV7EOIVmEUyIUFeO2N4XdqbG2hYeP7LWR6Fvg7E=",
+        "ref": "refs/heads/main",
+        "rev": "50e6db1d924af86f55e6976d5e11b90e59bc2a64",
+        "revCount": 11,
+        "type": "git",
+        "url": "https://git.827482.xyz/xvantz/coolcontrol"
       },
       "original": {
-        "owner": "xvantz",
-        "repo": "coolcontrol",
-        "type": "github"
+        "type": "git",
+        "url": "https://git.827482.xyz/xvantz/coolcontrol"
       }
     },
     "dank-greeter": {
@@ -376,17 +376,33 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1782847189,
-        "narHash": "sha256-twXPFqFsrrY5r28Zh7Homgcp2gUMBgQ6WDS98Q/3xFI=",
+        "lastModified": 1790450978,
+        "narHash": "sha256-/eLCD/X9kaWJqPR47+fDozEC87Hjmm3i8gJbYmDAD7g=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "b6018f87da91d19d0ab4cf979885689b469cdd41",
+        "rev": "5e2305d577ca00acbba631b05cb1094d172b29f3",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-25.11",
+        "ref": "nixos-26.05",
         "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-podman-pin": {
+      "locked": {
+        "lastModified": 1790000374,
+        "narHash": "sha256-HQYQWvnZBGHZDpyXC76BSfg/FRnCncqKAJ0gP5nkDG0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "25fb2cc17b8ccc635517fd79144523e02917d0b5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "25fb2cc17b8ccc635517fd79144523e02917d0b5",
         "type": "github"
       }
     },
@@ -608,6 +624,7 @@
         "navidrome-collector": "navidrome-collector",
         "niri": "niri",
         "nixpkgs": "nixpkgs_4",
+        "nixpkgs-podman-pin": "nixpkgs-podman-pin",
         "nixvim": "nixvim",
         "pm": "pm",
         "sops-nix": "sops-nix",

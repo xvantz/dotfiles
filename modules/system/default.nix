@@ -19,6 +19,7 @@
     ./hardware.nix
     ./hermes
     ./forgejo.nix
+    ./fix-podman.nix
     ./adguard.nix
     ./caddy.nix
     ./syncthing.nix

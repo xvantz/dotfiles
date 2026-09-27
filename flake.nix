@@ -4,6 +4,10 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    # Temporary pin: podman 5.8.6 (5.8.7 breaks Forgejo runner,
+    # CopyToContainer "path escapes from parent" on /var/run -> /run, podman#29805)
+    nixpkgs-podman-pin.url = "github:NixOS/nixpkgs/25fb2cc17b8ccc635517fd79144523e02917d0b5";
+
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
