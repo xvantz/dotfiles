@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{pkgs, config, ...}: {
   programs.dconf.enable = true;
   services.dbus.enable = true;
   services.dbus.implementation = "broker";
@@ -58,5 +58,11 @@
   services.pm = {
     enable = true;
     dataDir = "/home/xvantz/Documents/pm";
+    environmentFile = config.sops.secrets.pm_env.path;
+  };
+
+  sops.secrets.pm_env = {
+    owner = "xvantz";
+    restartUnits = [ "pm-serve.service" ];
   };
 }

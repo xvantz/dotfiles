@@ -237,7 +237,7 @@
       };
     };
 
-    environmentFiles = [config.sops.secrets.hermes_env.path config.sops.secrets.forgejo_env.path];
+    environmentFiles = [config.sops.secrets.hermes_env.path config.sops.secrets.forgejo_env.path config.sops.secrets.pm_env.path];
 
     mcpServers = {
       filesystem-obsidian = {
@@ -295,7 +295,8 @@
       pm = {
         enabled = true;
         command = "${config.services.pm.package}/bin/pm-mcp";
-        args = ["--dir" "/data/pm"];
+        env.PM_API = "http://127.0.0.1:8472";
+        env.PM_TOKEN = "\${PM_TOKEN}";
       };
     };
 
@@ -305,7 +306,6 @@
       ''"/home/xvantz/Documents/Obsidian/3. Resources/Hermes Agent/USER.md:/data/workspace/USER.md:Z"''
       "/home/xvantz/projects/public:/projects:rw"
       "/home/xvantz/.dotfiles:/dotfiles:rw"
-      "/home/xvantz/Documents/pm:/data/pm:Z"
       "/run/user/1001/podman/podman.sock:/var/run/docker.sock"
     ];
 

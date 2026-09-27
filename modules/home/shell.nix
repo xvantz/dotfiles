@@ -18,6 +18,10 @@
     initContent = ''
       eval "$(starship init zsh)"
       eval "$(zoxide init zsh)"
+      # PM daemon token (sops pm_env, same secret as the service uses).
+      if [[ -r /run/secrets/pm_env ]]; then
+        set -a; source /run/secrets/pm_env; set +a
+      fi
       if [[ -z "$TMUX" ]] && [ "$SSH_CONNECTION" = "" ]; then
         tmux attach-session -t default || tmux new-session -s default
       fi
