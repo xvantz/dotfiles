@@ -19,7 +19,6 @@
     ./hardware.nix
     ./hermes
     ./forgejo.nix
-    ./fix-buildah.nix
     ./adguard.nix
     ./caddy.nix
     ./syncthing.nix
