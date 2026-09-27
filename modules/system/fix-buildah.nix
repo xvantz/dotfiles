@@ -5,7 +5,7 @@
         patches = (o.patches or []) ++ [
           (prev.fetchpatch {
             url = "https://github.com/containers/buildah/pull/7129.patch";
-            hash = "sha256-t648PPyny/gixGAOUTyxCTi2pga5fEo4os62zhxnMKQ=";
+            hash = "sha256-ggz2IPJl/OHgRHne6H0oq9GfOExa7N0PBZRhBeZzX7U=";
             stripLen = 1;
             extraPrefix = "vendor/github.com/containers/buildah/";
           })
