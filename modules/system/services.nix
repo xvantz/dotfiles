@@ -66,11 +66,4 @@
     owner = config.services.pm.user;
     restartUnits = [ "pm-serve.service" ];
   };
-
-  # PM_TOKEN for the login shell of services.pm.user, rendered from the
-  # same secret the service uses. Shell sources this path (see home shell).
-  sops.templates."pm-env" = {
-    owner = config.services.pm.user;
-    content = "export ${config.sops.placeholder.pm_env}";
-  };
 }

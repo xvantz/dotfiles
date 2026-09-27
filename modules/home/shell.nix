@@ -18,11 +18,6 @@
     initContent = ''
       eval "$(starship init zsh)"
       eval "$(zoxide init zsh)"
-      # PM daemon token: rendered by sops template (host-managed path),
-      # same secret the pm-serve service uses.
-      if [[ -r /run/secrets-rendered/pm-env ]]; then
-        set -a; source /run/secrets-rendered/pm-env; set +a
-      fi
       if [[ -z "$TMUX" ]] && [ "$SSH_CONNECTION" = "" ]; then
         tmux attach-session -t default || tmux new-session -s default
       fi
