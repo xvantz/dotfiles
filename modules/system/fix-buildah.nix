@@ -12,6 +12,7 @@
     })
   ];
 
-  warnings = lib.optional (lib.versionOlder pkgs.buildah.version "1.45.2")
-    "fix-buildah overlay active — удали modules/system/fix-buildah.nix когда nixpkgs даст buildah 1.45.2+ (podman#29805)";
+  warnings = [
+    "fix-buildah overlay active — remove modules/system/fix-buildah.nix when nixpkgs provides buildah 1.45.2+ (podman#29805)"
+  ];
 }
