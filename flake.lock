@@ -550,11 +550,11 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1790521850,
-        "narHash": "sha256-g5DYYOgZxLbbctR0QLgQ5tYLYIOCUYonxrqkITtIxQM=",
+        "lastModified": 1790523329,
+        "narHash": "sha256-aoL9YD6HOiYpPfgf+qS0NVTznm+jr8cxfDFkwlW5MgA=",
         "ref": "refs/heads/main",
-        "rev": "705b9b65052e9a7f89948c84707fb7a7ac6b543f",
-        "revCount": 73,
+        "rev": "a85b6da46d5cadbdd1167ef41593e96c4c3c469a",
+        "revCount": 75,
         "type": "git",
         "url": "https://git.827482.xyz/xvantz/pm.git"
       },

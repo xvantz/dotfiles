@@ -295,7 +295,9 @@
       pm = {
         enabled = true;
         command = "${config.services.pm.package}/bin/pm-mcp";
-        env.PM_API = "http://127.0.0.1:8472";
+        # Same option the daemon serves: changing services.pm.listenAddr
+        # never orphans the agent on the default.
+        env.PM_API = "http://${config.services.pm.listenAddr}";
         env.PM_TOKEN = "\${PM_TOKEN}";
       };
     };
