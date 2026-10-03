@@ -78,12 +78,6 @@
 
         overlays = [
           (final: prev: {
-            inherit
-              (prev.lixPackageSets.stable)
-              nix-eval-jobs
-              nix-fast-build
-              nix-direnv
-              ;
             sync-agent = inputs.sync-agent.packages.${system}.default;
           })
           (import ./customPkgs/default.nix)

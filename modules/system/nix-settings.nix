@@ -1,11 +1,5 @@
-{
-  config,
-  pkgs,
-  ...
-}: {
+{config, ...}: {
   sops.secrets.github_nix.owner = "xvantz";
-
-  nix.package = pkgs.lixPackageSets.stable.lix;
 
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
