@@ -62,6 +62,17 @@ in {
       '';
     };
 
+    virtualHosts."terminal.827482.xyz" = {
+      extraConfig = ''
+        bind 100.95.144.120
+        tls {
+          dns cloudflare {env.CLOUDFLARE_TOKEN}
+          resolvers 1.1.1.1
+        }
+        reverse_proxy http://127.0.0.1:7681
+      '';
+    };
+
     virtualHosts."*.827482.xyz" = {
       extraConfig = ''
         tls {
