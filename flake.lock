@@ -472,11 +472,11 @@
     },
     "nixpkgs_5": {
       "locked": {
-        "lastModified": 1790463110,
-        "narHash": "sha256-hKlVl12B1dF0Q5vd9dY3lIJM5mFGWYSlXwSLAqHZ1+s=",
+        "lastModified": 1790822859,
+        "narHash": "sha256-69xHQhAeMAD2wDXO7T2pcOZIF9Sga2W+JkmY2a11Ops=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "e158d9ed9b51c98974c5e66e1ba1c9e0255fecaa",
+        "rev": "c59305bab2065cfecc4944690d9eedbb56f3a9fa",
         "type": "github"
       },
       "original": {
@@ -550,11 +550,11 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1790521850,
-        "narHash": "sha256-g5DYYOgZxLbbctR0QLgQ5tYLYIOCUYonxrqkITtIxQM=",
+        "lastModified": 1790884593,
+        "narHash": "sha256-rYqJh38DymwpLGmlHyJv0H4mUdJy7sQFCGCZfXdhWHM=",
         "ref": "refs/heads/main",
-        "rev": "705b9b65052e9a7f89948c84707fb7a7ac6b543f",
-        "revCount": 73,
+        "rev": "34f36df8d370e358df6ac7633f3fcdc58614cf4f",
+        "revCount": 143,
         "type": "git",
         "url": "https://git.827482.xyz/xvantz/pm.git"
       },
