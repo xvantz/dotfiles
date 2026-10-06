@@ -37,7 +37,7 @@ Core idea:
 - graphics/display (`display.nix`, `portals.nix`, `fonts.nix`, `i18n.nix`),
 - audio/Bluetooth (`audio.nix`, `bluetooth.nix`),
 - Nix settings and helpers (`nix-settings.nix`, `nh.nix`, `fix-podman.nix`),
-- services and self-hosting (`services.nix`, `forgejo.nix`, `searx.nix`, `redis.nix`, `syncthing.nix`, `actual.nix`, `crw.nix`, `dozzle.nix`, `driftty.nix`, `containers.nix`, `k3s/`, `music.nix`, `hindsight.nix`, `hermes/`),
+- services and self-hosting (`services.nix`, `forgejo.nix`, `searx.nix`, `redis.nix`, `syncthing.nix`, `crw.nix`, `dozzle.nix`, `driftty.nix`, `containers.nix`, `k3s/`, `music.nix`, `hindsight.nix`, `hermes/`),
 - system packages and virtualization (`packages.nix`, `virtualization.nix`).
 
 ### 3) User layer: `home.nix` + `modules/home/*`
