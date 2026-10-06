@@ -15,8 +15,12 @@
 
     firewall = {
       enable = true;
-      allowedTCPPorts = [22 53 80 443 22005 22006 9000];
-      allowedUDPPorts = [53 22005 22006];
+      allowedTCPPorts = [22 80 443 22005 22006 9000];
+      allowedUDPPorts = [];
+      interfaces."tailscale0" = {
+        allowedTCPPorts = [53];
+        allowedUDPPorts = [53];
+      };
     };
 
     nftables.enable = true;
