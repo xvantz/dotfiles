@@ -91,6 +91,19 @@ in
   services.beszel.agent = {
     enable = true;
     smartmon.enable = true;
+    environmentFile = config.sops.secrets.beszel_agent_env.path;
+  };
+
+  # KEY is issued by the hub UI when adding a system (Settings > Systems).
+  # Add it on host BEFORE rebuilding, otherwise sops activation fails:
+  #   sops secrets.yaml   # add: beszel_agent_env: KEY=<token from hub UI>
+  sops.secrets.beszel_agent_env = {
+    owner = "beszel-agent";
+    restartUnits = [ "beszel-agent.service" ];
+  };
+  systemd.services.beszel-agent = {
+    after = [ "sops-install-secrets.service" ];
+    wants = [ "sops-install-secrets.service" ];
   };
 
   services.caddy.virtualHosts."beszel.827482.xyz" = {
