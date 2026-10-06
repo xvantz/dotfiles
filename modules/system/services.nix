@@ -60,9 +60,19 @@
     user = "xvantz";
     dataDir = "/home/xvantz/Documents/pm";
     environmentFile = config.sops.secrets.pm_env.path;
+    backup = {
+      enable = true;
+      repoUrl = "https://git.827482.xyz/xvantz/pm-data.git";
+      tokenFile = config.sops.secrets.pm_backup_token.path;
+    };
   };
 
   sops.secrets.pm_env = {
+    owner = config.services.pm.user;
+    restartUnits = [ "pm-serve.service" ];
+  };
+
+  sops.secrets.pm_backup_token = {
     owner = config.services.pm.user;
     restartUnits = [ "pm-serve.service" ];
   };
