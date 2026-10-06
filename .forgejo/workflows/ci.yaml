@@ -16,15 +16,20 @@ jobs:
         run: |
           curl -L https://nixos.org/nix/install -o /tmp/nix-install.sh
           sh /tmp/nix-install.sh --no-daemon
-          echo "$HOME/.nix-profile/bin" >> "$GITHUB_PATH"
 
       - name: flake check (eval only, no builds)
-        run: nix flake check --no-build
+        run: |
+          . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+          nix flake check --no-build
 
       - name: deadnix (unused code, advisory)
         continue-on-error: true
-        run: nix run nixpkgs#deadnix -- .
+        run: |
+          . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+          nix run nixpkgs#deadnix -- .
 
       - name: statix (lint, advisory)
         continue-on-error: true
-        run: nix run nixpkgs#statix -- check .
+        run: |
+          . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+          nix run nixpkgs#statix -- check .
