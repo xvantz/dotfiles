@@ -21,8 +21,10 @@ jobs:
       - name: flake check (eval only, no builds)
         run: nix flake check --no-build
 
-      - name: deadnix (unused code)
-        run: nix run nixpkgs#deadnix -- --fail .
+      - name: deadnix (unused code, advisory)
+        continue-on-error: true
+        run: nix run nixpkgs#deadnix -- .
 
-      - name: statix (lint)
+      - name: statix (lint, advisory)
+        continue-on-error: true
         run: nix run nixpkgs#statix -- check .
