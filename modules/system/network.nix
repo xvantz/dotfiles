@@ -15,7 +15,7 @@
 
     firewall = {
       enable = true;
-      allowedTCPPorts = [22 80 443 22005 22006 9000];
+      allowedTCPPorts = [22 80 443 9000]; # 9000 = local test builds
       allowedUDPPorts = [];
       interfaces."tailscale0" = {
         allowedTCPPorts = [53];
