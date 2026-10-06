@@ -67,6 +67,7 @@ in
   services.smartd = {
     enable = true;
     autodetect = true;
+    notifications.systembus-notify.enable = true; # match earlyoom, avoid option conflict
     defaults.monitored = "-a -o on -S on -s (S/../.././02|L/../../6/03)";
   };
 
