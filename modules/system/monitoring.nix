@@ -165,7 +165,7 @@ in
         rules = [
           {
             alert = "InstanceDown";
-            expr = ''up{job=~"node|smartctl|blackbox"} == 0'';
+            expr = ''up{job=~"node|smartctl|blackbox-http"} == 0'';
             for = "2m";
             annotations.summary = "Exporter {{ $labels.job }} is down";
           }
