@@ -49,6 +49,7 @@ in {
   };
 
   systemd.services.forgejo.postStart = ''
+    ${pkgs.openssh}/bin/ssh-keygen -R github.com -f /var/lib/forgejo/.ssh/known_hosts 2>/dev/null || true
     ${pkgs.openssh}/bin/ssh-keyscan github.com 2>/dev/null >> /var/lib/forgejo/.ssh/known_hosts || true
   '';
 
