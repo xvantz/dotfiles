@@ -17,10 +17,15 @@ jobs:
           curl -L https://nixos.org/nix/install -o /tmp/nix-install.sh
           sh /tmp/nix-install.sh --no-daemon
 
+      - name: Auth for private flake inputs
+        run: |
+          printf 'machine git.827482.xyz login ci password %s\n' '${{ secrets.FORGEJO_READ_TOKEN }}' > "$HOME/.netrc"
+          chmod 600 "$HOME/.netrc"
+
       - name: flake check (eval only, no builds)
         run: |
           . "$HOME/.nix-profile/etc/profile.d/nix.sh"
-          nix flake check --no-build
+          nix --option netrc-file "$HOME/.netrc" flake check --no-build
 
       - name: deadnix (unused code, advisory)
         continue-on-error: true
