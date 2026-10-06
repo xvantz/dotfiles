@@ -664,11 +664,11 @@
         "rev": "b8255b62d07bdfbe2da46a72811ae1e90ca0f254",
         "revCount": 40,
         "type": "git",
-        "url": "http://localhost:2000/xvantz/sync-agent.git"
+        "url": "https://git.827482.xyz/xvantz/sync-agent.git"
       },
       "original": {
         "type": "git",
-        "url": "http://localhost:2000/xvantz/sync-agent.git"
+        "url": "https://git.827482.xyz/xvantz/sync-agent.git"
       }
     },
     "systems": {

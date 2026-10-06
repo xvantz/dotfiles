@@ -40,7 +40,7 @@
 
     coolcontrol.url = "git+https://git.827482.xyz/xvantz/coolcontrol";
 
-    sync-agent.url = "git+http://localhost:2000/xvantz/sync-agent.git";
+    sync-agent.url = "git+https://git.827482.xyz/xvantz/sync-agent.git";
 
     hermes-agent.url = "github:NousResearch/hermes-agent/v2026.9.14";
 
