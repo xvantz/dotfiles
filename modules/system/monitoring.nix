@@ -160,7 +160,7 @@ in
       "evaluationInterval" = "1m";
     };
     rules = {
-      group = [{
+      groups = [{
         name = "host";
         rules = [
           {
