@@ -28,6 +28,7 @@
     ./dozzle.nix
     ./driftty.nix
     ./containers.nix
+    ./monitoring.nix
     ./k3s
     ./music.nix
     ./hindsight.nix
