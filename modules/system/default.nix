@@ -27,7 +27,6 @@
     ./crw.nix
     ./dozzle.nix
     ./driftty.nix
-    ./actual.nix
     ./containers.nix
     ./k3s
     ./music.nix
