@@ -102,7 +102,7 @@ in
   services.prometheus.exporters.node = {
     enable = true;
     listenAddress = "127.0.0.1";
-    port = 9100;
+    port = 9101; # 9100 is taken by the k3s-bundled node_exporter
     enabledCollectors = [ "systemd" "filesystem" "loadavg" "meminfo" "diskstats" "netdev" "cpu" "uname" "time" ];
   };
   services.prometheus.exporters.smartctl = {
@@ -125,7 +125,7 @@ in
       scrape_configs = [
         {
           job_name = "node";
-          static_configs = [{ targets = [ "127.0.0.1:9100" ]; }];
+          static_configs = [{ targets = [ "127.0.0.1:9101" ]; }];
         }
         {
           job_name = "smartctl";
