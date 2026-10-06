@@ -1,0 +1,28 @@
+name: ci
+on: [push, pull_request]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      NIX_CONFIG: |
+        experimental-features = nix-command flakes
+        sandbox = false
+        filter-syscalls = false
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Nix
+        run: |
+          curl -L https://nixos.org/nix/install -o /tmp/nix-install.sh
+          sh /tmp/nix-install.sh --no-daemon
+          echo "$HOME/.nix-profile/bin" >> "$GITHUB_PATH"
+
+      - name: flake check (eval only, no builds)
+        run: nix flake check --no-build
+
+      - name: deadnix (unused code)
+        run: nix run nixpkgs#deadnix -- --fail .
+
+      - name: statix (lint)
+        run: nix run nixpkgs#statix -- check .
