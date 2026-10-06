@@ -18,25 +18,26 @@ Core idea:
 
 `flake.nix` defines:
 
-- inputs (`nixpkgs`, `home-manager`, `niri`, `anyrun`, `dms`, `zen-browser`, etc.);
+- inputs (`nixpkgs`, `home-manager`, `niri`, `dms`, `zen-browser`, `sops-nix`, `nixvim`, self-hosted `coolcontrol`/`pm`/`sync-agent`, etc.);
 - `nixosConfigurations.nixos`;
-- `specialArgs` wiring (including `pkgs-unstable` and `customPkgs`);
-- Home Manager integration as a NixOS module.
+- `specialArgs` wiring (including `selfPath` and `customPkgs`);
+- standalone `homeConfigurations.xvantz` (Home Manager as a separate config, not a NixOS module).
 
 ### 2) System layer: `configuration.nix` + `modules/system/*`
 
 `configuration.nix` imports:
 
-- `hardware-configuration.nix` (auto-generated hardware/disk config);
-- system module aggregator `modules/system/default.nix`.
+- `hardware-configuration.nix` (generated hardware/disk config, tracked);
+- `modules/system/default.nix` aggregator plus external modules (`dank-greeter`, `sops-nix`, `coolcontrol`, `sync-agent`, `hermes-agent`, `pm`, `navidrome-collector`).
 
 `modules/system/*` is organized by domain:
 
-- boot/kernel/memory (`boot.nix`, `power.nix`),
-- networking and DNS (`network.nix`),
-- graphics/display (`display.nix`, `portals.nix`),
+- boot/kernel/memory (`boot.nix`, `power.nix`, `hardware.nix`),
+- networking and DNS (`network.nix`, `adguard.nix`, `caddy.nix`),
+- graphics/display (`display.nix`, `portals.nix`, `fonts.nix`, `i18n.nix`),
 - audio/Bluetooth (`audio.nix`, `bluetooth.nix`),
-- Nix settings and services (`nix-settings.nix`, `services.nix`),
+- Nix settings and helpers (`nix-settings.nix`, `nh.nix`, `fix-podman.nix`),
+- services and self-hosting (`services.nix`, `forgejo.nix`, `searx.nix`, `redis.nix`, `syncthing.nix`, `actual.nix`, `crw.nix`, `dozzle.nix`, `driftty.nix`, `containers.nix`, `k3s/`, `music.nix`, `hindsight.nix`, `hermes/`),
 - system packages and virtualization (`packages.nix`, `virtualization.nix`).
 
 ### 3) User layer: `home.nix` + `modules/home/*`
@@ -45,22 +46,22 @@ Core idea:
 
 Home modules include:
 
-- shell/tooling (`shell.nix`, `packages.nix`, `starship.nix`, `tmux.nix`, `yazi.nix`),
-- desktop/UI (`desktop.nix`, `theme.nix`, `ghostty.nix`),
-- daily apps (`anyrun.nix`, `dms.nix`, `neovim.nix`).
+- shell/tooling (`shell.nix`, `packages.nix`, `starship.nix`, `tmux.nix`, `yazi.nix`, `opencode.nix`, `mutagen.nix`),
+- desktop/UI (`desktop.nix`, `theme.nix`, `ghostty.nix`, `dms.nix`, `browser.nix`, `keepassxc.nix`),
+- editor (`neovim/` directory with `core.nix`, `keymaps.nix`, `autocmds.nix`, `plugins/`).
 
 ### 4) Custom packages: `customPkgs/*`
 
 Local derivations are exposed through `customPkgs/default.nix`:
 
-- `customPkgs/codex/codex.nix` — pinned Codex CLI package with fixed version/hash;
-- `customPkgs/gemini/gemini.nix` — Gemini CLI package with wrapper and behavior patching.
+- `codex/` - pinned Codex CLI package with fixed version/hash;
+- `gemini/` - Gemini CLI package with wrapper and behavior patching;
+- `agent-lsp/`, `biome/`, `pi-coding-agent/` - agent tooling and linters.
 
 ### 5) External config assets
 
-- `config/hypr/*` — Hyprlock assets and theme,
-- `config/niri/config.kdl` — config included by DMS/Niri,
-- `config/nvim` — git submodule with a separate Neovim setup.
+- `config/niri/config.kdl` - config included by DMS/Niri,
+- `config/virtual/ssdt1.dat` - ACPI table for the Windows VM passthrough.
 
 ---
 
@@ -69,9 +70,12 @@ Local derivations are exposed through `customPkgs/default.nix`:
 In addition to base `nixpkgs` + `home-manager`, this setup uses:
 
 - `zen-browser`;
-- `dms` (DankMaterialShell) + `dgop`;
-- `niri`;
-- `anyrun`.
+- `dms` (DankMaterialShell) + `dgop` + `dank-greeter`;
+- `niri` (via sodiboo flake);
+- `nixvim`;
+- `sops-nix`;
+- self-hosted on git.827482.xyz: `coolcontrol`, `pm`, `navidrome-collector`, `sync-agent`;
+- `hermes-agent` (NousResearch).
 
 This creates a hybrid model: **stable base + targeted external components**.
 
@@ -85,26 +89,33 @@ This creates a hybrid model: **stable base + targeted external components**.
 ├── flake.lock
 ├── configuration.nix
 ├── home.nix
-├── hardware-configuration.nix   (local, ignored)
+├── hardware-configuration.nix   (generated, tracked)
+├── secrets.yaml                 (sops-encrypted)
 ├── customPkgs/
 │   ├── default.nix
-│   ├── codex/codex.nix
-│   └── gemini/gemini.nix
+│   ├── agent-lsp/
+│   ├── biome/
+│   ├── codex/
+│   ├── gemini/
+│   └── pi-coding-agent/
 ├── modules/
-│   ├── system/
+│   ├── system/   (see default.nix for the full list)
+│   │   ├── hermes/
+│   │   └── k3s/
 │   └── home/
+│       └── neovim/
 └── config/
-    ├── hypr/
     ├── niri/
-    └── nvim/   (submodule)
+    └── virtual/
 ```
 
 ---
 
 ## Privacy Notes
 
-- `hardware-configuration.nix` is intentionally git-ignored (machine-specific, generated per host).
-- Runtime logs like `config/hypr/*.log` are git-ignored.
+- `hardware-configuration.nix` is tracked (contains partition UUIDs, regenerate per host when migrating).
+- `secrets.yaml` is tracked but sops-encrypted; the age key (`sops-keys.txt`) is git-ignored and backed up in KeePassXC.
+- Runtime logs like `config/hypr/*.log` are git-ignored (legacy pattern, no hypr config in tree).
 
 ---
 
@@ -113,7 +124,19 @@ This creates a hybrid model: **stable base + targeted external components**.
 From the repository root:
 
 ```bash
+nh os switch
+```
+
+or plain:
+
+```bash
 sudo nixos-rebuild switch --flake .#nixos
+```
+
+Update home separately:
+
+```bash
+nh home switch
 ```
 
 Update flake inputs:
