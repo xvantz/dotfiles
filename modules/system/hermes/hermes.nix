@@ -345,6 +345,9 @@
     ];
   };
 
+  # Accepted risk: NOPASSWD podman for xvantz equals root (e.g. -v /:/host).
+  # Kept per upstream Hermes agent setup (container socket exec needs
+  # passwordless podman); revisit by scoping to exec-only if it starts to bother.
   security.sudo.extraRules = [
     {
       users = ["xvantz"];
