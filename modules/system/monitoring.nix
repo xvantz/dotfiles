@@ -76,8 +76,8 @@ let
           preferred_ip_protocol: ip4
   '';
 
-  # TODO: replace with your Telegram chat id (see @userinfobot).
-  telegramChatId = 0;
+  # Telegram chat id for alerts (public user id, not a secret).
+  telegramChatId = 857054384;
 in
 {
   # SMART: scheduled selftests, results go to journal.
