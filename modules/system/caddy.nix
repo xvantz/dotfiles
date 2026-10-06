@@ -64,12 +64,17 @@ in {
 
     virtualHosts."terminal.827482.xyz" = {
       extraConfig = ''
-        bind 100.95.144.120
+        @tailnet remote_ip 100.64.0.0/10
+        handle @tailnet {
+          reverse_proxy http://127.0.0.1:7681
+        }
+        handle {
+          respond "Access requires Tailscale" 403
+        }
         tls {
           dns cloudflare {env.CLOUDFLARE_TOKEN}
           resolvers 1.1.1.1
         }
-        reverse_proxy http://127.0.0.1:7681
       '';
     };
 
