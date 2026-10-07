@@ -67,7 +67,8 @@
       if [ -n "$zwid" ]; then
         wwidth=$(${pkgs.niri}/bin/niri msg -j windows \
           | ${pkgs.jq}/bin/jq -r --argjson id "$zwid" '[.[] | select(.id == $id)] | .[0].layout.tile_size[0] // 0')
-        if [ "$((${wwidth%.*} + 0))" -lt 1500 ]; then
+        wint=$(printf '%.0f' "$wwidth")
+        if [ "$wint" -lt 1500 ]; then
           ${pkgs.niri}/bin/niri msg action focus-window --id "$zwid"
           ${pkgs.niri}/bin/niri msg action maximize-window-to-edges
           ${pkgs.niri}/bin/niri msg action focus-window --id "$gid"
