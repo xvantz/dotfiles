@@ -67,11 +67,25 @@ jobs:
           . "$HOME/.nix-profile/etc/profile.d/nix.sh"
           nix --option netrc-file "$HOME/.netrc" eval .#homeConfigurations.xvantz.activationPackage.drvPath
 
-      - name: deadnix (unused code, advisory)
+      - name: deadnix on changed files (advisory)
         continue-on-error: true
         run: |
           . "$HOME/.nix-profile/etc/profile.d/nix.sh"
-          nix run nixpkgs#deadnix -- .
+          base="${{ github.event.before }}"
+          if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
+            base="origin/${{ github.base_ref }}"
+          fi
+          if [ "$base" = "origin/" ]; then
+            base="HEAD~1"
+          fi
+          files=$(git diff --name-only "$base" HEAD -- '*.nix' 2>/dev/null || true)
+          if [ -z "$files" ]; then
+            echo "no nix files changed, skipping"
+          else
+            echo "checking: $files"
+            # shellcheck disable=SC2086
+            nix run nixpkgs#deadnix -- $files
+          fi
 
       - name: statix (lint, advisory)
         continue-on-error: true

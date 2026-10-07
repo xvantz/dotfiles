@@ -1,0 +1,4 @@
+# empty_pattern ({...}:) and repeated_keys (split blocks merged by modules)
+# are idiomatic NixOS style, not smells.
+disabled = ["empty_pattern", "repeated_keys"]
+ignore = [".direnv"]
