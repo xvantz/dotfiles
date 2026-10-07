@@ -5,7 +5,7 @@ let
     fails=$(systemctl --failed --no-legend 2>/dev/null || true)
     alerts=""
     [ -n "$fails" ] && alerts="FAILED UNITS:\n$fails\n"
-    disk=$(df -h / /nix 2>/dev/null | ${pkgs.gawk}/bin/awk 'NR>1 && $5+0 >= 85 {print $6" at "$5}')
+    disk=$(df -h / /nix /boot 2>/dev/null | ${pkgs.gawk}/bin/awk 'NR>1 && $5+0 >= 85 {print $6" at "$5}')
     [ -n "$disk" ] && alerts="$alerts DISK >=85%:\n$disk\n"
     for url in http://127.0.0.1:2000 http://127.0.0.1:8888; do
       ${pkgs.curl}/bin/curl -sf --max-time 10 "$url" >/dev/null 2>&1 || alerts="$alerts PROBE DOWN: $url\n"
