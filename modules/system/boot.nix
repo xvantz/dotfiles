@@ -4,6 +4,7 @@
       efi.canTouchEfiVariables = true;
       grub.enable = false;
       systemd-boot.enable = true;
+      timeout = 5;
     };
     initrd.kernelModules = ["amdgpu"];
     kernelModules = ["hp-wmi" "ec_sys" "it87" "k10temp"];
