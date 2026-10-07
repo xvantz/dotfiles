@@ -87,6 +87,10 @@ prefer-no-csd
 
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
+// Standard workflow lines: always exist, stable order.
+workspace "code"
+workspace "chat"
+
 animations {
 }
 
@@ -121,17 +125,18 @@ window-rule {
     draw-border-with-background false
 }
 
-// Standard workflow layout: line 1 apps on workspace 1, telegram on 2.
+// Standard workflow layout: line 1 apps on workspace code, telegram on chat.
 // Spawned once by niri-workflow; existing windows are never moved.
 window-rule {
     match app-id=r#"^(com\.mitchellh\.ghostty|zen-beta|org\.keepassxc\.KeePassXC)$"#
-    open-on-workspace "1"
+    open-on-workspace "code"
     open-fullscreen true
 }
 
 window-rule {
     match app-id="^org.telegram.desktop$"
-    open-on-workspace "2"
+    exclude title="^Media viewer$"
+    open-on-workspace "chat"
     open-fullscreen true
 }
 
