@@ -21,6 +21,7 @@ in {
 
   services.forgejo = {
     enable = true;
+    package = pkgs.forgejo; # latest (16.x), module default is forgejo-lts
     database.type = "postgres";
     lfs.enable = true;
     settings = {
