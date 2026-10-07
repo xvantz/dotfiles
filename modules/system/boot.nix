@@ -6,7 +6,7 @@
         enable = true;
         device = "nodev";
         efiSupport = true;
-        useOSProber = true;
+        useOSProber = false; # no bare-metal dual boot, Windows VM lives in libvirt
       };
     };
     initrd.kernelModules = ["amdgpu"];
@@ -14,7 +14,7 @@
     extraModprobeConfig = ''
       options ec_sys write_support=1
     '';
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages; # stable, not latest: kvmfr/coolcontrol are out-of-tree
     kernelParams = [
       "acpi_enforce_resources=lax"
       "pci=noaer"
