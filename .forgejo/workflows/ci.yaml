@@ -26,10 +26,15 @@ jobs:
           printf 'machine git.827482.xyz login ci password %s\n' '${{ secrets.FORGEJO_READ_TOKEN }}' > "$HOME/.netrc"
           chmod 600 "$HOME/.netrc"
 
-      - name: flake check (eval only, no builds)
+      - name: eval nixos toplevel (no builds)
         run: |
           . "$HOME/.nix-profile/etc/profile.d/nix.sh"
-          nix --option netrc-file "$HOME/.netrc" flake check --no-build
+          nix --option netrc-file "$HOME/.netrc" eval .#nixosConfigurations.nixos.config.system.build.toplevel.drvPath
+
+      - name: eval home-manager (no builds)
+        run: |
+          . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+          nix --option netrc-file "$HOME/.netrc" eval .#homeConfigurations.xvantz.activationPackage.drvPath
 
       - name: deadnix (unused code, advisory)
         continue-on-error: true
