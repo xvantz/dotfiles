@@ -72,7 +72,7 @@
       User = "xvantz";
       Environment = "TERM=xterm-256color";
       ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /run/user/1000/tmux-1000";
-      ExecStart = "${pkgs.tmux}/bin/tmux -S /run/user/1000/tmux-1000/default new-session -d -A -s default -c /home/xvantz";
+      ExecStart = "-${pkgs.tmux}/bin/tmux -S /run/user/1000/tmux-1000/default new-session -d -s default -c /home/xvantz";
     };
   };
 
