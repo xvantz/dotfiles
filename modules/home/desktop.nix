@@ -9,7 +9,7 @@
   # never duplicates, never moves existing windows.
   # Wired via spawn-at-startup in config/niri/config.kdl.
   home.packages = [
-    (pkgs.writeShellScriptBin "niri-session" ''
+    (pkgs.writeShellScriptBin "niri-workflow" ''
       for i in $(seq 1 20); do
         ${pkgs.niri}/bin/niri msg -j version >/dev/null 2>&1 && break
         sleep 0.5
