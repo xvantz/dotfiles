@@ -1,6 +1,6 @@
 {pkgs, ...}: {
   services.k3s = {
-    enable = true;
+    enable = false;
     role = "server";
     extraFlags = "--disable servicelb --write-kubeconfig /home/xvantz/.kube/config --write-kubeconfig-mode 644";
   };
