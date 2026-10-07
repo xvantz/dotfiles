@@ -70,7 +70,7 @@
       Type = "oneshot";
       RemainAfterExit = true;
       User = "xvantz";
-      ExecStart = "${pkgs.tmux}/bin/tmux new-session -d -s main -c /home/xvantz";
+      ExecStart = "${pkgs.tmux}/bin/tmux new-session -d -A -s default -c /home/xvantz";
     };
   };
 
