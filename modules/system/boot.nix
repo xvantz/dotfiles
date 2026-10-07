@@ -2,12 +2,8 @@
   boot = {
     loader = {
       efi.canTouchEfiVariables = true;
-      grub = {
-        enable = true;
-        device = "nodev";
-        efiSupport = true;
-        useOSProber = false; # no bare-metal dual boot, Windows VM lives in libvirt
-      };
+      grub.enable = false;
+      systemd-boot.enable = true;
     };
     initrd.kernelModules = ["amdgpu"];
     kernelModules = ["hp-wmi" "ec_sys" "it87" "k10temp"];
