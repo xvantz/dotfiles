@@ -68,6 +68,22 @@ in {
       '';
     };
 
+    virtualHosts."terminal2.827482.xyz" = {
+      extraConfig = ''
+        @tailnet remote_ip 100.64.0.0/10
+        handle @tailnet {
+          reverse_proxy http://127.0.0.1:7682
+        }
+        handle {
+          respond "Access requires Tailscale" 403
+        }
+        tls {
+          dns cloudflare {env.CLOUDFLARE_TOKEN}
+          resolvers 1.1.1.1
+        }
+      '';
+    };
+
     virtualHosts."*.827482.xyz" = {
       extraConfig = ''
         tls {
