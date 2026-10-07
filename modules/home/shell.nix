@@ -19,7 +19,8 @@
       eval "$(starship init zsh)"
       eval "$(zoxide init zsh)"
       if [[ -z "$TMUX" ]] && [ "$SSH_CONNECTION" = "" ]; then
-        tmux -S /run/user/1000/tmux-1000/default attach-session -t default || tmux -S /run/user/1000/tmux-1000/default new-session -s default
+        tmux -S /run/user/1000/tmux-1000/default new-window -t default 2>/dev/null
+        tmux -S /run/user/1000/tmux-1000/default new-session -A -s default
       fi
     '';
   };

@@ -84,4 +84,37 @@
       }
     ];
   };
+
+  # Resurrect save dir (old resurrect writes to ~/.tmux, not XDG).
+  # Declarative keep so the dir always exists after home switch.
+  home.file.".tmux/resurrect/.keep".text = "keep";
+
+  # User-level keepalive: starts AFTER home files (tmux.conf + plugins)
+  # are in place, with a real user env (PATH/HOME). This replaces the
+  # old system driftty-tmux-keepalive which started at boot with a bare
+  # env -> plugin scripts failed with 127 -> default theme, no restore.
+  systemd.user.services.tmux-keepalive = {
+    Unit = {
+      Description = "keep tmux default session alive (after tmux config)";
+      After = [ "default.target" ];
+    };
+    Service = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      # Full PATH: plugin scripts (#!/usr/bin/env bash) resolve interpreters
+      # via the SERVER env. Bare systemd PATH -> 127 for every plugin.
+      Environment = [
+        "TERM=xterm-256color"
+        "PATH=/run/current-system/sw/bin:/run/wrappers/bin:%h/.nix-profile/bin:/etc/profiles/per-user/%u/bin:/nix/var/nix/profiles/default/bin:/usr/bin:/bin"
+      ];
+      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p %t/tmux-1000";
+      # NOTE: no -A flag here. -A turns into attach when the session
+      # exists, and attach needs a tty -> "open terminal failed" under
+      # systemd. has-session check keeps exit code clean both ways.
+      ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.tmux}/bin/tmux -S %t/tmux-1000/default has-session -t default 2>/dev/null || exec ${pkgs.tmux}/bin/tmux -S %t/tmux-1000/default new-session -d -s default -c %h'";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
 }

@@ -1,4 +1,4 @@
-{ pkgs, config, ... }: {
+{ config, ... }: {
   sops.secrets.driftty_env = {
     owner = "root";
   };
@@ -60,24 +60,12 @@
     '';
   };
 
-  # tmux server must be alive before the container starts,
-  # otherwise podman creates an empty directory instead of the socket
-  systemd.services.driftty-tmux-keepalive = {
-    description = "keep tmux session alive for driftty";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "network.target" "systemd-user-sessions.service" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      User = "xvantz";
-      Environment = "TERM=xterm-256color";
-      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /run/user/1000/tmux-1000";
-      ExecStart = "-${pkgs.tmux}/bin/tmux -S /run/user/1000/tmux-1000/default new-session -d -s default -c /home/xvantz";
-    };
-  };
-
-  systemd.services.podman-driftty = {
-    after = [ "driftty-tmux-keepalive.service" ];
-    wants = [ "driftty-tmux-keepalive.service" ];
-  };
+  # NOTE: the tmux server is owned by the home-manager user service
+  # `tmux-keepalive` (modules/home/tmux.nix). It starts after home files
+  # (tmux.conf + plugins) with a real user env, so plugins load (no more
+  # 127) and continuum autorestore works. No system-level keepalive here:
+  # a system unit can never wait for standalone `nh home switch` output.
+  # NOTE: no ordering on the user keepalive here: system units cannot
+  # depend on `systemd --user` services. The wrapper falls back to the
+  # known socket path, and the container tolerates a missing socket.
 }
