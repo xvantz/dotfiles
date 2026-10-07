@@ -68,6 +68,7 @@ in {
           "node:docker://node:lts-bookworm"
           "python:docker://python:3.12-bookworm"
           "go:docker://golang:1.23-bookworm"
+          "nix:docker://nixos/nix:latest"
         ];
         settings = {
           container = {
