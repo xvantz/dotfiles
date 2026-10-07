@@ -11,6 +11,16 @@ jobs:
         filter-syscalls = false
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Cache nix flake sources
+        uses: actions/cache@v4
+        continue-on-error: true
+        with:
+          path: ~/.cache/nix
+          key: nix-flake-${{ hashFiles('flake.lock') }}
+          restore-keys: nix-flake-
 
       - name: Install Nix
         run: |
@@ -26,7 +36,28 @@ jobs:
           printf 'machine git.827482.xyz login ci password %s\n' '${{ secrets.FORGEJO_READ_TOKEN }}' > "$HOME/.netrc"
           chmod 600 "$HOME/.netrc"
 
+      - name: Detect changed areas
+        id: changes
+        run: |
+          base="${{ github.event.before }}"
+          if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
+            base="origin/${{ github.base_ref }}"
+          fi
+          if [ "$base" = "origin/" ]; then
+            base="HEAD~1"
+          fi
+          files=$(git diff --name-only "$base" HEAD -- 2>/dev/null || true)
+          echo "changed: $files"
+          if [ -z "$files" ]; then
+            echo "sys_changed=true" >> "$GITHUB_OUTPUT"
+          elif echo "$files" | grep -qvE '^(modules/home/|home\.nix$|README\.md$|\.forgejo/)'; then
+            echo "sys_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "sys_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: eval nixos toplevel (no builds)
+        if: steps.changes.outputs.sys_changed == 'true'
         run: |
           . "$HOME/.nix-profile/etc/profile.d/nix.sh"
           nix --option netrc-file "$HOME/.netrc" eval .#nixosConfigurations.nixos.config.system.build.toplevel.drvPath
