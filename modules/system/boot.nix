@@ -3,7 +3,11 @@
     loader = {
       efi.canTouchEfiVariables = true;
       grub.enable = false;
-      systemd-boot.enable = true;
+      systemd-boot.enable = false;
+      limine = {
+        enable = true;
+        efiSupport = true;
+      };
       timeout = 5;
     };
     initrd.kernelModules = ["amdgpu"];
