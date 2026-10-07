@@ -40,8 +40,7 @@
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
       "acpi_enforce_resources=lax"
-      "pci=noaer"
-      "pcie_aspm=force"
+      "nvme_core.default_ps_max_latency_us=0"
       "usbcore.autosuspend=-1"
       "usbcore.quirks=342d:e487:g"
       "amdgpu.gpu_recovery=1"
