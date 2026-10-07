@@ -28,7 +28,11 @@
   };
 
   systemd.services.searx = {
-    after = ["sops-install-secrets.service" "redis-searx.service"];
-    wants = ["sops-install-secrets.service" "redis-searx.service"];
+    after = [ "sops-install-secrets.service" "redis-searx.service" "network-online.target" ];
+    wants = [ "sops-install-secrets.service" "redis-searx.service" "network-online.target" ];
+    serviceConfig = {
+      Restart = "on-failure";
+      RestartSec = "10s";
+    };
   };
 }
