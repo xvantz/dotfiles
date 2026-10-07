@@ -65,11 +65,12 @@
   systemd.services.driftty-tmux-keepalive = {
     description = "keep tmux session alive for driftty";
     wantedBy = [ "multi-user.target" ];
-    after = [ "network.target" ];
+    after = [ "network.target" "systemd-user-sessions.service" ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
       User = "xvantz";
+      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /run/user/1000/tmux-1000";
       ExecStart = "${pkgs.tmux}/bin/tmux -S /run/user/1000/tmux-1000/default new-session -d -A -s default -c /home/xvantz";
     };
   };
