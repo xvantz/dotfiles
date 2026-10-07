@@ -44,6 +44,21 @@
       if [ -n "$gid" ]; then
         ${pkgs.niri}/bin/niri msg action focus-window --id "$gid"
       fi
+      # Deterministic column order on workspace code, left to right:
+      # ghostty, zen-beta, keepassxc. move-column-left is a no-op at the edge.
+      for app in org.keepassxc.KeePassXC zen-beta com.mitchellh.ghostty; do
+        wid=$(${pkgs.niri}/bin/niri msg -j windows \
+          | ${pkgs.jq}/bin/jq -r --arg a "$app" '[.[] | select(.app_id == $a)] | last | .id // empty')
+        if [ -n "$wid" ]; then
+          ${pkgs.niri}/bin/niri msg action focus-window --id "$wid"
+          ${pkgs.niri}/bin/niri msg action move-column-left
+          ${pkgs.niri}/bin/niri msg action move-column-left
+          ${pkgs.niri}/bin/niri msg action move-column-left
+        fi
+      done
+      if [ -n "$gid" ]; then
+        ${pkgs.niri}/bin/niri msg action focus-window --id "$gid"
+      fi
     '')
   ];
 
