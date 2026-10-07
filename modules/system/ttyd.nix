@@ -10,7 +10,7 @@
     serviceConfig = {
       User = "xvantz";
       WorkingDirectory = "/home/xvantz";
-      ExecStart = "${pkgs.ttyd}/bin/ttyd -p 7682 -i 127.0.0.1 ${pkgs.tmux}/bin/tmux -S /tmp/tmux-1000/default new-session -A -s default";
+      ExecStart = "${pkgs.ttyd}/bin/ttyd -p 7682 -i 127.0.0.1 ${pkgs.tmux}/bin/tmux -S /run/user/1000/tmux-1000/default new-session -A -s default";
       Restart = "always";
       RestartSec = "3s";
     };

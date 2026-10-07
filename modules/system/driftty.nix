@@ -7,7 +7,7 @@
     image = "ghcr.io/mdp/driftty-gateway:edge";
     ports = [ "127.0.0.1:7681:7681" ];
     volumes = [
-      "/tmp/tmux-1000:/run/host-tmux:ro"
+      "/run/user/1000/tmux-1000:/run/host-tmux:ro"
       "/etc/driftty/tmux-wrapper:/usr/local/lib/driftty-local/bin/tmux:ro"
     ];
     cmd = [ "--local-tmux" "/run/host-tmux/default" ];
@@ -70,7 +70,7 @@
       Type = "oneshot";
       RemainAfterExit = true;
       User = "xvantz";
-      ExecStart = "${pkgs.tmux}/bin/tmux -S /tmp/tmux-1000/default new-session -d -A -s default -c /home/xvantz";
+      ExecStart = "${pkgs.tmux}/bin/tmux -S /run/user/1000/tmux-1000/default new-session -d -A -s default -c /home/xvantz";
     };
   };
 
