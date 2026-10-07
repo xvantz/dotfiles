@@ -27,7 +27,6 @@
     ./crw.nix
     ./dozzle.nix
     ./driftty.nix
-    ./ttyd.nix
     ./containers.nix
     ./monitoring.nix
     ./k3s
