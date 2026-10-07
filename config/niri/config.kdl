@@ -1,5 +1,6 @@
 spawn-at-startup "gammastep" "-l" "10.76:106.66" "-t" "6500:3500"
 spawn-at-startup "anyrun --daemon"
+spawn-at-startup "niri-session"
 
 environment {
     DISPLAY ":0"
@@ -118,6 +119,20 @@ window-rule {
 window-rule {
     match app-id="^com\\.mitchellh\\.ghostty$"
     draw-border-with-background false
+}
+
+// Standard workflow layout: line 1 apps on workspace 1, telegram on 2.
+// Spawned once by niri-session; existing windows are never moved.
+window-rule {
+    match app-id=r#"^(com\.mitchellh\.ghostty|zen-beta|org\.keepassxc\.KeePassXC)$"#
+    open-on-workspace "1"
+    open-fullscreen true
+}
+
+window-rule {
+    match app-id="^org.telegram.desktop$"
+    open-on-workspace "2"
+    open-fullscreen true
 }
 
 window-rule {

@@ -1,7 +1,7 @@
 {...}: {
   programs.keepassxc = {
     enable = true;
-    autostart = true;
+    autostart = false; # opened by niri-session on workspace 1 instead
     settings = {
       GUI = {
         ShowTrayIcon = true;
