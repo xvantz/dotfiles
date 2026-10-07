@@ -14,6 +14,10 @@ jobs:
 
       - name: Install Nix
         run: |
+          sudo groupadd nixbld || true
+          for i in $(seq 1 4); do
+            sudo useradd -c "Nix build user $i" -d /var/empty -g nixbld -M -N -r -s /usr/sbin/nologin "nixbld$i" || true
+          done
           curl -L https://nixos.org/nix/install -o /tmp/nix-install.sh
           sh /tmp/nix-install.sh --no-daemon
 
