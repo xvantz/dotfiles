@@ -130,14 +130,14 @@ window-rule {
 window-rule {
     match app-id=r#"^(com\.mitchellh\.ghostty|zen-beta|org\.keepassxc\.KeePassXC)$"#
     open-on-workspace "code"
-    open-fullscreen true
+    open-maximized-to-edges true
 }
 
 window-rule {
     match app-id="^org.telegram.desktop$"
     exclude title="^Media viewer$"
     open-on-workspace "chat"
-    open-fullscreen true
+    open-maximized-to-edges true
 }
 
 window-rule {
