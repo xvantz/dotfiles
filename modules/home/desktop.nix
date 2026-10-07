@@ -59,6 +59,20 @@
       if [ -n "$gid" ]; then
         ${pkgs.niri}/bin/niri msg action focus-window --id "$gid"
       fi
+      # Zen restores its own half-width on cold start, ignoring the open
+      # rule. Re-apply maximize once it has settled (toggle is conditional
+      # on the actual tile width, so a correct state is never flipped).
+      zwid=$(${pkgs.niri}/bin/niri msg -j windows \
+        | ${pkgs.jq}/bin/jq -r '[.[] | select(.app_id == "zen-beta")] | last | .id // empty')
+      if [ -n "$zwid" ]; then
+        wwidth=$(${pkgs.niri}/bin/niri msg -j windows \
+          | ${pkgs.jq}/bin/jq -r --argjson id "$zwid" '[.[] | select(.id == $id)] | .[0].layout.tile_size[0] // 0')
+        if [ "$((${wwidth%.*} + 0))" -lt 1500 ]; then
+          ${pkgs.niri}/bin/niri msg action focus-window --id "$zwid"
+          ${pkgs.niri}/bin/niri msg action maximize-window-to-edges
+          ${pkgs.niri}/bin/niri msg action focus-window --id "$gid"
+        fi
+      fi
     '')
   ];
 
