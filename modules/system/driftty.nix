@@ -19,20 +19,36 @@
   # (including our 3.7c) is routed to tmux-3.5a -> protocol mismatch ->
   # "server exited unexpectedly". Fix by adding 3.7 to the case.
   # Source: gateway/src/local-tmux.ts + docker/local-tmux-wrapper.sh
+  # Newer gateways may not set DRIFTTY_LOCAL_TMUX_SOCKET at all (passing
+  # -S directly or nothing), so never fail hard: fall back to -S from args
+  # or to our known mount point.
   environment.etc."driftty/tmux-wrapper" = {
     mode = "0555";
     text = ''
       #!/bin/sh
       set -eu
 
-      if [ -z "''${DRIFTTY_LOCAL_TMUX_SOCKET:-}" ]; then
-        echo "DRIFTTY_LOCAL_TMUX_SOCKET is not set" >&2
-        exit 2
+      sock="''${DRIFTTY_LOCAL_TMUX_SOCKET:-}"
+      has_flag=0
+      for a in "$@"; do
+        if [ "$a" = "-S" ]; then has_flag=1; break; fi
+      done
+      if [ "$has_flag" -eq 0 ]; then
+        if [ -z "$sock" ]; then sock="/run/host-tmux/default"; fi
+        set -- -S "$sock" "$@"
+      else
+        # socket path follows -S in args; fall back to env/default if unparsable
+        next_is_sock=0
+        for a in "$@"; do
+          if [ "$next_is_sock" -eq 1 ]; then sock="$a"; break; fi
+          if [ "$a" = "-S" ]; then next_is_sock=1; fi
+        done
+        if [ -z "$sock" ]; then sock="/run/host-tmux/default"; fi
       fi
 
       tmux_client=/usr/bin/tmux
       server_version=$(
-        "$tmux_client" -S "$DRIFTTY_LOCAL_TMUX_SOCKET" \
+        "$tmux_client" -S "$sock" \
           display-message -p '#{version}' 2>/dev/null || true
       )
       case "$server_version" in
@@ -40,7 +56,7 @@
         *) tmux_client=/usr/local/bin/tmux-3.5a ;;
       esac
 
-      exec "$tmux_client" -S "$DRIFTTY_LOCAL_TMUX_SOCKET" "$@"
+      exec "$tmux_client" "$@"
     '';
   };
 
