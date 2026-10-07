@@ -14,7 +14,7 @@
     extraModprobeConfig = ''
       options ec_sys write_support=1
     '';
-    kernelPackages = pkgs.linuxPackages_6_18; # recent but not bleeding: out-of-tree modules target it
+    kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
       "acpi_enforce_resources=lax"
       "pci=noaer"
