@@ -27,6 +27,23 @@
       maybe com.mitchellh.ghostty "$HOME/.nix-profile/bin/ghostty"
       sleep 0.3
       maybe org.telegram.desktop "$HOME/.nix-profile/bin/Telegram"
+      # Wait until all four are actually open (slow starters steal focus),
+      # then put ghostty on top.
+      for i in $(seq 1 60); do
+        have_all=1
+        for app in zen-beta org.keepassxc.KeePassXC com.mitchellh.ghostty org.telegram.desktop; do
+          ${pkgs.niri}/bin/niri msg -j windows \
+            | ${pkgs.jq}/bin/jq -e --arg a "$app" 'any(.[]; .app_id == $a)' >/dev/null \
+            || have_all=0
+        done
+        [ "$have_all" -eq 1 ] && break
+        sleep 1
+      done
+      gid=$(${pkgs.niri}/bin/niri msg -j windows \
+        | ${pkgs.jq}/bin/jq -r '[.[] | select(.app_id == "com.mitchellh.ghostty")] | last | .id // empty')
+      if [ -n "$gid" ]; then
+        ${pkgs.niri}/bin/niri msg action focus-window --id "$gid"
+      fi
     '')
   ];
 
