@@ -14,6 +14,11 @@
     restartUnits = ["hermes-agent.service"];
   };
 
+  sops.secrets.work_env = {
+    owner = "xvantz";
+    restartUnits = ["hermes-agent.service"];
+  };
+
   services.hermes-agent = {
     enable = true;
     addToSystemPackages = true;
@@ -65,8 +70,8 @@
       ];
     };
 
-    extraDependencyGroups = ["messaging" "voice" "edge-tts" "firecrawl" "hindsight"];
-    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium docker-client docker-compose pnpm fontconfig dejavu_fonts nix];
+    extraDependencyGroups = ["messaging" "voice" "edge-tts" "firecrawl"];
+    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium docker-client docker-compose pnpm yarn-berry fontconfig dejavu_fonts nix];
 
     documents = {
       "OBSIDIAN_MEMORY.md" = ''
@@ -237,7 +242,7 @@
       };
     };
 
-    environmentFiles = [config.sops.secrets.hermes_env.path config.sops.secrets.forgejo_env.path config.sops.secrets.pm_env.path];
+    environmentFiles = [config.sops.secrets.hermes_env.path config.sops.secrets.forgejo_env.path config.sops.secrets.pm_env.path config.sops.secrets.work_env.path];
 
     mcpServers = {
       filesystem-obsidian = {
