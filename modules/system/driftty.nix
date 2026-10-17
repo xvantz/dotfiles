@@ -15,6 +15,14 @@
     extraOptions = [ "--pull=always" ];
   };
 
+  systemd.services."podman-driftty" = {
+    after = [ "time-sync.target" ];
+    wants = [ "time-sync.target" ];
+    serviceConfig = {
+      RestartSec = "10s";
+    };
+  };
+
   # Upstream wrapper in the image only knows server 3.6, everything else
   # (including our 3.7c) is routed to tmux-3.5a -> protocol mismatch ->
   # "server exited unexpectedly". Fix by adding 3.7 to the case.

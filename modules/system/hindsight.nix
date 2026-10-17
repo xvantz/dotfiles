@@ -19,4 +19,12 @@
     };
     environmentFiles = [config.sops.secrets.hindsight_env.path];
   };
+
+  systemd.services."podman-hindsight" = {
+    after = [ "time-sync.target" ];
+    wants = [ "time-sync.target" ];
+    serviceConfig = {
+      RestartSec = "10s";
+    };
+  };
 }

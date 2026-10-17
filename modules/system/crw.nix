@@ -4,4 +4,12 @@
     ports = ["127.0.0.1:8889:3000"];
     extraOptions = ["--pull=always"];
   };
+
+  systemd.services."podman-crw" = {
+    after = [ "time-sync.target" ];
+    wants = [ "time-sync.target" ];
+    serviceConfig = {
+      RestartSec = "10s";
+    };
+  };
 }
