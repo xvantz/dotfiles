@@ -48,6 +48,7 @@
     yarn-berry_4
     obs-studio
     yandex-cloud
+    claude-code
   ];
 
   services.udiskie = {
