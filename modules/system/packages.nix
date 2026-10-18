@@ -1,14 +1,11 @@
 {pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     vim
-    neovim
     git
     wget
     curl
     wl-clipboard
     xclip
-    waybar
-    fuzzel
     mako
     xwayland-satellite
     pciutils
