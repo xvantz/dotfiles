@@ -9,6 +9,21 @@
       backend = "podman";
     };
     containers.enable = true;
+
+    # Unqualified image names from c0's docker-compose.yml (`node:20-alpine`,
+    # `nats:2.10-alpine`, `postgres:latest`) need a search registry, otherwise
+    # podman fails with "short-name ... did not resolve to an alias and no
+    # unqualified-search registries are defined in /etc/containers/registries.conf".
+    # `registry` is repeated on purpose: assigning `settings` replaces the
+    # module default wholesale (the option is not a merge).
+    containers.registries.settings = {
+      unqualified-search-registries = ["docker.io"];
+      registry = [
+        {location = "docker.io";}
+        {location = "quay.io";}
+      ];
+    };
+
     podman = {
       enable = true;
       dockerCompat = true;
