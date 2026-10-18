@@ -14,6 +14,7 @@
       set -g allow-passthrough on
       set -ga update-environment TERM
       set -ga update-environment TERM_PROGRAM
+      set -ga update-environment PATH
       set -g renumber-windows on
       set -g focus-events on
       set -g status-interval 1
@@ -104,11 +105,15 @@
     Service = {
       Type = "oneshot";
       RemainAfterExit = true;
+      # Never kill the tmux server on service restart (home-manager switch
+      # restarts this unit when tmux.nix changes; default control-group would
+      # SIGTERM the server living in this cgroup -> kicked out, sessions lost).
+      KillMode = "process";
       # Full PATH: plugin scripts (#!/usr/bin/env bash) resolve interpreters
       # via the SERVER env. Bare systemd PATH -> 127 for every plugin.
       Environment = [
         "TERM=xterm-256color"
-        "PATH=/run/current-system/sw/bin:/run/wrappers/bin:%h/.nix-profile/bin:/etc/profiles/per-user/%u/bin:/nix/var/nix/profiles/default/bin:/usr/bin:/bin"
+        "PATH=/run/wrappers/bin:/run/current-system/sw/bin:%h/.nix-profile/bin:/etc/profiles/per-user/%u/bin:/nix/var/nix/profiles/default/bin:/usr/bin:/bin"
       ];
       ExecStartPre = "${pkgs.coreutils}/bin/install -d -m 0700 %t/tmux-1000";
       # NOTE: no -A flag here. -A turns into attach when the session
