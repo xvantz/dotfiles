@@ -69,8 +69,13 @@
 
       notificationOverlayEnabled = true;
       notificationCompactMode = true;
-      notificationPopupPosition = 2;
+      notificationPopupPosition = 0;
+      notificationIgnoreAppTimeout = true;
+      notificationTimeoutLow = 3000;
       notificationTimeoutNormal = 5000;
+      notificationTimeoutCritical = 8000;
+      notificationShowTimeoutBar = true;
+      notificationDndAllowCritical = false;
 
       matugenTemplateNeovim = false;
       matugenTemplateGhostty = false;
