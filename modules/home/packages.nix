@@ -49,6 +49,7 @@
     obs-studio
     yandex-cloud
     claude-code
+    ffmpeg
   ];
 
   services.udiskie = {
