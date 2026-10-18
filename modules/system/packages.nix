@@ -6,7 +6,6 @@
     curl
     wl-clipboard
     xclip
-    mako
     xwayland-satellite
     pciutils
     lm_sensors
