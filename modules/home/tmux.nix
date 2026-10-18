@@ -110,7 +110,7 @@
         "TERM=xterm-256color"
         "PATH=/run/current-system/sw/bin:/run/wrappers/bin:%h/.nix-profile/bin:/etc/profiles/per-user/%u/bin:/nix/var/nix/profiles/default/bin:/usr/bin:/bin"
       ];
-      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p %t/tmux-1000";
+      ExecStartPre = "${pkgs.coreutils}/bin/install -d -m 0700 %t/tmux-1000";
       # NOTE: no -A flag here. -A turns into attach when the session
       # exists, and attach needs a tty -> "open terminal failed" under
       # systemd. Creation is racy by design (first shell uses new-session
