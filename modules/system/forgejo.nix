@@ -55,13 +55,13 @@ in {
   '';
 
   services = {
-    gitea-actions-runner = {
+    forgejo-runner = {
       package = pkgs.forgejo-runner;
       instances.default = {
         enable = true;
-        name = "nixos-runner";
         url = "http://127.0.0.1:2000/";
-        tokenFile = config.sops.secrets.forgejo_runner_token.path;
+        settings.server.connections.default.uuid = "c8e8ac9c-150c-49ac-b62c-44f945f82d79";
+        secrets.server.connections.default.token_url = config.sops.secrets.forgejo_runner_token.path;
         labels = [
           "ubuntu-latest:docker://ghcr.io/catthehacker/ubuntu:act-latest"
           "ubuntu-22.04:docker://ghcr.io/catthehacker/ubuntu:act-latest"
@@ -107,7 +107,7 @@ in {
     };
   };
 
-  systemd.services.gitea-runner-default = {
+  systemd.services.forgejo-runner-default = {
     after = ["sops-install-secrets.service"];
     wants = ["sops-install-secrets.service"];
   };

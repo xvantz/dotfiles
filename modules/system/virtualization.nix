@@ -41,10 +41,14 @@
 
   boot.initrd.kernelModules = ["vfio" "vfio_pci" "vfio_iommu_type1"];
   boot.kernelParams = ["amd_iommu=on" "iommu=pt" "vfio-pci.ids=10de:25a0,10de:2291"];
-  boot.extraModulePackages = [config.boot.kernelPackages.kvmfr];
-  boot.kernelModules = ["kvmfr"];
+  # TEMP disabled 20.10.2026: kvmfr broken by nixpkgs kmodigest module signing
+  # (upstream commits 13-14.10.2026, c736bb8 + 2d935f1). Build fails with:
+  # cat: kernel/drivers/misc/kvmfr.ko.cer: No such file or directory
+  # Re-enable after upstream fix.
+  # boot.extraModulePackages = [config.boot.kernelPackages.kvmfr];
+  # boot.kernelModules = ["kvmfr"];
   boot.extraModprobeConfig = ''
-    options kvmfr static_size_mb=256
+    # options kvmfr static_size_mb=256
     options vfio-pci ids=10de:25a0,10de:2291
   '';
   boot.blacklistedKernelModules = [

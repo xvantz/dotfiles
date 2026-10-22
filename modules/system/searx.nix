@@ -23,7 +23,25 @@
         safe_search = 0;
         languages = ["ru" "en"];
         formats = ["html" "json" "csv"];
+        autocomplete = "brave";
       };
+
+      outgoing = {
+        request_timeout = 8.0;
+        max_request_timeout = 15.0;
+        pool_connections = 50;
+        enable_http2 = true;
+        retries = 1;
+        useragent_suffix = "xvantz-private";
+      };
+
+      engines = [
+        { name = "ahmia"; disabled = true; }
+        { name = "torch"; disabled = true; }
+        { name = "google cse"; disabled = true; }
+        { name = "google"; disabled = true; }
+        { name = "bing"; disabled = true; }
+      ];
     };
   };
 
