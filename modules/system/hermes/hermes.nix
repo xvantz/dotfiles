@@ -79,6 +79,9 @@
         - Memory: /brain/3. Resources/Hermes Agent/Memory.md
         - Skills: /brain/3. Resources/Hermes Agent/Skills/
       '';
+      "SKILLS_ROUTING.md" = ''
+        Before any task: call skills_list(), score candidates by name+description with 2-5 keywords (3 must have, 2 helps, 1 later, 0 skip). Load ONE primary via skill_view FIRST, before reading files or asking questions. Max 1 for simple tasks, 1 primary plus supports for multi-phase, stop when next action is clear. Explicit /name from user beats fuzzy match. Before skill_manage create: search first, if score>=2 patch existing skill, never create duplicate.
+      '';
     };
 
     settings = {
@@ -91,8 +94,8 @@
       ];
 
       auxiliary.vision = {
-        provider = "gemini";
-        model = "gemini-3.1-flash-lite";
+        provider = "opencode-go";
+        model = "deepseek-v4.1-flash";
       };
 
       web = {
