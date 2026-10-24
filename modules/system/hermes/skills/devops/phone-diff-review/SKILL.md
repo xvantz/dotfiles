@@ -112,15 +112,22 @@ Render the diff, never paste it.
    agent reads `$REVIEW_COMMENTS` and answers point by point. Stop the server
    afterwards. Page assets (`REVIEW_PAGE`) are read per request, so regenerating
    the page applies live; handler code changes require a server restart.
-6. Pretty page = our diff2html fork (no npm at review time). The skill carries
-   a prebuilt binary plus a generator, both versioned with the skill:
+6. Pretty page = our diff2html fork (no npm at review time). The fork is
+   ours now: https://git.827482.xyz/xvantz/diff2html, `master` carries the
+   native `Diff2HtmlComments` (tap a line number to open an inline editor
+   under the line, second tap on the same line cancels; badges and
+   GitHub-style threads mark commented lines). The skill carries a binary
+   plus a generator, and the generator keeps the binary fresh by itself:
    - `assets/diff2html-fork.min.js` + `assets/diff2html-fork.min.css`: UMD
-     bundle built from https://git.827482.xyz/xvantz/diff2html
-     (`feature/phone-comments`: native `Diff2HtmlComments` - tap a line
-     number to open an inline editor under the line, second tap on the
-     same line cancels; badges and GitHub-style threads mark commented
-     lines).
-     Rebuild after pulling the fork: `npm run build:bundles build:css`.
+     bundle built from the fork. `assets/.fork-rev` stamps which fork rev
+     it was built from - update the two together, never one without the other.
+   - `scripts/generate-review.js`: before rendering, it compares the fork
+     checkout (`$FORK_DIR`, default `/projects/diff2html`) HEAD against the
+     stamp and rebuilds (`npm run build:bundles && npm run build:css`) on
+     mismatch, then re-copies the bundle. A failed rebuild (or a missing
+     checkout / node_modules) falls back to the bundled binary with a
+     stderr warning instead of breaking the review. So the skill always
+     renders with the current fork code without manual rebuilds.
    - `scripts/generate-review.js`: renders a diff file to a self-contained
    HTML page (fork bundle + CSS inlined, zero network). The page uses the
    fork-native flow: inline editor under the tapped line, submit posts to

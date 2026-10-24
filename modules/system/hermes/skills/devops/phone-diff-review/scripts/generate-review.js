@@ -34,6 +34,38 @@ if (!diffFile || !outFile) {
 const bundlePath = opt('--bundle', path.join(here, '..', 'assets', 'diff2html-fork.min.js'));
 const cssPath = opt('--css', path.join(here, '..', 'assets', 'diff2html-fork.min.css'));
 
+function ensureFreshBundle(bundlePath, cssPath) {
+  const { execSync } = require('child_process');
+  const forkDir = process.env.FORK_DIR || '/projects/diff2html';
+  const stampPath = path.join(path.dirname(bundlePath), '.fork-rev');
+  let head = null;
+  try {
+    head = execSync('git rev-parse HEAD', { cwd: forkDir, encoding: 'utf8' }).trim();
+  } catch (e) {
+    return;
+  }
+  let stamped = null;
+  try {
+    stamped = fs.readFileSync(stampPath, 'utf8').trim();
+  } catch (e) {}
+  if (head && head === stamped) return;
+  if (!fs.existsSync(path.join(forkDir, 'node_modules'))) {
+    console.error('[generate-review] no node_modules in fork, using bundled binary as is');
+    return;
+  }
+  console.error(`[generate-review] fork ${head.slice(0, 8)} != bundled, rebuilding...`);
+  try {
+    execSync('npm run build:bundles && npm run build:css', { cwd: forkDir, stdio: 'inherit' });
+    fs.copyFileSync(path.join(forkDir, 'bundles/js/diff2html.min.js'), bundlePath);
+    fs.copyFileSync(path.join(forkDir, 'bundles/css/diff2html.min.css'), cssPath);
+    fs.writeFileSync(stampPath, head + '\n');
+  } catch (e) {
+    console.error('[generate-review] rebuild failed, using bundled binary as is');
+  }
+}
+
+ensureFreshBundle(bundlePath, cssPath);
+
 const Diff2Html = require(bundlePath);
 const diffText = fs.readFileSync(diffFile, 'utf8');
 const css = fs.readFileSync(cssPath, 'utf8');
