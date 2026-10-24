@@ -280,6 +280,32 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def do_DELETE(self):
+        if not self.authed():
+            self.send_response(403)
+            self.end_headers()
+            return
+        url = urllib.parse.urlparse(self.path)
+        if url.path != "/api/comments":
+            self.send_response(404)
+            self.end_headers()
+            return
+        q = urllib.parse.parse_qs(url.query)
+        target = q.get("id", [""])[0]
+        items = load_comments()
+        kept = [c for c in items if str(c.get("id")) != target]
+        if len(kept) == len(items):
+            self.send_response(404)
+            self.end_headers()
+            return
+        save_comments(kept)
+        data = b'{"ok":true}'
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
 
 if __name__ == "__main__":
     print(f"serving {TITLE} on {BIND}:{PORT}", flush=True)

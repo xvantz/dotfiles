@@ -39,6 +39,11 @@ const diffText = fs.readFileSync(diffFile, 'utf8');
 const css = fs.readFileSync(cssPath, 'utf8');
 const bundle = fs.readFileSync(bundlePath, 'utf8');
 
+const PAGE_CSS = [
+  "body{margin:0;background:#fff;color:#24292e;}",
+  "@media (prefers-color-scheme:dark){body{background:#0d1117;color:#e6edf3;}}",
+].join('');
+
 const body = Diff2Html.html(diffText, {
   outputFormat: 'line-by-line',
   drawFileList: true,
@@ -54,7 +59,9 @@ const comments=new Diff2Html.Diff2HtmlComments(document,s=>{sel=s;
 if(s){comments.openEditor({placeholder:'Write a comment...',submitLabel:'Comment',
 onSubmit:text=>send(s,text)});}});
 async function load(){try{const r=await fetch('api/comments'+qs);if(!r.ok)return;
-const items=await r.json();comments.setComments(items);}catch(e){}}
+const items=await r.json();comments.setComments(items,{onDelete:i=>del(items[i]&&items[i].id)});}catch(e){}}
+async function del(id){if(id==null)return;
+try{await fetch('api/comments'+qs+'&id='+encodeURIComponent(id),{method:'DELETE'});load();}catch(e){}}
 async function send(s,text){try{const r=await fetch('api/comments'+qs,{method:'POST',
 headers:{'Content-Type':'application/json'},
 body:JSON.stringify({file:s.file,oldLine:s.oldLine,newLine:s.newLine,
@@ -68,7 +75,7 @@ const escTitle = String(title || 'diff review')
 const page = [
   "<!DOCTYPE html><html lang='ru'><head><meta charset='utf-8'>",
   "<meta name='viewport' content='width=device-width,initial-scale=1,interactive-widget=resizes-content'>",
-  `<title>${escTitle}</title><style>${css}</style></head><body>`,
+  `<title>${escTitle}</title><style>${css}</style><style>${PAGE_CSS}</style></head><body>`,
   `<div style="padding:12px 16px;font-family:-apple-system,system-ui,monospace"><b>${escTitle}</b></div>`,
   body,
   `<script>${bundle}</script>`,
