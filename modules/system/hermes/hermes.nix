@@ -82,6 +82,9 @@
       "SKILLS_ROUTING.md" = ''
         Before any task: call skills_list(), score candidates by name+description with 2-5 keywords (3 must have, 2 helps, 1 later, 0 skip). Load ONE primary via skill_view FIRST, before reading files or asking questions. Max 1 for simple tasks, 1 primary plus supports for multi-phase, stop when next action is clear. Explicit /name from user beats fuzzy match. Before skill_manage create: search first, if score>=2 patch existing skill, never create duplicate.
       '';
+      "EVIDENCE.md" = ''
+        Before acting: gather live evidence, never rely on training data alone. For binaries: check man, --help and installed version first, never give flags blind. For libraries and APIs: search web or repo docs for current behavior. For errors: read full output, reproduce, then fix.
+      '';
     };
 
     settings = {
