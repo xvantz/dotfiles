@@ -36,8 +36,8 @@ Core idea:
 - networking and DNS (`network.nix`, `adguard.nix`, `caddy.nix`),
 - graphics/display (`display.nix`, `portals.nix`, `fonts.nix`, `i18n.nix`),
 - audio/Bluetooth (`audio.nix`, `bluetooth.nix`),
-- Nix settings and helpers (`nix-settings.nix`, `nh.nix`, `fix-podman.nix`),
-- services and self-hosting (`services.nix`, `forgejo.nix`, `searx.nix`, `redis.nix`, `syncthing.nix`, `crw.nix`, `dozzle.nix`, `driftty.nix`, `containers.nix`, `k3s/`, `music.nix`, `hindsight.nix`, `hermes/`),
+- Nix settings and helpers (`nix-settings.nix`, `nh.nix`),
+- services and self-hosting (`services.nix`, `forgejo.nix`, `searx.nix`, `syncthing.nix`, `crw.nix`, `dozzle.nix`, `containers.nix`, `k3s/` (disabled), `music.nix`, `hindsight.nix`, `hermes/`),
 - system packages and virtualization (`packages.nix`, `virtualization.nix`).
 
 ### 3) User layer: `home.nix` + `modules/home/*`
@@ -46,7 +46,7 @@ Core idea:
 
 Home modules include:
 
-- shell/tooling (`shell.nix`, `packages.nix`, `starship.nix`, `tmux.nix`, `yazi.nix`, `opencode.nix`, `mutagen.nix`),
+- shell/tooling (`shell.nix`, `packages.nix`, `starship.nix`, `tmux.nix`, `yazi.nix`, `driftty-terminal.nix`),
 - desktop/UI (`desktop.nix`, `theme.nix`, `ghostty.nix`, `dms.nix`, `browser.nix`, `keepassxc.nix`),
 - editor (`neovim/` directory with `core.nix`, `keymaps.nix`, `autocmds.nix`, `plugins/`).
 
@@ -54,9 +54,8 @@ Home modules include:
 
 Local derivations are exposed through `customPkgs/default.nix`:
 
-- `codex/` - pinned Codex CLI package with fixed version/hash;
-- `gemini/` - Gemini CLI package with wrapper and behavior patching;
-- `agent-lsp/`, `biome/`, `pi-coding-agent/` - agent tooling and linters.
+- `biome/` - pinned Biome linter binary (used by nixvim conform/lint);
+- `driftty-terminal/` - mobile-first web terminal binary.
 
 ### 5) External config assets
 
@@ -93,11 +92,8 @@ This creates a hybrid model: **stable base + targeted external components**.
 ├── secrets.yaml                 (sops-encrypted)
 ├── customPkgs/
 │   ├── default.nix
-│   ├── agent-lsp/
 │   ├── biome/
-│   ├── codex/
-│   ├── gemini/
-│   └── pi-coding-agent/
+│   └── driftty-terminal/
 ├── modules/
 │   ├── system/   (see default.nix for the full list)
 │   │   ├── hermes/

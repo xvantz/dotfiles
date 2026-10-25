@@ -9,17 +9,12 @@
     xwayland-satellite
     pciutils
     lm_sensors
-    mission-center
-    mesa-demos
-    vulkan-tools
     gsettings-desktop-schemas
     adwaita-icon-theme
     glib
     gtk3
     gtk4
     libadwaita
-    hyprlock
-    hypridle
     catppuccin-cursors.mochaDark
     xdg-desktop-portal-gtk
     xdg-desktop-portal-wlr

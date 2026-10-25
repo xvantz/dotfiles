@@ -296,13 +296,6 @@
         ];
       };
 
-      ts-docs-mcp = {
-        enabled = false;
-        command = "${pkgs.nodejs}/bin/npx";
-        args = ["-y" "ts-docs-mcp"];
-        env.GITHUB_TOKEN = "\${GITHUB_TOKEN}";
-      };
-
       pm = {
         enabled = true;
         command = "${config.services.pm.package}/bin/pm-mcp";

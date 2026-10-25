@@ -15,7 +15,6 @@
     ./nh.nix
     ./fonts.nix
     ./coolcontrol.nix
-    ./redis.nix
     ./hardware.nix
     ./hermes
     ./forgejo.nix

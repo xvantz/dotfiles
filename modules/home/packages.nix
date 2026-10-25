@@ -9,7 +9,6 @@
     nodejs
     eza
     zoxide
-    dotnet-sdk_9
     bottom
     cmake
     ripgrep
@@ -17,7 +16,6 @@
     fd
     gnumake
     unzip
-    ghostty
     spotify
     libnotify
     pavucontrol
@@ -30,8 +28,6 @@
     alejandra
     telegram-desktop
     pnpm
-    xv-codex
-    xv-gemini
     tldr
     ouch
     procs
@@ -41,7 +37,6 @@
     obsidian
     bun
     vesktop
-    xv-pi-coding
     python3
     uv
     imagemagick
