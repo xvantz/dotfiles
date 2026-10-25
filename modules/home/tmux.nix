@@ -12,9 +12,7 @@
     extraConfig = ''
       set -g status-position top
       set -g allow-passthrough on
-      set -ga update-environment TERM
-      set -ga update-environment TERM_PROGRAM
-      set -ga update-environment PATH
+      set -g update-environment 'TERM TERM_PROGRAM'
       set -g renumber-windows on
       set -g focus-events on
       set -g status-interval 1
