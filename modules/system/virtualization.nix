@@ -44,9 +44,9 @@
   # TEMP disabled 20.10.2026: kvmfr broken by nixpkgs kmodigest module signing
   # (upstream commits 13-14.10.2026, c736bb8 + 2d935f1). Build fails with:
   # cat: kernel/drivers/misc/kvmfr.ko.cer: No such file or directory
-  # Re-enable after upstream fix.
-  # boot.extraModulePackages = [config.boot.kernelPackages.kvmfr];
-  # boot.kernelModules = ["kvmfr"];
+  # Re-enable attempt 25.10.2026: kvmfr-B7 evaluates clean, likely fixed upstream.
+  boot.extraModulePackages = [config.boot.kernelPackages.kvmfr];
+  boot.kernelModules = ["kvmfr"];
   boot.extraModprobeConfig = ''
     # options kvmfr static_size_mb=256
     options vfio-pci ids=10de:25a0,10de:2291

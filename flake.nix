@@ -34,11 +34,20 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    coolcontrol.url = "git+https://git.827482.xyz/xvantz/coolcontrol";
+    coolcontrol = {
+      url = "git+https://git.827482.xyz/xvantz/coolcontrol";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-    sync-agent.url = "git+https://git.827482.xyz/xvantz/sync-agent.git";
+    sync-agent = {
+      url = "git+https://git.827482.xyz/xvantz/sync-agent.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-    hermes-agent.url = "github:NousResearch/hermes-agent/v0.22.0";
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent/v0.22.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nixvim = {
       url = "github:nix-community/nixvim";
@@ -50,8 +59,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    pm.url = "git+https://git.827482.xyz/xvantz/pm.git";
-    navidrome-collector.url = "git+https://git.827482.xyz/xvantz/navidrome-collector.git";
+    pm = {
+      url = "git+https://git.827482.xyz/xvantz/pm.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    navidrome-collector = {
+      url = "git+https://git.827482.xyz/xvantz/navidrome-collector.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -68,7 +83,6 @@
         config =
           {
             allowUnfree = true;
-            permittedInsecurePackages = ["pnpm-10.29.2"];
           }
           // extConfig;
 
@@ -77,18 +91,6 @@
             sync-agent = inputs.sync-agent.packages.${system}.default;
           })
           (import ./customPkgs/default.nix)
-          (final: prev: {
-            libdisplay-info = prev.libdisplay-info.overrideAttrs (old: {
-              version = "0.3.0";
-              src = final.fetchFromGitLab {
-                domain = "gitlab.freedesktop.org";
-                owner = "emersion";
-                repo = "libdisplay-info";
-                rev = "0.3.0";
-                hash = "sha256-nXf2KGovNKvcchlHlzKBkAOeySMJXgxMpbi5z9gLrdc=";
-              };
-            });
-          })
         ];
       };
 
