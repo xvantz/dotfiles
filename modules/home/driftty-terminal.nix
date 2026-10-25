@@ -1,4 +1,18 @@
 { pkgs, config, ... }:
+let
+  # Wrapper lives in a store script (not inline in ExecStart): systemd expands
+  # $VAR/${VAR} in unit lines, so any shell $ there gets eaten (proven
+  # 2026-10-26: `${line#*=}` became empty, ttyd exited 255). File contents are
+  # passed through untouched - single Nix escaping layer only.
+  startScript = pkgs.writeShellScript "driftty-terminal-start" ''
+    set -eu
+    f=${config.sops.secrets.driftty_env.path}
+    if [ ! -r "$f" ]; then echo "missing secret file $f" >&2; exit 1; fi
+    line=$(grep -m1 "=" "$f" || cat "$f")
+    pw="''${line#*=}"
+    exec ${pkgs.xv-driftty-terminal}/bin/driftty-terminal -p 7681 -c "driftty:$pw" ${pkgs.tmux}/bin/tmux new-session -A -s default
+  '';
+in
 {
   # Native driftty-terminal, no podman gateway.
   # Home user service: same UID as the tmux server, no mounts, no version skew.
@@ -25,7 +39,7 @@
       # padding); a bare password file without '=' works too.
       # Zero-exposure check on host (prints only the var NAME, never the value):
       #   cut -d= -f1 "$(nix --extra-experimental-features 'nix-command flakes' eval --raw .#homeConfigurations.xvantz.config.sops.secrets.driftty_env.path)"
-      ExecStart = ''${pkgs.bash}/bin/bash -c 'f=${config.sops.secrets.driftty_env.path}; line=$(grep -m1 "=" "$f" || cat "$f"); pw="''${line#*=}"; exec ${pkgs.xv-driftty-terminal}/bin/driftty-terminal -p 7681 -c "driftty:$pw" ${pkgs.tmux}/bin/tmux new-session -A -s default' '';
+      ExecStart = startScript;
       WorkingDirectory = "%h";
       Restart = "on-failure";
       RestartSec = "5s";
