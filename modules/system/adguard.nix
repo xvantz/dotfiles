@@ -8,9 +8,8 @@ in {
 
     settings = {
       http = {
-        address = "127.0.0.1";
-        port = 8345;
-      };
+      address = "127.0.0.1:8345";
+    };
       dns = {
         bind_hosts = ["127.0.0.1" "::1" "100.95.144.120"];
         port = 53;
