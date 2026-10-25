@@ -60,7 +60,7 @@
           display-message -p '#{version}' 2>/dev/null || true
       )
       case "$server_version" in
-        3.7*|3.6*) ;;
+        3.8*|3.7*|3.6*) ;;
         *) tmux_client=/usr/local/bin/tmux-3.5a ;;
       esac
 
