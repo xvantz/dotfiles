@@ -4,7 +4,7 @@
   ];
 
   sops.age.keyFile = "/home/xvantz/.config/sops/age/keys.txt";
-  sops.defaultSopsFile = /home/xvantz/.dotfiles/secrets.yaml;
+  sops.defaultSopsFile = ./secrets.yaml;
 
   home.username = "xvantz";
   home.homeDirectory = "/home/xvantz";
