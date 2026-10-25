@@ -12,8 +12,8 @@
     ./neovim
     ./git.nix
     ./browser.nix
-    ./opencode.nix
     ./mutagen.nix
     ./keepassxc.nix
+    ./driftty-terminal.nix
   ];
 }

@@ -91,49 +91,10 @@
 
   # Resurrect save dir (old resurrect writes to ~/.tmux, not XDG).
   # Declarative keep so the dir always exists after home switch.
+  # No keepalive unit on purpose (removed 2026-10-26): the tmux server is
+  # owned by login shells (new-session -A). A server born inside a managed
+  # unit puts panes into tmux-spawn scopes and every unit stop kills them
+  # (proven 2026-10-25: 3 stops, 3 dead sessions, KillMode=process did not
+  # help). Restore after reboot is manual: prefix + Ctrl-r.
   home.file.".tmux/resurrect/.keep".text = "keep";
-
-  # User-level keepalive: starts AFTER home files (tmux.conf + plugins)
-  # are in place, with a real user env (PATH/HOME). This replaces the
-  # old system driftty-tmux-keepalive which started at boot with a bare
-  # env -> plugin scripts failed with 127 -> default theme, no restore.
-  systemd.user.services.tmux-keepalive = {
-    Unit = {
-      Description = "keep tmux default session alive (after tmux config)";
-      After = [ "default.target" ];
-    };
-    Service = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      # Never kill the tmux server on service restart (home-manager switch
-      # restarts this unit when tmux.nix changes; default control-group would
-      # SIGTERM the server living in this cgroup -> kicked out, sessions lost).
-      KillMode = "process";
-      # Full PATH: plugin scripts (#!/usr/bin/env bash) resolve interpreters
-      # via the SERVER env. Bare systemd PATH -> 127 for every plugin.
-      Environment = [
-        "TERM=xterm-256color"
-        "PATH=/run/wrappers/bin:/run/current-system/sw/bin:%h/.nix-profile/bin:/etc/profiles/per-user/%u/bin:/nix/var/nix/profiles/default/bin:/usr/bin:/bin"
-      ];
-      ExecStartPre = "${pkgs.coreutils}/bin/install -d -m 0700 %t/tmux-1000";
-      # NOTE: no -A flag here. -A turns into attach when the session
-      # exists, and attach needs a tty -> "open terminal failed" under
-      # systemd. Creation is racy by design (first shell uses new-session
-      # -A and can win): "duplicate session" is tolerated, whoever wins,
-      # the session exists afterwards.
-      # Restore runs only when the session is fresh (created <180s ago),
-      # i.e. at login after boot. On mid-day service restarts the server
-      # is old and live sessions are left alone. Continuum auto-restore
-      # stays off; it only auto-saves.
-      # NOTE: systemd expands %t/%h itself; a literal percent for bash
-      # (date +%%s) must be doubled, single %s would become user shell.
-      # Restore path comes from the same tmuxPlugins.resurrect package that
-      # provides the plugin above, resolved at build time (no parsing of
-      # generated files: keybinding paths exist only at runtime).
-      ExecStart = "${pkgs.bash}/bin/bash -c 'S=%t/tmux-1000/default; B=${pkgs.tmux}/bin/tmux; \$B -S \$S new-session -d -s default -c %h 2>/dev/null; if [ -e %h/.tmux/resurrect/last ]; then C=\$(\$B -S \$S display-message -p -t default \"#{session_created}\" 2>/dev/null); N=\$(date +%%s); A=\$((N - \${C:-0})); echo \"tmux-keepalive: session_age=\$A\"; if [ -n \"\$C\" ] && [ \"\$A\" -lt 180 ]; then R=${pkgs.tmuxPlugins.resurrect}/share/tmux-plugins/resurrect/scripts/restore.sh; [ -x \"\$R\" ] && { echo \"tmux-keepalive: restoring \$R\"; \$B -S \$S run-shell \"\$R\"; }; fi; fi; exit 0'";
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-  };
 }

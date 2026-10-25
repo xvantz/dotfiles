@@ -25,7 +25,6 @@
     ./searx.nix
     ./crw.nix
     ./dozzle.nix
-    ./driftty.nix
     ./containers.nix
     ./monitoring.nix
     ./k3s
