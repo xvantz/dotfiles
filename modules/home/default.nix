@@ -14,5 +14,6 @@
     ./browser.nix
     ./mutagen.nix
     ./keepassxc.nix
+    ./driftty-terminal.nix
   ];
 }
