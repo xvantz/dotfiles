@@ -49,28 +49,54 @@ in {
     wants = ["sops-install-secrets.service"];
   };
 
-  systemd.services.forgejo.postStart = ''
-    ${pkgs.openssh}/bin/ssh-keygen -R github.com -f /var/lib/forgejo/.ssh/known_hosts 2>/dev/null || true
-    ${pkgs.openssh}/bin/ssh-keyscan github.com 2>/dev/null >> /var/lib/forgejo/.ssh/known_hosts || true
-  '';
+  systemd.services.forgejo-known-hosts = {
+    description = "Ensure github.com host keys for Forgejo push mirrors";
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    before = [ "forgejo.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      set -euo pipefail
+      KH=/var/lib/forgejo/.ssh/known_hosts
+      mkdir -p "$(dirname "$KH")"
+      out=""
+      for i in $(seq 1 30); do
+        out=$(${pkgs.openssh}/bin/ssh-keyscan -T 10 github.com 2>/dev/null || true)
+        if echo "$out" | ${pkgs.gnugrep}/bin/grep -q "^github.com "; then break; fi
+        out=""
+        sleep 10
+      done
+      if [ -z "$out" ]; then echo "no github.com keys after retries" >&2; exit 1; fi
+      tmp=$(mktemp)
+      ${pkgs.gnugrep}/bin/grep -v "^github.com[ ,]" "$KH" 2>/dev/null > "$tmp" || true
+      printf '%s\n' "$out" >> "$tmp"
+      mv "$tmp" "$KH"
+      chown forgejo:forgejo "$KH"
+      chmod 644 "$KH"
+    '';
+  };
 
   services = {
     forgejo-runner = {
       package = pkgs.forgejo-runner;
       instances.default = {
         enable = true;
-        url = "http://127.0.0.1:2000/";
         settings.server.connections.default.uuid = "c8e8ac9c-150c-49ac-b62c-44f945f82d79";
+        settings.server.connections.default.url = "http://127.0.0.1:2000/";
         secrets.server.connections.default.token_url = config.sops.secrets.forgejo_runner_token.path;
-        labels = [
-          "ubuntu-latest:docker://ghcr.io/catthehacker/ubuntu:act-latest"
-          "ubuntu-22.04:docker://ghcr.io/catthehacker/ubuntu:act-latest"
-          "node:docker://node:lts-bookworm"
-          "python:docker://python:3.12-bookworm"
-          "go:docker://golang:1.23-bookworm"
-          "nix:docker://nixos/nix:latest"
-        ];
         settings = {
+          runner.labels = [
+            "ubuntu-latest:docker://ghcr.io/catthehacker/ubuntu:act-latest"
+            "ubuntu-22.04:docker://ghcr.io/catthehacker/ubuntu:act-latest"
+            "node:docker://node:lts-bookworm"
+            "python:docker://python:3.12-bookworm"
+            "go:docker://golang:1.23-bookworm"
+            "nix:docker://nixos/nix:latest"
+          ];
           container = {
             network = "host";
             privileged = false;

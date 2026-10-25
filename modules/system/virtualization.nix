@@ -62,8 +62,9 @@
 
   systemd.services.kvmfr-options = {
     description = "Set permissions for /dev/kvmfr0";
-    after = ["systemd-modules-load.service"];
-    wantedBy = ["multi-user.target"];
+    after = [ "systemd-modules-load.service" ];
+    wantedBy = [ "multi-user.target" ];
+    unitConfig.ConditionPathExists = "/dev/kvmfr0";
     serviceConfig = {
       Type = "oneshot";
       ExecStart = pkgs.writeShellScript "kvmfr-permissions" ''

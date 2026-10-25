@@ -5,11 +5,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1790286612,
-        "narHash": "sha256-cG4SfV7EOIVmEUyIUFeO2N4XdqbG2hYeP7LWR6Fvg7E=",
+        "lastModified": 1792787630,
+        "narHash": "sha256-BBk98kus/JzUc8UR7pXVbrCd8CRmrovJ442CBO15irk=",
         "ref": "refs/heads/main",
-        "rev": "50e6db1d924af86f55e6976d5e11b90e59bc2a64",
-        "revCount": 11,
+        "rev": "e17dfccec58d1f15da5a7cbe0b2447edb8c0cbbf",
+        "revCount": 12,
         "type": "git",
         "url": "https://git.827482.xyz/xvantz/coolcontrol"
       },
@@ -375,34 +375,18 @@
       }
     },
     "nixpkgs": {
-      "original": {
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "02c087f3fe673c9e317f206a627cb6b910336dbe",
-        "type": "github"
-      },
       "locked": {
-        "lastModified": 1792502884,
-        "narHash": "sha256-IoNisKcGbUjdd45qCqywGMCYmZ5EnkxezvLII0FWwNA=",
+        "lastModified": 1792615934,
+        "narHash": "sha256-MlvRfa1O5Cqc2/a+gG+l9TSuowEoCKCmrJ1d9oAVm0I=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "02c087f3fe673c9e317f206a627cb6b910336dbe",
-        "type": "github"
-      }
-    },
-    "nixpkgs-podman-pin": {
-      "locked": {
-        "lastModified": 1790000374,
-        "narHash": "sha256-HQYQWvnZBGHZDpyXC76BSfg/FRnCncqKAJ0gP5nkDG0=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "25fb2cc17b8ccc635517fd79144523e02917d0b5",
+        "rev": "da6dc0e7b26060f2f71ce3ef7088fb56ee44fa36",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
+        "ref": "nixos-26.05",
         "repo": "nixpkgs",
-        "rev": "25fb2cc17b8ccc635517fd79144523e02917d0b5",
         "type": "github"
       }
     },
@@ -456,17 +440,17 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1792502884,
-        "narHash": "sha256-IoNisKcGbUjdd45qCqywGMCYmZ5EnkxezvLII0FWwNA=",
-        "owner": "NixOS",
+        "lastModified": 1792773339,
+        "narHash": "sha256-rZLrzrC6i+jnTAlvPZHogKDulY7WWDEv9hJeHieO7Zw=",
+        "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "02c087f3fe673c9e317f206a627cb6b910336dbe",
+        "rev": "3ec636362e1816bc2f0888fa0fa2c69f1bc9e504",
         "type": "github"
       },
       "original": {
-        "owner": "NixOS",
+        "owner": "nixos",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
-        "rev": "02c087f3fe673c9e317f206a627cb6b910336dbe",
         "type": "github"
       }
     },
@@ -624,7 +608,6 @@
         "navidrome-collector": "navidrome-collector",
         "niri": "niri",
         "nixpkgs": "nixpkgs_4",
-        "nixpkgs-podman-pin": "nixpkgs-podman-pin",
         "nixvim": "nixvim",
         "pm": "pm",
         "sops-nix": "sops-nix",

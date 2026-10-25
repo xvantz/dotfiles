@@ -21,6 +21,9 @@
 
         EnableSharing = true;
         ScanSchedule = "@every 1m";
+        # 0.64+ plugin manager defaults Plugins.Folder inside the nix store
+        # (read-only) -> FATAL on start. Plugins unused, disable.
+        Plugins.Enabled = false;
       };
     };
 
