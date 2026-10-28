@@ -1,7 +1,7 @@
 ---
 name: phone-diff-review
 description: "Use when Ivan reviews branch diffs from his phone."
-version: 0.1.0
+version: 0.2.0
 author: Hermes Agent
 license: MIT
 platforms: [linux]
@@ -18,10 +18,24 @@ phone (Telegram, small screen, Tailscale-only terminal). Full diffs pasted in
 chat are unreadable and TUI pagers over a phone terminal are painful.
 Render the diff, never paste it.
 
+**Source of truth:** this skill lives in the repo at
+`/dotfiles/modules/system/hermes/skills/devops/phone-diff-review/`
+(wired via `external_dirs`, edits apply live, no rebuild). Edit it there -
+never keep a second copy under `~/.hermes/skills/`, it shadows the repo one
+and drifts out of git.
+
 ## Invocation (agreed triggers)
 
 - `review <branch>` (default base `origin/develop`): generate the page from
   the fork, start the server, reply with the URL. Range `A..B` on request.
+- `ревью ветки` / `review` with your own findings: the board handed over already
+  filled - your comments sit as threads on the lines (see "Ревью с моими замечаниями
+  на строках"). A review markdown file in the repo is NOT the deliverable: he drops
+  such a commit and asks for the board.
+- `финальный ревью` / `ревью с последней проверки` / «дай ревью»: это запрос на ДОСКУ на
+  дельте с прошлого замороженного коммита, а не на текстовый разбор в чате. Текстовый вердикт
+  без ссылки на доску он возвращает («я именно phone diff review просил»): в чате — 5 строк
+  чисел (коммиты, файлы, +/−, зелёные тесты) и URL, а сам дифф он смотрит на телефоне.
 - `разбери комменты`: read `$REVIEW_COMMENTS` and answer point by point.
 - `удали решённые комментарии` / "убери обработанные": back the file up, empty it, confirm the
   board is clean (procedure below).
@@ -54,6 +68,12 @@ Render the diff, never paste it.
    эталон, новые тесты показывай от него"), move the tag to exactly that commit
    BEFORE writing the new work and state the frozen range back to him - he treats
    every later round as a diff against that anchor.
+   Anchor choice follows WHERE your findings sit. When the review you are handing over
+   has comments on production code that already lives below `reviewed-baseline` (a full
+   branch review, not a test-round delta), render the whole branch (`origin/develop...HEAD`)
+   - a comment cannot be pinned to a file that is not in the page. Say which range you
+   rendered and why in the handover line, and offer the incremental range as the next round;
+   do not silently keep a stale tag that hides half the findings.
 2. Pick the renderer, first fit wins:
    a. Branch is pushed: GitLab Compare revisions (Code > Compare revisions,
       Source = feature branch, Target = base). It lists commits plus a
@@ -147,12 +167,37 @@ Render the diff, never paste it.
    Validate the injected script before serving: extract the layer's
    `<script>` block and run `node --check` on it - a syntax slip otherwise
    fails silently in the phone browser with no console to read.
+   `INIT_JS` is itself a template literal in the generator source, so mind
+   which layer decodes an escape: write `\\uXXXX` in the generator and the
+   served page carries `\uXXXX` for the phone browser to decode - a single
+   backslash is consumed by the generator's own literal and bakes the raw
+   char into the page instead.
+   Page extras (both live in `generate-review.js`, no fork rebuild):
+   a floating `↑` button (`#d2h-to-top`, appears after 600 px) scrolls back
+   to the file list; the `Viewed` checkbox in each file header collapses
+   the file and persists in `localStorage` under `d2h-reviewed:<title>`
+   together with its `+a/-d` stats - a file whose stats changed since
+   checking comes back unchecked and expanded, reviewed ones get a `✓`
+   in the file list. Pair list rows to file sections by index - both render
+   from the same diff array in order. Storage is per title, so each
+   branch/range keeps its own marks. The stdlib fallback (`review-server.py` render) has the same
+   two extras cheaper: `↑` button plus `<details>` open state in
+   `localStorage` keyed by file name.
    Sources: `rtfpessoa/diff2html` (MIT) - entry points are
    `src/diff2html.ts`, `src/line-by-line-renderer.ts`, `src/ui/`,
    `src/templates/`. Full tool-choice rationale lives in
    `references/oss-review-options.md`. The maintained fork (native
    comment layer) lives at `/projects/diff2html`, upkeep recipe in
    `references/fork-upkeep.md`.
+
+## Ревью с моими замечаниями на строках ("чтобы я предметно ответил")
+
+When Ivan asks for a branch review and wants to answer specific findings, hand over
+the board with your findings already sitting as threads on the lines - not a markdown
+review file in the repo (a committed one gets dropped). Ids (`C<n>` / `N<n>` / `Q<n>`)
+are stable, every pin is a real line at HEAD, and each thread ends with the direct
+question so he can answer "C1 ок". Seeding schema, anchor verification and the
+handover checks: `references/seeding-review-comments.md`.
 
 ## Answering the comments ("почитай комментарии")
 
@@ -213,6 +258,27 @@ Render the diff, never paste it.
    сделал дичь"), agree where he is right, name the weak points in your own work,
    and offer the smaller option - do not defend it. Extra machinery he did not ask
    for (polling for a metric, a shared-package refactor) is the usual reason.
+11. When a comment turns into a code change, paste the hunk in chat (`git show <sha> -- <file>`,
+   added lines only) - he asks "покажи дифф потом, что добавил", and a sha plus prose is not an
+   answer. Same for a revert: show the line that went away.
+12. `СДЕЛАНО (<sha>):` goes stale the moment you amend that commit while answering a later round.
+   Before quoting a sha, `git cat-file -e <sha>`; if it is gone, rewrite the board text with the
+   current sha and say plainly that the old one no longer exists - the board is the only place he
+   tracks which fix actually landed.
+13. "Не понял, с кем мы боремся / почему мы чего-то ждём" = he wants the mechanism split into layers,
+   with measurements, not a retelling. Answer in three parts: what we do NOT wait for (the vendor keeps
+   running), what we DO and how long it takes (`app.close()` 4-7 ms, stdout flush 0 ms - measure, do
+   not estimate), and why the awkward line exists at all (the specific handle that keeps the event loop
+   alive, found by `git log -S '<symbol>' -- <file>` plus `process._getActiveHandles()`). End with the
+   plain model he can repeat ("подключились → прочитали → сделали → вышли"). A prose restatement of the
+   same design without numbers reads as evasion and he asks again.
+14. "Не понял про пункт N" / "я всё ещё не понял" = пересказ теми же словами не работает. Три шага,
+   в этом порядке: (1) конкретный пример из НАШЕГО кода - реальные классы и методы, кусок диффа или
+   таблица «значение → что получается с механизмом → что без него»; (2) явная граница - что механизм
+   НЕ ловит и на каком именно сценарии он слеп; (3) если прошлый ответ был слишком оптимистичным,
+   назвать это поправкой к себе самому ("я написал слишком оптимистично: страж меняет текст ошибки,
+   а не добавляет обнаружение"), а не защищать формулировку. Абстракции вида «компилятор проверяет
+   сигнатуру» он читает как воду: ему нужен сценарий с именами его файлов.
 
 ## Clearing resolved comments ("удали решённые комментарии")
 
@@ -247,6 +313,10 @@ list again. A 404 means the id is already gone; 403 without token.
 
 He reviews the same branch in rounds, so he asks for the delta since the round he just finished.
 
+**Delivery first:** the delta arrives as a regenerated board on the range `<reviewed>..HEAD`, not as
+prose. Chat carries only the numbers and the URL; a written review of the delta without a board
+reads as ignoring the request.
+
 1. Pin the revision he reviewed when you hand over the page (and again when he says he left comments):
    note `git rev-parse HEAD` next to the range you rendered. The page renders the committed range, so
    that hash IS what he read - without pinning it the question cannot be answered from hashes at all.
@@ -277,6 +347,19 @@ Yes - the server takes any commit-ish pair: `review-server.py <repo> <base> <hea
   sure he is looking at YOUR server.
 - When he goes back to the branch view, restart with `origin/develop..HEAD` and its own comments file -
   the old link stays valid only if the token is reused (see the token pitfall).
+- **A greenfield repo has no base to diff against.** `git diff <empty-tree>...HEAD` fails with
+  `object … is a tree, not a commit`, while the two-tree form `git diff <empty-tree> HEAD` produces the
+  full-tree diff you want (`EMPTY=$(git hash-object -t tree /dev/null)`). Render the page from that file and
+  start the server with `BASE=$(git rev-list --max-parents=0 HEAD)` plus `REVIEW_PAGE`: `git log root..HEAD`
+  still lists the commits (the root one aside), and comment anchors come from the rendered page, not from the
+  server's own diff. Exclude lockfiles and generated artefacts with `':(exclude)package-lock.json'` - a
+  2000-line lockfile is most of the page and none of the review - and state the exclusion in the handover
+  line so he knows the range is the whole tree minus noise.
+- **A restart on a delta range hides the earlier threads, it does not delete them.** Seeded comments whose
+  files are not in `reviewed-baseline..HEAD` simply have no line to render on, and the page comes up looking
+  empty while `$REVIEW_COMMENTS` still holds every one of them. Say that in the handover: the file is intact,
+  which threads are invisible and why, and how to get the full view back (restart on `origin/develop...HEAD`).
+  Don't re-seed anything to "restore" them - re-seeding mints new ids and loses his answers.
 
 ## Pitfalls
 
@@ -311,7 +394,23 @@ Yes - the server takes any commit-ish pair: `review-server.py <repo> <base> <hea
   LIVE session that simply restarts it - a killed preview came back a minute
   later and retook the port. Identify it first (`ps -o pid,ppid,lstart,cmd -p
   <pid>`, `pgrep -af <port>`, which project it serves), say what it is, and let
-  Ivan decide; killing a preview he is using costs him work.
+  Ivan decide; killing a preview he is using costs him work. **The exception is a server you started
+  yourself in this session** (an emulator or dev preview you were demoing): that one is yours to stop,
+  and handing over a board on 9000 requires it. Kill it by explicit pid (`kill <pid>`, both the wrapper
+  and the node/python child), never `pkill -f <path>` - the pattern matches the `bash -c` wrapper of the
+  very call you are running, so the tool call dies with `-15` and the server keeps the port. Confirm with
+  `curl --max-time 2` returning `000` before binding the review server.
+- **`потуши review` = убить python-ребёнка, а не обёртку.** Сервер запущен через
+  `terminal(background=true)`, то есть под `bash -c`; `kill` по pid обёртки (и даже по pid из
+  списка процессов, если взят не тот) оставляет `review-server.py` живым, и порт продолжает
+  отвечать `403` на запрос без токена. Правильно: `ps -eo pid,cmd | grep review-server.py`
+  → убить КАЖДЫЙ найденный pid → `curl -m 2` должен дать `000`. `403` после kill — это не
+  успех, это живой сервер; не отчитывайся «потушено» по коду ответа, пока он не станет `000`.
+- **`pgrep -af review-server.py` matches YOUR OWN shell command line** — every tool call runs wrapped
+  in `bash -c "…"`, so the pattern appears in that wrapper and pgrep reports the server as alive long
+  after it died (and its first hit is your own pid). Judge liveness by behaviour instead:
+  `curl --max-time 3` the URL — `000` or a timeout means stopped, 200/403 means it is up. When he says
+  "ревью вроде уже потушено", confirm with the curl, not with pgrep.
 - Restarting the server mints a NEW token and silently kills the link in his open tab. Persist the token
   under a stable dir, not scratch or `/tmp`: `echo $REVIEW_TOKEN > /data/.hermes/phone-review/review-token.txt`,
   and on a restart on the same port RE-USE it
@@ -353,3 +452,22 @@ Yes - the server takes any commit-ish pair: `review-server.py <repo> <base> <hea
   (a second pass is normal, and he says so). Keep it running, keep the same URL, and only stop
   it on `потуши review`. Before the next pass, make sure the page reflects the current HEAD -
   regenerate it after every commit, since the page renders the committed range.
+- Start the server with `terminal(background=true)`, never as a foreground command carrying
+  `nohup`/`&`/`setsid`: Hermes refuses those wrappers and the server never starts, so the next
+  curl checks prove nothing. Readiness is a separate foreground call: `curl` with the token (200),
+  without it (403), `api/comments` (your count), `<title>`, `grep -c Diff2HtmlComments`.
+- **Anchors move under you.** Any commit that adds or removes lines above a seeded comment shifts its
+  `newLine`; recompute each pin by grepping the symbol the comment sits on (`grep -n '<symbol>' <file>`)
+  and rewrite the JSON - arithmetic "minus N lines" drifts the moment one hunk is not the one you
+  counted. Re-check after an amend too, and quote the current sha (`git cat-file -e <sha>`).
+- **File count: trust `grep -c '^diff --git' <diff>`, not the page.** The rendered HTML repeats header
+  classes inside its inlined template and JS bundle (56 files showed as 58), so a mismatch there is a counting
+  artefact - compare the page against the diff before claiming it is current.
+- **A rebase orphans `reviewed-baseline`.** The tag keeps the pre-rebase sha, which is no longer an
+  ancestor of HEAD, so `reviewed-baseline..HEAD` suddenly renders the whole branch again. After any
+  rebase (or history rewrite) re-point the tag at the current HEAD - or at the post-rebase equivalent
+  of the reviewed commit - before the next round, and say the new frozen sha in the handover line.
+- Answers may come back in CHAT instead of on the board, in his own order ("C6, C7, N5, N1 …").
+  Then answer in that same order with the same ids, one short block each, and update the board in
+  the same pass: re-pinned anchors plus `СДЕЛАНО (<sha>):` in the text of the ones you fixed. Do not
+  renumber, do not answer from the old JSON without re-reading the lines - your own commits moved them.

@@ -108,6 +108,8 @@ CSS = (
     "#dock textarea{width:100%;box-sizing:border-box;background:#0d1117;color:#e6edf3;border:1px solid #30363d;border-radius:8px;font-size:14px;padding:8px}"
     "#dock button{background:#238636;color:#fff;border:0;border-radius:8px;padding:10px 18px;font-size:15px;margin-top:6px}"
     "#dock .ok{color:#3fb950;font-size:13px;margin-left:8px}"
+    "#top{position:fixed;right:16px;bottom:200px;width:52px;height:52px;border-radius:50%;"
+    "background:#161b22;color:#e6edf3;border:1px solid #30363d;font-size:24px;display:none;z-index:50}"
 )
 
 JS = """let sel=null;
@@ -124,7 +126,20 @@ async function load(){const r=await fetch('api/comments'+location.search);if(!r.
 const items=await r.json();const box=document.getElementById('list');box.innerHTML='';
 items.forEach(c=>{const d=document.createElement('div');d.className='cmt';
 d.innerHTML='<b>'+c.file+':'+c.line+'</b> '+c.text.replace(/</g,'&lt;');box.appendChild(d);});}
-load();"""
+load();
+const tp=document.createElement('button');tp.id='top';tp.textContent='↑';
+tp.setAttribute('aria-label','Back to top');
+tp.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+document.body.appendChild(tp);
+addEventListener('scroll',()=>{tp.style.display=scrollY>600?'block':'none'},{passive:true});
+try{const sk='rv:'+document.title;
+const st=JSON.parse(localStorage.getItem(sk)||'{}');
+document.querySelectorAll('details').forEach(d=>{
+const sm=d.querySelector('summary');const fn=sm?sm.textContent.trim():'';
+if(!fn)return;if(st[fn]!==undefined)d.open=st[fn];
+d.addEventListener('toggle',()=>{try{
+const o=JSON.parse(localStorage.getItem(sk)||'{}');o[fn]=d.open;
+localStorage.setItem(sk,JSON.stringify(o))}catch(e){}});});}catch(e){}"""
 
 
 def render():

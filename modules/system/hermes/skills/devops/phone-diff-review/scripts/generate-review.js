@@ -10,6 +10,10 @@
  * right under the line, second tap on the same line cancels.
  * Submitted comments persist via the same-origin api/comments
  * endpoints served by review-server.py.
+ *
+ * Page extras (no fork rebuild): floating ↑ button back to the file list;
+ * per-file `Viewed` checkbox collapses the file and persists in
+ * localStorage (`d2h-reviewed:<title>` + +/- stats, stale if changed).
  */
 const fs = require('fs');
 const path = require('path');
@@ -74,6 +78,13 @@ const bundle = fs.readFileSync(bundlePath, 'utf8');
 const PAGE_CSS = [
   "body{margin:0;background:#fff;color:#24292e;}",
   "@media (prefers-color-scheme:dark){body{background:#0d1117;color:#e6edf3;}}",
+  ".d2h-file-collapse{display:flex!important;}",
+  ".d2h-file-wrapper.d2h-reviewed .d2h-file-header{opacity:.6;}",
+  ".d2h-file-list-line.d2h-reviewed{opacity:.55;}",
+  ".d2h-reviewed-mark{color:#3fb950;font-weight:700;}",
+  "#d2h-to-top{position:fixed;right:16px;bottom:24px;width:52px;height:52px;border-radius:50%;",
+  "border:1px solid #30363d;background:#161b22;color:#e6edf3;font-size:24px;display:none;z-index:50;cursor:pointer;opacity:.9;}",
+  "#d2h-to-top.show{display:block;}",
 ].join('');
 
 const body = Diff2Html.html(diffText, {
@@ -99,6 +110,37 @@ headers:{'Content-Type':'application/json'},
 body:JSON.stringify({file:s.file,oldLine:s.oldLine,newLine:s.newLine,
 line:s.newLine==null?s.oldLine:s.newLine,text:String(text).slice(0,2000)})});
 if(r.ok){comments.closeEditor();comments.clearSelection();load();}}catch(e){}}
+const top=document.createElement('button');top.id='d2h-to-top';top.textContent='\\u2191';
+top.setAttribute('aria-label','Back to top');
+top.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+document.body.appendChild(top);
+addEventListener('scroll',()=>{top.classList.toggle('show',scrollY>600)},{passive:true});
+const storeKey='d2h-reviewed:'+document.title;let store={};
+try{store=JSON.parse(localStorage.getItem(storeKey)||'{}')||{}}catch(e){store={}}
+const saveStore=()=>{try{localStorage.setItem(storeKey,JSON.stringify(store))}catch(e){}};
+const listItems=Array.from(document.querySelectorAll('.d2h-file-list-line'));
+const wrappers=Array.from(document.querySelectorAll('.d2h-file-wrapper'));
+function curStats(i){const li=listItems[i];if(!li)return{a:null,d:null};
+const a=li.querySelector('.d2h-lines-added');const d=li.querySelector('.d2h-lines-deleted');
+return{a:a?a.textContent.trim():null,d:d?d.textContent.trim():null};}
+function markList(i,on){const li=listItems[i];if(!li)return;
+li.classList.toggle('d2h-reviewed',!!on);
+let b=li.querySelector('.d2h-reviewed-mark');
+if(on&&!b){b=document.createElement('span');b.className='d2h-reviewed-mark';
+b.textContent='\\u2713 ';li.insertBefore(b,li.firstChild);}if(!on&&b)b.remove();}
+function setCollapsed(w,i,on){const diff=w.querySelector('.d2h-file-diff,.d2h-files-diff');
+if(diff)diff.classList.toggle('d2h-d-none',!!on);
+w.classList.toggle('d2h-reviewed',!!on);
+const lb=w.querySelector('.d2h-file-collapse');if(lb)lb.classList.toggle('d2h-selected',!!on);
+markList(i,on);}
+wrappers.forEach((w,i)=>{const n=w.querySelector('.d2h-file-name');
+const file=n?(n.textContent||'').trim():'';
+const box=w.querySelector('.d2h-file-collapse-input');if(!file||!box)return;
+box.checked=false;const s=curStats(i);const kept=store[file];
+if(kept&&kept.a===s.a&&kept.d===s.d&&kept.v){box.checked=true;setCollapsed(w,i,true);}
+box.addEventListener('change',()=>{const on=box.checked;
+if(on)store[file]={a:s.a,d:s.d,v:true};else delete store[file];
+saveStore();setCollapsed(w,i,on);});});
 document.addEventListener('DOMContentLoaded',()=>{load();});})();`;
 
 const escTitle = String(title || 'diff review')
