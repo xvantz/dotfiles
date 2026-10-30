@@ -67,11 +67,15 @@
           razdel
           pymorphy3
         ]))}"
+        "--env"
+        "CONTAINER_HOST=unix:///run/podman/podman.sock"
+        "--env"
+        "DOCKER_HOST=unix:///run/podman/podman.sock"
       ];
     };
 
     extraDependencyGroups = ["messaging" "voice" "edge-tts" "firecrawl"];
-    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium docker-client docker-compose pnpm yarn-berry fontconfig dejavu_fonts nix];
+    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium podman podman-compose pnpm yarn-berry fontconfig dejavu_fonts nix];
 
     documents = {
       "OBSIDIAN_MEMORY.md" = ''
@@ -84,6 +88,9 @@
       '';
       "EVIDENCE.md" = ''
         Before acting: gather live evidence, never rely on training data alone. For binaries: check man, --help and installed version first, never give flags blind. For libraries and APIs: search web or repo docs for current behavior. For errors: read full output, reproduce, then fix.
+      '';
+      "CONTAINERS.md" = ''
+        Use podman, not docker. Socket is podman-native at /run/podman/podman.sock (CONTAINER_HOST and DOCKER_HOST already set). Commands: podman run/ps/logs/exec, podman-compose up/down. No docker binary in this container. Compose files need no changes.
       '';
     };
 
@@ -312,7 +319,7 @@
       ''"/home/xvantz/Documents/Obsidian/3. Resources/Hermes Agent/USER.md:/data/workspace/USER.md:Z"''
       "/home/xvantz/projects/public:/projects:rw"
       "/home/xvantz/.dotfiles:/dotfiles:rw"
-      "/run/user/1001/podman/podman.sock:/var/run/docker.sock"
+      "/run/user/1001/podman/podman.sock:/run/podman/podman.sock"
     ];
 
     restart = "always";
