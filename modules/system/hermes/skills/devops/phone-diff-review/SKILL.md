@@ -1,7 +1,7 @@
 ---
 name: phone-diff-review
-description: "Use when Ivan reviews branch diffs from his phone."
-version: 0.2.0
+description: "Use when Ivan reviews any diff from his phone. Триггеры: ревью ветки, дифф на телефон, phone diff review, запусти ревью, финальный ревью, покажи дифф."
+version: 0.2.1
 author: Hermes Agent
 license: MIT
 platforms: [linux]
@@ -36,6 +36,11 @@ and drifts out of git.
   дельте с прошлого замороженного коммита, а не на текстовый разбор в чате. Текстовый вердикт
   без ссылки на доску он возвращает («я именно phone diff review просил»): в чате — 5 строк
   чисел (коммиты, файлы, +/−, зелёные тесты) и URL, а сам дифф он смотрит на телефоне.
+- `дай диф` / `диф только на этот коммит` / `покажи дифф`: это доска на этом диапазоне (один коммит -
+  `HEAD~1..HEAD`), а не unified diff в чате. Текст диффа в чате он возвращает ("не, закинь в diff phone"):
+  переключение диапазона = рестарт сервера с этим `base`/`head` и своим `REVIEW_COMMENTS`, токен и URL
+  переиспользовать. В чате - только цифры диапазона (коммиты, файлы, +/−) и ссылка.
+- `запусти phone diff review` / `на свои изменения`: the changes are UNCOMMITTED worktree, not a branch. Scope the diff to your files only (`git diff HEAD -- <explicit paths>`, never the whole worktree - other dirty files are not yours), write it to a diff file, render with `generate-review.js`, serve via `REVIEW_PAGE` (the server's own `base...head` renders the committed range only, so uncommitted edits never appear without it). Never commit just to enable review - commits need his approval.
 - `разбери комменты`: read `$REVIEW_COMMENTS` and answer point by point.
 - `удали решённые комментарии` / "убери обработанные": back the file up, empty it, confirm the
   board is clean (procedure below).
@@ -121,8 +126,15 @@ and drifts out of git.
    Default port 9000 is shared with `django-dev-preview` sessions, which bind
    `<ts-ip>:9000` and will kill the current occupant to take it, so a review
    server there can die mid-review (observed). Probe before binding
-   (`socket.bind((TS_IP, p))`); if 9000 is busy, ask Ivan to tell the other
-   session to stand down - never kill the occupant yourself. Verify what you
+   (`socket.bind((TS_IP, p))`); if 9000 is busy, identify the occupant first
+   (`curl -s <url>/ | grep -o '<title>[^<]*</title>'` plus the port-owner lookup from
+   the pitfalls) and decide by WHO it is: `django-dev-preview` is another
+   interactive session - never kill it, ask Ivan to stand it down; the Customer.io
+   dev emulator `cio-emu` (`/projects/cio-emu`, `node dist/server/index.js`, usually
+   orphaned under PPID=1) is a background dev tool with no state to lose - when Ivan
+   asks for a board on 9000 it is his to stop, and the handover message must say which
+   one you stopped and how to bring it back (`cd /projects/cio-emu && node dist/server/index.js`).
+   Verify what you
    actually serve by curling the page and checking `<title>` - a foreign page
    means someone else owns the port.
    `ss`, `nft` and the `tailscale` CLI do not exist on this host - do not build
@@ -279,6 +291,13 @@ handover checks: `references/seeding-review-comments.md`.
    назвать это поправкой к себе самому ("я написал слишком оптимистично: страж меняет текст ошибки,
    а не добавляет обнаружение"), а не защищать формулировку. Абстракции вида «компилятор проверяет
    сигнатуру» он читает как воду: ему нужен сценарий с именами его файлов.
+   **Подписывай единицы измерения и сам интервал.** Числа, взятые из чужого примера или из своего же
+   прошлого разбора, он читает по умолчанию в миллисекундах и тогда весь механизм кажется невозможным
+   ("как мы попадаем на два обновления в рамках одной миллисекунды?" — а в примере были секунды).
+   Пиши "0.3 - это 300 мс, события разошлись на треть секунды" и назови, что именно отстаёт
+   (длительность транзакции, а не точность часов). Если он всё равно говорит "не понял" - значит
+   провалилась не формулировка механизма, а масштаб: дай таблицу «момент → что публикуем → какая
+   версия по-старому → какая по-новому → что делает guard».
 
 ## Clearing resolved comments ("удали решённые комментарии")
 
@@ -355,6 +374,7 @@ Yes - the server takes any commit-ish pair: `review-server.py <repo> <base> <hea
   server's own diff. Exclude lockfiles and generated artefacts with `':(exclude)package-lock.json'` - a
   2000-line lockfile is most of the page and none of the review - and state the exclusion in the handover
   line so he knows the range is the whole tree minus noise.
+- **Uncommitted changes have no range.** `git diff HEAD -- <explicit paths>` to a file IS the range: `git -C <repo> diff HEAD --no-color -- <paths> > /data/.hermes/phone-review/<name>.diff`, render with `node scripts/generate-review.js <diff> <page>.html "<title>"`, serve with `REVIEW_PAGE=<page>.html` plus a fresh `REVIEW_COMMENTS` file (server args still need valid commit-ishes - `HEAD HEAD` works). Scope to YOUR paths only: the rest of a dirty worktree is someone else's work and must not enter the page. Verify `git diff HEAD --check -- <paths>` is empty and `grep -c '^diff --git'` matches the handover count before serving.
 - **A restart on a delta range hides the earlier threads, it does not delete them.** Seeded comments whose
   files are not in `reviewed-baseline..HEAD` simply have no line to render on, and the page comes up looking
   empty while `$REVIEW_COMMENTS` still holds every one of them. Say that in the handover: the file is intact,
@@ -411,6 +431,11 @@ Yes - the server takes any commit-ish pair: `review-server.py <repo> <base> <hea
   after it died (and its first hit is your own pid). Judge liveness by behaviour instead:
   `curl --max-time 3` the URL — `000` or a timeout means stopped, 200/403 means it is up. When he says
   "ревью вроде уже потушено", confirm with the curl, not with pgrep.
+  Тот же критерий для любого убитого процесса: после `kill` порт может освободиться, пока сам
+  процесс висит `defunct`-зомби под PPID=1 - `ps -p <pid>` и `test -d /proc/<pid>` продолжают
+  его показывать, и это не повод ни убивать повторно, ни отчитываться «не остановился». Решает порт:
+  `curl --max-time 2` дал `000` - всё, место свободно, можно биндить доску.
+- **Name the port occupant via inode, not via text match.** `pgrep -f` matches your own wrapper command line, so it reports ghosts. Read `/proc/net/tcp` for the port in hex with state `0A`, take the socket inode, resolve it to a pid through `/proc/[0-9]*/fd` symlinks, then read that pid's `cmdline` - only then decide by WHO it is and whether it is yours to stop.
 - Restarting the server mints a NEW token and silently kills the link in his open tab. Persist the token
   under a stable dir, not scratch or `/tmp`: `echo $REVIEW_TOKEN > /data/.hermes/phone-review/review-token.txt`,
   and on a restart on the same port RE-USE it
@@ -419,6 +444,7 @@ Yes - the server takes any commit-ish pair: `review-server.py <repo> <base> <hea
   link vanished mid-review once), so a token kept there is not a durable "same link" promise. Mint a new
   token only when the host or port changes, when the token file is gone, or when he asks for one - and say
   plainly that the previous link is dead.
+- **Never type token bytes from memory.** Always substitute from the token file (`$(cat /data/.hermes/phone-review/review-token.txt)`). A guessed token that returns 403 proves nothing about the server, and a real token typed into a command lands in the transcript - read the file, never recall.
 - Moving the review server to another port (the default port was occupied, or
   another session killed the server to take it) invalidates the URL you already
   handed him - the token is minted per start. Say plainly that the old link is
@@ -439,6 +465,13 @@ Yes - the server takes any commit-ish pair: `review-server.py <repo> <base> <hea
   committed"). Name the mechanism
   ("my `git add -A` committed a local config") instead of guessing at what the file is, and
   regenerate the page afterwards so it drops out of the diff.
+  **While the repo is still unpushed, rewrite history instead of adding a delete commit**
+  (`git filter-branch -f --index-filter 'git rm --cached --ignore-unmatch <path>' --prune-empty -- --all`,
+  then `rm -rf .git/refs/original`): the junk never reaches the remote, whereas a later delete commit
+  leaves it in every clone. Do it before the first push, not after. Every sha quoted on the board
+  before the rewrite is dead afterwards - re-read `git rev-parse HEAD` and say plainly that the old
+  hashes no longer exist.
+- **«Удали коммит из удалённого репо» = сначала докажи, что он там есть.** `git ls-remote origin 'refs/heads/feat/*'` (живой вызов, а не кэш `git fetch`) плюс `git log --oneline <remote-branch>..HEAD`: после раунда правок в ветке легко висят 5 локальных коммитов, которых на remote нет вообще, и тогда удалять нечего - отчитаться фактами, а не делать reset «на всякий случай». Если на remote часть работы есть, а последний коммит надо оставить локально, пушится точечно по sha: `git push origin <sha>:refs/heads/<branch>`. Перед любым `reset`/force-push сохрани коммит патчем (`git format-patch -1 HEAD --stdout > <scratch>/<name>.patch`) и скажи, какой командой он возвращается. Доска при этом рендерит ЛОКАЛЬНЫЙ диапазон: если в него входит коммит, которого нет на remote, скажи это в handover одной строкой - иначе он считает его частью MR.
 - `curl -s -o /dev/null -w '%{http_code}'` proves only that the server answered, NOT which page it
   served. After regenerating the page for a new range, verify the content: fetch the page and check its
   `<title>` plus a flat count of file headers/total lines against `git diff <range> --stat | tail -1`.
@@ -456,6 +489,13 @@ Yes - the server takes any commit-ish pair: `review-server.py <repo> <base> <hea
   `nohup`/`&`/`setsid`: Hermes refuses those wrappers and the server never starts, so the next
   curl checks prove nothing. Readiness is a separate foreground call: `curl` with the token (200),
   without it (403), `api/comments` (your count), `<title>`, `grep -c Diff2HtmlComments`.
+- **Run the skill's own scripts from the path `skill_view` reports (`skill_dir` / `_source_path`).** A
+  shadow copy of this skill can exist under `/data/.hermes/skills/...` with an incomplete `scripts/`
+  directory: `node <copy>/scripts/generate-review.js` then exits `MODULE_NOT_FOUND`, while the page file
+  from the previous round still sits on disk - the follow-up `curl` answers 200 with a stale `<title>` and
+  the handover looks healthy. Resolve the directory from `skill_dir` in the `skill_view` result (for this
+  skill that is the repo path), `ls` the script before invoking it, and prove the served page is the one
+  you just rendered by its `<title>` sha/range, not by the status code.
 - **Anchors move under you.** Any commit that adds or removes lines above a seeded comment shifts its
   `newLine`; recompute each pin by grepping the symbol the comment sits on (`grep -n '<symbol>' <file>`)
   and rewrite the JSON - arithmetic "minus N lines" drifts the moment one hunk is not the one you
