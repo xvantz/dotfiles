@@ -1,6 +1,6 @@
 ---
 name: phone-diff-review
-description: "Use when Ivan reviews any diff from his phone. Триггеры: ревью ветки, дифф на телефон, phone diff review, запусти ревью, финальный ревью, покажи дифф."
+description: "Use when Ivan reviews any diff from his phone."
 version: 0.2.1
 author: Hermes Agent
 license: MIT
