@@ -164,14 +164,6 @@
       memory = {
         memory_enabled = true;
         user_profile_enabled = true;
-        provider = "hindsight";
-        hindsight = {
-          mode = "local_external";
-          api_url = "http://localhost:8891";
-          bank_id = "hermes:xvantz";
-          memory_mode = "hybrid";
-          prefetch_method = "recall";
-        };
       };
 
       toolsets = ["all"];
