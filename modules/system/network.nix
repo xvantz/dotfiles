@@ -20,6 +20,13 @@
       interfaces."tailscale0" = {
         allowedTCPPorts = [53];
         allowedUDPPorts = [53];
+        # демо-стенды для телефона: http://100.95.144.120:<port>
+        allowedTCPPortRanges = [
+          {
+            from = 3000;
+            to = 3100;
+          }
+        ];
       };
     };
 
