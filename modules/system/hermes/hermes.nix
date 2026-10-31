@@ -96,7 +96,7 @@
 
     settings = {
       model = {
-        default = "muse-spark-1.3-contributor";
+        default = "deepseek-v4.1-flash";
         provider = "opencode-go";
         context_length = 1000000;
       };
