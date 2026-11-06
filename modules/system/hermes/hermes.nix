@@ -71,11 +71,13 @@
         "CONTAINER_HOST=unix:///run/podman/podman.sock"
         "--env"
         "DOCKER_HOST=unix:///run/podman/podman.sock"
+        "--env"
+        "KUBECONFIG=/etc/kube/config:/etc/kube/xvantz.kubeconfig"
       ];
     };
 
     extraDependencyGroups = ["messaging" "voice" "edge-tts" "firecrawl"];
-    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium podman podman-compose pnpm yarn-berry fontconfig dejavu_fonts nix];
+    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium podman podman-compose pnpm yarn-berry fontconfig dejavu_fonts nix kubectl];
 
     documents = {
       "OBSIDIAN_MEMORY.md" = ''
@@ -227,6 +229,17 @@
         mode = "smart";
       };
 
+      hooks_auto_accept = true;
+
+      hooks.pre_tool_call = [
+        {
+          matcher = "^terminal$";
+          command = "${pkgs.python3}/bin/python3 ${./hooks/kubectl-gate.py}";
+          timeout = 5;
+          fail_closed = true;
+        }
+      ];
+
       terminal = {
         backend = "local";
         cwd = ".";
@@ -312,6 +325,7 @@
       "/home/xvantz/projects/public:/projects:rw"
       "/home/xvantz/.dotfiles:/dotfiles:rw"
       "/run/user/1001/podman/podman.sock:/run/podman/podman.sock"
+      "/home/xvantz/.kube:/etc/kube:ro"
     ];
 
     restart = "always";
