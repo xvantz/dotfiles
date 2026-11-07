@@ -68,6 +68,16 @@ in {
       '';
     };
 
+    virtualHosts."hermes.827482.xyz" = {
+      extraConfig = ''
+        tls {
+          dns cloudflare {env.CLOUDFLARE_TOKEN}
+          resolvers 1.1.1.1
+        }
+        reverse_proxy http://127.0.0.1:9120
+      '';
+    };
+
     virtualHosts."*.827482.xyz" = {
       extraConfig = ''
         tls {

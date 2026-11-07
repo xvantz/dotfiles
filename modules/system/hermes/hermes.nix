@@ -45,22 +45,6 @@
         "--env"
         "FIRECRAWL_API_URL=http://localhost:8889"
         "--env"
-        "AGENT_BROWSER_EXECUTABLE_PATH=${pkgs.writeShellScriptBin "agent-browser-chromium" ''
-          args=("$@")
-          has_url=0
-          for a in "''${args[@]}"; do
-            case "$a" in
-              -*) ;;
-              *) has_url=1 ;;
-            esac
-          done
-          if [ "$has_url" -eq 0 ]; then
-            exec ${pkgs.chromium}/bin/chromium --remote-allow-origins=* "$@" "about:blank"
-          else
-            exec ${pkgs.chromium}/bin/chromium --remote-allow-origins=* "$@"
-          fi
-        ''}/bin/agent-browser-chromium"
-        "--env"
         "PATH=${pkgs.lib.makeBinPath config.services.hermes-agent.extraPackages}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
         "--env"
         "PYTHONPATH=${pkgs.lib.makeSearchPath pkgs.python312.sitePackages (pkgs.python312.pkgs.requiredPythonModules (with pkgs.python312Packages; [
@@ -77,7 +61,7 @@
     };
 
     extraDependencyGroups = ["messaging" "voice" "edge-tts" "firecrawl"];
-    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium podman podman-compose pnpm yarn-berry fontconfig dejavu_fonts nix kubectl];
+    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium podman podman-compose pnpm yarn-berry fontconfig dejavu_fonts nix kubectl kubernetes-helm];
 
     documents = {
       "OBSIDIAN_MEMORY.md" = ''
@@ -118,6 +102,7 @@
 
       browser = {
         cdp_url = "http://127.0.0.1:9222";
+        executable_path = "${pkgs.chromium}/bin/chromium";
         allow_private_urls = true;
       };
 
@@ -152,7 +137,7 @@
           first_lines = 2;
           last_lines = 2;
         };
-        interem_assistant_messages = true;
+        interim_assistant_messages = true;
         tool_progress_command = true;
         tool_preview_length = 0;
         ephemeral_system_ttl = 0;
@@ -206,6 +191,14 @@
 
       worktree = false;
 
+      webapp = {
+        enabled = true;
+        host = "127.0.0.1";
+        port = 9120;
+      };
+
+      dashboard = {};
+
       platform_toolsets = {
         cli = "hermes-cli";
         discord = "hermes-discord";
@@ -249,6 +242,12 @@
         enabled = true;
         threshold = 0.70;
         target_ratio = 0.40;
+        prepare_ahead = true;
+      };
+
+      sessions = {
+        auto_prune = true;
+        retention_days = 90;
       };
 
       stt = {
@@ -311,8 +310,6 @@
       pm = {
         enabled = true;
         command = "${config.services.pm.package}/bin/pm-mcp";
-        # Same option the daemon serves: changing services.pm.listenAddr
-        # never orphans the agent on the default.
         env.PM_API = "http://${config.services.pm.listenAddr}";
         env.PM_TOKEN = "\${PM_TOKEN}";
       };
