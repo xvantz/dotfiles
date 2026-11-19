@@ -2,7 +2,6 @@
   inputs,
   config,
   selfPath,
-  pkgs,
   ...
 }: {
   imports = [
