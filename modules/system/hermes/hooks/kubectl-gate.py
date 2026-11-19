@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """Require human approval for calls that change the cluster.
 
-The approval card in Hermes has two slots: the command block is taken by the
-`<terminal> (plugin approval rule)` placeholder, and the Reason field holds 500
-characters. Only the command itself goes into Reason. When it does not fit the
-budget, the call is blocked with the full text so the human sees it in chat
-instead of a truncated line.
+The approve directive carries `display_target`, so the approval card shows the
+real command in its command block (Hermes >= 0.23.2 + our local patch on
+request_tool_approval). The Reason field only holds a short why, never the
+command: it is capped at ~500 characters and truncates long kubectl/helm lines.
+
+If the receiving Hermes predates the patch the extra key is ignored and the card
+falls back to the synthetic `<terminal> (plugin approval rule)` label with the
+reason text - which is why the reason stays short and readable either way.
 
 The command is matched at command position (line start, after ; | && || ` ( or
 environment assignments), not anywhere in the text: mentioning the tool inside
@@ -15,7 +18,6 @@ import json
 import re
 import sys
 
-REASON_BUDGET = 460
 
 CMD_START = (
     r"(?:^|[\n;|&(`])\s*"
@@ -63,18 +65,14 @@ def main() -> int:
         return 0
 
     one_line = " ".join(command.split())
-
-    if len(one_line) <= REASON_BUDGET:
-        print(json.dumps({"action": "approve", "message": one_line}, ensure_ascii=False))
-        return 0
-
-    message = (
-        "Требуется подтверждение человека: команда не влезает в поле подтверждения "
-        "(лимит 500 символов), поэтому её нельзя показать без обрезки. "
-        "Покажи команду в чате код-блоком и дождись явного согласия, прежде чем выполнять:\n\n"
-        + command
-    )
-    print(json.dumps({"action": "block", "message": message}, ensure_ascii=False))
+    verbs = one_line.split()
+    short = " ".join(verbs[:5]) + ("…" if len(verbs) > 5 else "")
+    # Полная команда уходит в слот команды карточки, причина - короткая и читаемая.
+    print(json.dumps({
+        "action": "approve",
+        "message": f"kubectl меняет кластер: {short}",
+        "display_target": command,
+    }, ensure_ascii=False))
     return 0
 
 
