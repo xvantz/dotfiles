@@ -49,6 +49,69 @@ MUTATING = re.compile(
     re.MULTILINE,
 )
 
+# ssh отправляет команду на другую машину, и мутирующий глагол оказывается внутри
+# кавычек - то есть не в командной позиции. Без этого разбора `ssh box 'kubectl
+# scale ...'` проходил мимо гейта.
+SSH_INVOCATION = re.compile(
+    CMD_START + r"ssh\b(?P<rest>[^\n;|&]*)",
+    re.MULTILINE,
+)
+
+# Флаги ssh, которые съедают следующий токен как своё значение.
+SSH_FLAGS_WITH_ARG = {
+    "-b", "-c", "-D", "-E", "-e", "-F", "-I", "-i", "-J", "-L", "-l",
+    "-m", "-O", "-o", "-p", "-Q", "-R", "-S", "-W", "-w",
+}
+
+QUOTED = re.compile(r"'([^']*)'|\"([^\"]*)\"")
+
+
+def _unwrap(text: str, depth: int = 3) -> list[str]:
+    """Строка плюс всё, что из неё вынимается снятием/раскрытием кавычек.
+
+    Нужно для цепочек вида `ssh box "bash -lc 'kubectl delete ...'"`: снаружи
+    команда начинается с bash, а мутирующий глагол лежит на два уровня глубже.
+    """
+    out = [text]
+    stripped = text.strip().strip("'\"").strip()
+    if stripped and stripped != text:
+        out.append(stripped)
+    if depth > 0:
+        for single, double in QUOTED.findall(text):
+            inner = single or double
+            if not inner:
+                continue
+            for item in _unwrap(inner, depth - 1):
+                if item not in out:
+                    out.append(item)
+    return out
+
+
+def _ssh_remote_command(rest: str) -> str:
+    """Хвост ssh-вызова после «опции + хост» -> строка удалённой команды."""
+    tokens = rest.split()
+    i = 0
+    while i < len(tokens) and tokens[i].startswith("-"):
+        flag = tokens[i]
+        i += 1
+        if flag in SSH_FLAGS_WITH_ARG:
+            i += 1
+    if i >= len(tokens):
+        return ""          # ssh без хоста: это не вызов команды
+    i += 1                 # сам хост
+    return " ".join(tokens[i:])
+
+
+def ssh_remote_mutates(command: str) -> bool:
+    """Есть ли мутирующий kubectl/helm в удалённой части ssh-вызова."""
+    for m in SSH_INVOCATION.finditer(command):
+        remote = _ssh_remote_command(m.group("rest"))
+        if not remote:
+            continue
+        if any(MUTATING.search(c) for c in _unwrap(remote) if c):
+            return True
+    return False
+
 
 def main() -> int:
     try:
@@ -61,7 +124,7 @@ def main() -> int:
 
     tool_input = payload.get("tool_input") or payload.get("args") or {}
     command = tool_input.get("command") or tool_input.get("cmd") or ""
-    if not isinstance(command, str) or not MUTATING.search(command):
+    if not isinstance(command, str) or not (MUTATING.search(command) or ssh_remote_mutates(command)):
         return 0
 
     one_line = " ".join(command.split())
