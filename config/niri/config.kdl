@@ -1,5 +1,4 @@
 spawn-at-startup "gammastep" "-l" "10.76:106.66" "-t" "6500:3500"
-spawn-at-startup "anyrun --daemon"
 spawn-at-startup "niri-workflow"
 
 environment {
@@ -32,7 +31,7 @@ hotkey-overlay {
 output "DP-2" {
  
   mode "1920x1080@144.000"
-  scale 1.0
+  scale 1.25
   transform "normal"
   position x=0 y=0
   variable-refresh-rate
