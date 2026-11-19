@@ -45,7 +45,12 @@
     };
 
     hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v0.23.0";
+      # Наш форк: код апстрима + локальные коммиты в main.
+      # shallow=1 обязателен: без него nix тянет всю историю (1.3 ГБ) на каждый update.
+      # URL обязан быть литеральной строкой (nix не принимает вычисляемые flakeref-ы),
+      # поэтому версия тут не подставляется - она живёт в versions.nix и уходит
+      # в пакет через .override в modules/system/hermes/hermes.nix.
+      url = "git+https://git.827482.xyz/xvantz/hermes-agent?ref=main&shallow=1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

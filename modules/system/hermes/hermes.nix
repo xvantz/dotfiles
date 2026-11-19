@@ -2,8 +2,12 @@
   pkgs,
   config,
   lib,
+  inputs,
   ...
-}: {
+}: let
+  # Единственный источник версии Hermes (см. versions.nix в корне).
+  versions = import ../../../versions.nix;
+in {
   sops.secrets.hermes_env = {
     owner = "xvantz";
     restartUnits = ["hermes-agent.service"];
@@ -25,6 +29,12 @@
     workingDirectory = "/data/.hermes";
     user = "hermes";
     group = "users";
+
+    # Версия из versions.nix. Без этого пакет штампует "0.0.0", а это load-blocking
+    # гейт: любой плагин с requires_hermes считается несовместимым.
+    package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
+      version = versions.hermes;
+    };
 
     container = {
       enable = true;
