@@ -1,0 +1,5 @@
+# SearXNG bot detection config. The limiter is off (server.limiter: false in settings.yml),
+# so this file exists only to silence
+#   WARNING:searx.botdetection.config: missing config file: /etc/searxng/limiter.toml
+# Nothing here is active. If limiter is ever turned on, fill in [real_ip] first:
+# https://docs.searxng.org/admin/searx.limiter.html

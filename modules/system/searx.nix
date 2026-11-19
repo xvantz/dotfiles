@@ -1,56 +1,36 @@
-{config, ...}: {
+{
+  config,
+  lib,
+  ...
+}: {
   sops.secrets.searx_env = {
-    owner = "searx";
+    owner = "xvantz";
+    restartUnits = ["podman-searxng.service"];
   };
 
-  services.searx = {
-    enable = true;
-
-    environmentFile = config.sops.secrets.searx_env.path;
-
-    redisCreateLocally = true;
-
-    settings = {
-      use_default_settings = true;
-
-      server = {
-        port = 8888;
-        bind_address = "127.0.0.1";
-        secret_key = "\$SEARX_SECRET_KEY";
-      };
-
-      search = {
-        safe_search = 0;
-        languages = ["ru" "en"];
-        formats = ["html" "json" "csv"];
-        autocomplete = "brave";
-      };
-
-      outgoing = {
-        request_timeout = 8.0;
-        max_request_timeout = 15.0;
-        pool_connections = 50;
-        enable_http2 = true;
-        retries = 1;
-        useragent_suffix = "xvantz-private";
-      };
-
-      engines = [
-        { name = "ahmia"; disabled = true; }
-        { name = "torch"; disabled = true; }
-        { name = "google cse"; disabled = true; }
-        { name = "google"; disabled = true; }
-        { name = "bing"; disabled = true; }
-      ];
-    };
+  virtualisation.oci-containers.containers.searxng = {
+    image = "docker.io/searxng/searxng:2026.11.19-368baa340";
+    ports = ["127.0.0.1:8888:8080"];
+    volumes = [
+      # Read-only settings from the nix store; the secret comes from the env file.
+      "${./searxng/settings.yml}:/etc/searxng/settings.yml:ro"
+      # Silences "missing config file: /etc/searxng/limiter.toml" (limiter is off).
+      "${./searxng/limiter.toml}:/etc/searxng/limiter.toml:ro"
+    ];
+    environmentFiles = [
+      config.sops.secrets.searx_env.path
+    ];
+    extraOptions = [
+      "--pull=missing"
+      "--volume"
+      "searxng-cache:/var/cache/searxng"
+    ];
   };
 
-  systemd.services.searx = {
-    after = [ "sops-install-secrets.service" "redis-searx.service" "network-online.target" ];
-    wants = [ "sops-install-secrets.service" "redis-searx.service" "network-online.target" ];
-    serviceConfig = {
-      Restart = "on-failure";
-      RestartSec = "10s";
-    };
+  # The env file is read by podman at container start, so the unit must not come up before
+  # sops has written /run/secrets/searx_env. mkAfter keeps the module's own ordering
+  systemd.services."podman-searxng" = {
+    after = lib.mkAfter ["sops-install-secrets.service"];
+    wants = lib.mkAfter ["sops-install-secrets.service"];
   };
 }

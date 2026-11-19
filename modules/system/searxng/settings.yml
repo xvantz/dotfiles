@@ -1,0 +1,58 @@
+# SearXNG settings for the container instance (docker.io/searxng/searxng).
+#
+# Mounted read-only at /etc/searxng/settings.yml. Everything that is a secret or a
+# deployment detail comes from the environment instead of this file:
+#   SEARXNG_SECRET      -> server.secret_key
+#   SEARXNG_BASE_URL    -> server.base_url
+#   SEARXNG_PORT        -> server.port   (image default 8080)
+#   SEARXNG_BIND_ADDRESS-> server.bind_address (image default 0.0.0.0)
+#
+# Engine names/paths change with every SearXNG release, so this file deliberately
+# keeps the upstream engine set and only turns off what cannot work here.
+
+use_default_settings: true
+
+general:
+  instance_name: "xvantz search"
+  # Required by the wikipedia / wikidata / openstreetmap engines; without it they
+  # refuse to load ("engine requires general.contact_url").
+  contact_url: "https://git.827482.xyz/xvantz"
+
+server:
+  limiter: false          # localhost-only instance, no inbound rate limiting
+  public_instance: false
+  image_proxy: false
+  method: "GET"
+
+search:
+  safe_search: 0
+  languages:
+    - ru
+    - en
+  formats:
+    - html
+    - json              # Hermes' searxng provider reads this
+    - csv
+  autocomplete: ""      # brave/ddg autocomplete are the same endpoints that get throttled
+
+outgoing:
+  request_timeout: 8.0
+  max_request_timeout: 15.0
+  pool_connections: 50
+  enable_http2: true
+  retries: 2
+  # useragent_suffix is intentionally unset: it did not cause the blocks (verified), and a
+  # unique UA tail is a needless fingerprint.
+
+engines:
+  # Tor-only engines: cannot load without a Tor proxy, only spam the log.
+  - name: ahmia
+    disabled: true
+  - name: torch
+    disabled: true
+  # Google HTML scraping from this host returns a JS shell with no results, and
+  # google cse needs an API key/cx pair.
+  - name: google
+    disabled: true
+  - name: google cse
+    disabled: true
