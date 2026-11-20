@@ -5,7 +5,6 @@
   inputs,
   ...
 }: let
-  # Единственный источник версии Hermes (см. versions.nix в корне).
   versions = import ../../../versions.nix;
 in {
   sops.secrets.hermes_env = {
@@ -30,8 +29,6 @@ in {
     user = "hermes";
     group = "users";
 
-    # Версия из versions.nix. Без этого пакет штампует "0.0.0", а это load-blocking
-    # гейт: любой плагин с requires_hermes считается несовместимым.
     package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
       version = versions.hermes;
     };
@@ -71,7 +68,7 @@ in {
     };
 
     extraDependencyGroups = ["messaging" "voice" "edge-tts" "firecrawl"];
-    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium podman podman-compose pnpm yarn-berry fontconfig dejavu_fonts nix kubectl kubernetes-helm];
+    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium podman podman-compose pnpm yarn-berry fontconfig dejavu_fonts nix kubectl kubernetes-helm uv];
 
     documents = {
       "OBSIDIAN_MEMORY.md" = ''
@@ -322,6 +319,15 @@ in {
         command = "${config.services.pm.package}/bin/pm-mcp";
         env.PM_API = "http://${config.services.pm.listenAddr}";
         env.PM_TOKEN = "\${PM_TOKEN}";
+      };
+
+      plane = {
+        enabled = true;
+        command = "${pkgs.uv}/bin/uvx";
+        args = ["plane-mcp-server" "stdio"];
+        env.PLANE_API_KEY = "\${PLANE_API_KEY}";
+        env.PLANE_WORKSPACE_SLUG = "quasara";
+        env.PLANE_BASE_URL = "https://plane.quasara.space";
       };
     };
 
