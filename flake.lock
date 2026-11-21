@@ -223,10 +223,10 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1795087395,
-        "narHash": "sha256-RuRmIGJb5Pq7E9sHIOUVVUsIbp3LXQbHwAxbsiXKLzo=",
+        "lastModified": 1795105040,
+        "narHash": "sha256-kJvC/0IDC0tbOmgPzIhjlqsToerEOhosy9uptVQI1dw=",
         "ref": "main",
-        "rev": "c32773274a41fd728c711455a3576538a68d8589",
+        "rev": "2c026b889dd01a48a7b341968fc45ec267dcd347",
         "shallow": true,
         "type": "git",
         "url": "https://git.827482.xyz/xvantz/hermes-agent"
@@ -441,11 +441,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791275504,
-        "narHash": "sha256-dLD7j7x9lzgDCazW/6R5jcc598HFdxXr/3S1nU/70S0=",
+        "lastModified": 1795179101,
+        "narHash": "sha256-8oh5k3PPO//1vVpHM7qR/K3hrQ0/i2VLdeFPk7n3yys=",
         "ref": "refs/heads/main",
-        "rev": "84750a9a154a3138ee844b44d0981e5a37bbbba6",
-        "revCount": 174,
+        "rev": "900b0ba24f304896ffa0b1aa7b23c81633c3f1fb",
+        "revCount": 182,
         "type": "git",
         "url": "https://git.827482.xyz/xvantz/pm.git"
       },
