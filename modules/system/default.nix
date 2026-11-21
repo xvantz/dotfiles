@@ -28,5 +28,6 @@
     ./monitoring.nix
     ./k3s
     ./music.nix
+    ./hp-charge-limit.nix
   ];
 }
