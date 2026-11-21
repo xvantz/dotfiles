@@ -18,9 +18,19 @@
     initContent = ''
       eval "$(starship init zsh)"
       eval "$(zoxide init zsh)"
-      if [[ -z "$TMUX" ]] && [ "$SSH_CONNECTION" = "" ]; then
-        tmux -S /run/user/1000/tmux-1000/default new-window -t default 2>/dev/null
-        tmux -S /run/user/1000/tmux-1000/default new-session -A -s default
+      if [[ -z "$TMUX" && -z "$SSH_CONNECTION" ]]; then
+        # The tmux server is owned by the tmux-server systemd unit (see
+        # modules/home/tmux.nix). This is a client only: wait for the socket,
+        # create nothing. Otherwise a client would start its own server
+        # outside the unit and with a foreign env.
+        sock="''${TMUX_TMPDIR:-$XDG_RUNTIME_DIR}/tmux-$(id -u)/default"
+        for i in {1..30}; do [[ -S $sock ]] && break; sleep 0.1; done
+        if [[ -S $sock ]]; then
+          tmux new-window -t default 2>/dev/null
+          tmux attach-session -t default 2>/dev/null || tmux new-session -A -s default
+        else
+          echo "tmux server not running: systemctl --user status tmux-server" >&2
+        fi
       fi
     '';
   };

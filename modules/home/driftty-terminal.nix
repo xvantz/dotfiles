@@ -10,6 +10,10 @@ let
     if [ ! -r "$f" ]; then echo "missing secret file $f" >&2; exit 1; fi
     line=$(grep -m1 "=" "$f" || cat "$f")
     pw="''${line#*=}"
+    # The socket must match the server from tmux-server.service. home-manager
+    # exports TMUX_TMPDIR only in shells (sessionVariables); a systemd user
+    # unit does not get it, and without this tmux would go to /tmp/tmux-1000.
+    export TMUX_TMPDIR="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
     exec ${pkgs.xv-driftty-terminal}/bin/driftty-terminal -p 7681 -c "driftty:$pw" ${pkgs.tmux}/bin/tmux new-session -A -s default
   '';
 in
@@ -19,9 +23,9 @@ in
   # Password reuses the existing sops key driftty_env (same secrets.yaml, no
   # sops changes): home-manager sops-nix decrypts as the user into
   # /run/user/*/secrets, so no owner juggling is needed.
-  # Full PATH in Environment: if this service creates the tmux server first
-  # (fresh boot, browser before any shell), plugins resolve interpreters via
-  # the server env - bare systemd PATH means 127 for every plugin.
+  # Full PATH in Environment: the tmux server is now started by
+  # tmux-server.service (with its own derivePath), so plugins no longer depend
+  # on this PATH. Kept for driftty-terminal itself and its child utilities.
   sops.secrets.driftty_env = { };
 
   systemd.user.services.driftty-terminal = {
