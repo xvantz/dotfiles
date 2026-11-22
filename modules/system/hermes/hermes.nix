@@ -163,8 +163,10 @@ in {
       toolsets = ["all"];
 
       skills = {
+        # Единственный корень скиллов: приватный репозиторий, материализованный в стор
+        # через flake input. Read-only намеренно: правка = коммит, применение = rebuild.
         external_dirs = [
-          "/dotfiles/modules/system/hermes/skills"
+          "${inputs.skills.skills}"
         ];
       };
 
