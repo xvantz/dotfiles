@@ -1,21 +1,28 @@
 ---
 name: matt-pocock-grill-with-docs
-description: "Grilling session that builds project domain model, sharpens terminology and updates CONTEXT.md and ADRs inline. Based on Matt Pocock's approach."
-version: 1.0.0
+description: "Допрос по плану/дизайну до полного согласия + GLOSSARY.md и ADR по ходу. Use for grill, допроси, разбери план, стресс-тест идеи."
+version: 1.1.0
 author: Matt Pocock (adapted for Hermes)
 license: MIT
 metadata:
   hermes:
-    tags: [grilling, domain-modeling, architecture, adr, context]
+    tags: [grilling, domain-modeling, architecture, adr, glossary]
     related_skills: [matt-pocock-codebase-design, matt-pocock-improve-codebase-architecture]
 ---
 
----
-name: grill-with-docs
-description: A relentless interview to sharpen a plan or design, which also creates docs (ADR's and glossary) as we go.
-disable-model-invocation: true
----
+# Grill With Docs
 
-Load skills via skill_view(name): "grilling" and "domain-modeling" (from the corresponding matt-pocock directories).
+Relentless interview that sharpens a plan or design and writes the artefacts it produces: the project glossary and the decisions that must not be re-litigated.
 
-For Hermes Agent: use skill_view(name="matt-pocock-grill-with-docs-grilling") and skill_view(name="matt-pocock-grill-with-docs-domain-modeling") to load the referenced sub-skills.
+Both halves live as supporting files, not as separate skills:
+
+- `skill_view(name="matt-pocock-grill-with-docs", file_path="grilling.md")` - the interview primitive: design tree, frontier rounds, numbered questions each with your recommended answer.
+- `skill_view(name="matt-pocock-grill-with-docs", file_path="domain-modeling.md")` - the glossary and ADR discipline: challenge terms, invent edge cases, write decisions down the moment they crystallise.
+
+`skill_view(name="grilling")` and `skill_view(name="domain-modeling")` fail: this pool has no skills under those names. Always pass `file_path`.
+
+## Flow
+
+1. Load `grilling.md` and start the first frontier round. Never ask a question whose answer you could look up yourself - dispatch a sub-agent for facts instead.
+2. Load `domain-modeling.md` once terms start moving. Write `GLOSSARY.md` (older repos: `CONTEXT.md`) and `docs/adr/NNNN-*.md` inline, not at the end.
+3. Stop when the frontier is empty and the user confirms shared understanding. Do not act on the design before that.

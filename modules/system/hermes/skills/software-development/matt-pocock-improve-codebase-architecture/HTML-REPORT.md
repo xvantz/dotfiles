@@ -1,5 +1,11 @@
 # HTML Report Format
 
+## Delivery and language
+
+This report is never opened by hand: the agent runs headless in a container and talks over Telegram. Serve the file over HTTP from the scratch dir and screenshot it in the attached Chrome - the full recipe (and the two traps: `file://` is invisible to the host Chrome, hand-built `Page.captureScreenshot` clips time out) lives in SKILL.md, step 2. Send the PNG with a `MEDIA:` line next to the absolute path. Inspect the screenshot before sending: an unstyled page or an empty `<pre class="mermaid">` reaches the user as a broken report.
+
+Write the prose and card copy in Russian (the reader is Ivan), and keep the architecture vocabulary in English exactly as the glossary defines it: `module`, `interface`, `depth`, `seam`, `adapter`, `leverage`, `locality`. Mixed language here is the point - Russian sentence, English term - not a translation of the terms.
+
 The architectural review is rendered as a single self-contained HTML file in the OS temp directory. Tailwind and Mermaid both come from CDNs. Mermaid handles graph-shaped diagrams reliably; hand-built divs and inline SVG handle the more editorial visuals (mass diagrams, cross-sections). Mix the two: don't lean on Mermaid for everything, it'll start to look generic.
 
 ## Scaffold
