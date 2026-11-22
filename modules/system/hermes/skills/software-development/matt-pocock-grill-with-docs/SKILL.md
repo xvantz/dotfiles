@@ -1,6 +1,6 @@
 ---
 name: matt-pocock-grill-with-docs
-description: "Допрос по плану/дизайну до полного согласия + GLOSSARY.md и ADR по ходу. Use for grill, допроси, разбери план, стресс-тест идеи."
+description: "Use when stress-testing a plan or a design: relentless interview that writes GLOSSARY.md and ADRs as it goes."
 version: 1.1.0
 author: Matt Pocock (adapted for Hermes)
 license: MIT

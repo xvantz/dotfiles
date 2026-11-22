@@ -1,6 +1,6 @@
 ---
 name: matt-pocock-improve-codebase-architecture
-description: "Архитектурный обзор: shallow-модули, deep-рефакторинг, HTML-отчёт + grilling. Use for architecture review, refactor, разбери архитектуру, мелкие модули."
+description: "Use when reviewing or refactoring architecture: find shallow modules, propose deep-module refactors, render a visual HTML report, then grill the chosen candidate."
 version: 1.1.0
 author: Matt Pocock (adapted for Hermes)
 license: MIT
