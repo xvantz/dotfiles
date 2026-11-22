@@ -517,9 +517,25 @@
         "nixpkgs": "nixpkgs",
         "nixvim": "nixvim",
         "pm": "pm",
+        "skills": "skills",
         "sops-nix": "sops-nix",
         "sync-agent": "sync-agent",
         "zen-browser": "zen-browser"
+      }
+    },
+    "skills": {
+      "locked": {
+        "lastModified": 1795381131,
+        "narHash": "sha256-RszEai2xlG+tqG8lXf11xTes035SEq/5aajW5GD+5Dg=",
+        "ref": "refs/heads/main",
+        "rev": "c7247385040bc50a1cee9316eca4a613db786f7d",
+        "revCount": 5,
+        "type": "git",
+        "url": "https://git.827482.xyz/xvantz/skills"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://git.827482.xyz/xvantz/skills"
       }
     },
     "sops-nix": {
