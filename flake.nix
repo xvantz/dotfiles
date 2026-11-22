@@ -40,7 +40,7 @@
     };
 
     skills = {
-      url = "git+ssh://forgejo@git.827482.xyz/xvantz/skills";
+      url = "git+ssh://git@github.com/xvantz/skills";
     };
 
     sync-agent = {
