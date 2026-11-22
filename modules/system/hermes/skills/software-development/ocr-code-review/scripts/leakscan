@@ -1,0 +1,221 @@
+#!/usr/bin/env python3
+"""leakscan — страж публичной поверхности.
+
+Ловит приватные термины в том, что уезжает наружу: в файлах, в коммит-сообщениях,
+в тексте PR. Работает без ocr и без сети.
+
+Термины берутся из приватного файла (вне git) и/или выводятся из приватного маппинга
+репозиториев. В выводе термин НЕ печатается целиком: только индекс и длина, потому что
+вывод часто попадает в публичные логи CI.
+
+Коды выхода:
+  0 — чисто
+  4 — найдены совпадения
+  5 — не задано ни одного термина (fail-closed при --require-terms)
+
+Примеры:
+  leakscan --staged                     # то, что уходит в коммит
+  leakscan --range origin/master..HEAD  # коммиты + их сообщения
+  leakscan --text pr-body.md            # тело PR/MR перед публикацией
+  cat description.md | leakscan --text - --require-terms
+  leakscan --derive                     # какие термины вывелись и откуда
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+PRIVATE = Path(os.environ.get("OCR_REVIEW_PRIVATE")
+               or (Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / "ocr-review"))
+BINARY_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".pdf", ".zip", ".gz", ".tar",
+                   ".xz", ".zst", ".woff", ".woff2", ".ttf", ".ico", ".so", ".a", ".o"}
+SKIP_PATH_PARTS = {".git", "node_modules", "dist", "build", ".next", "vendor", "__pycache__"}
+
+
+def git(*args: str, cwd: Path | None = None) -> str:
+    return subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True).stdout
+
+
+def explicit_terms(path: Path | None) -> list[str]:
+    candidates = [path] if path else [PRIVATE / "leak-terms.txt"]
+    for candidate in candidates:
+        if candidate and candidate.is_file():
+            out = []
+            for line in candidate.read_text(encoding="utf-8", errors="replace").splitlines():
+                line = line.strip()
+                if line and not line.startswith("#"):
+                    out.append(line)
+            return out
+    return []
+
+
+def derived_terms() -> list[tuple[str, str]]:
+    """(термин, источник) — имена проектов и базовые имена репозиториев из приватного маппинга."""
+    result: list[tuple[str, str]] = []
+    repos_file = PRIVATE / "repos.json"
+    if repos_file.is_file():
+        try:
+            repos = (json.loads(repos_file.read_text(encoding="utf-8")).get("repos") or {})
+        except json.JSONDecodeError:
+            repos = {}
+        for path, profile in repos.items():
+            base = Path(path.rstrip("/")).name
+            if len(base) >= 3:
+                result.append((base, "repos.json:basename"))
+            project = (profile or {}).get("project")
+            if project and len(project) >= 3:
+                result.append((project, "repos.json:project"))
+    projects_dir = PRIVATE / "projects"
+    if projects_dir.is_dir():
+        for f in projects_dir.glob("*.json"):
+            if len(f.stem) >= 3:
+                result.append((f.stem, "projects/filename"))
+    seen, unique = set(), []
+    for term, source in result:
+        if term.lower() in seen:
+            continue
+        seen.add(term.lower())
+        unique.append((term, source))
+    return unique
+
+
+def compile_term(term: str) -> re.Pattern:
+    escaped = re.escape(term)
+    if len(term) <= 4:
+        # короткие термины (2-4 символа) матчим только по границам слова, иначе ловим хэши и base64
+        return re.compile(rf"(?<![A-Za-z0-9]){escaped}(?![A-Za-z0-9])", re.IGNORECASE)
+    return re.compile(escaped, re.IGNORECASE)
+
+
+def mask(index: int, term: str) -> str:
+    return f"term[{index}] ({len(term)} симв.)"
+
+
+def should_skip(path: Path) -> bool:
+    if path.suffix.lower() in BINARY_SUFFIXES:
+        return True
+    return any(part in SKIP_PATH_PARTS for part in path.parts)
+
+
+def scan_text(label: str, text: str, patterns: list[tuple[int, str, re.Pattern]]) -> list[str]:
+    hits = []
+    for number, line in enumerate(text.splitlines(), 1):
+        for index, term, pattern in patterns:
+            if pattern.search(line):
+                hits.append(f"{label}:{number}: {mask(index, term)}")
+    return hits
+
+
+def staged_files() -> list[Path]:
+    names = git("diff", "--cached", "--name-only", "--diff-filter=ACMR").splitlines()
+    return [Path(n) for n in names if n.strip()]
+
+
+def tracked_files() -> list[Path]:
+    names = git("ls-files").splitlines()
+    return [Path(n) for n in names if n.strip()]
+
+
+def files_in_range(spec: str) -> list[Path]:
+    names = git("diff", "--name-only", "--diff-filter=ACMR", spec).splitlines()
+    return [Path(n) for n in names if n.strip()]
+
+
+def main() -> int:
+    p = argparse.ArgumentParser(prog="leakscan", description="Поиск приватных терминов в публичной поверхности")
+    p.add_argument("--terms", help="файл с терминами (по умолчанию приватный leak-terms.txt)")
+    p.add_argument("--staged", action="store_true", help="сканировать индекс (то, что уйдёт в коммит)")
+    p.add_argument("--range", help="git-диапазон, напр. origin/master..HEAD (файлы + сообщения коммитов)")
+    p.add_argument("--all-tracked", action="store_true", help="весь отслеживаемый набор файлов")
+    p.add_argument("--path", action="append", default=[], help="конкретный файл или каталог (можно несколько)")
+    p.add_argument("--text", help="сканировать текст: путь к файлу или '-' для stdin (тело PR, описание)")
+    p.add_argument("--derive", action="store_true", help="показать выведенные термины и выйти")
+    p.add_argument("--show-terms", action="store_true", help="показать все термины (только локально!)")
+    p.add_argument("--require-terms", action="store_true", help="падать с кодом 5, если терминов нет (fail-closed)")
+    args = p.parse_args()
+
+    terms = explicit_terms(Path(args.terms) if args.terms else None)
+    sources = [(t, "leak-terms.txt") for t in terms]
+    derived = derived_terms()
+    if args.derive:
+        print("явные из leak-terms.txt:", len(terms))
+        for term, source in derived:
+            print(f"  выведен: {source}")
+        print(f"всего терминов: {len({t.lower() for t, _ in sources} | {t.lower() for t, _ in derived})}")
+        return 0
+
+    seen, merged = set(), []
+    for term, source in sources + derived:
+        if term.lower() in seen:
+            continue
+        seen.add(term.lower())
+        merged.append((term, source))
+
+    if not merged:
+        print("leakscan: не задано ни одного термина "
+              f"(ожидался {PRIVATE / 'leak-terms.txt'} или --terms)", file=sys.stderr)
+        return 5 if args.require_terms else 0
+
+    if args.show_terms:
+        print(f"leakscan: {len(merged)} терминов из {PRIVATE}")
+
+    patterns = [(i, term, compile_term(term)) for i, (term, _) in enumerate(merged, 1)]
+    hits: list[str] = []
+
+    if args.text:
+        if args.text == "-":
+            hits += scan_text("<stdin>", sys.stdin.read(), patterns)
+        else:
+            target = Path(args.text)
+            hits += scan_text(str(target), target.read_text(encoding="utf-8", errors="replace"), patterns)
+
+    files: list[Path] = []
+    if args.staged:
+        files += staged_files()
+    if args.range:
+        files += files_in_range(args.range)
+        for message in git("log", "--format=%B%n---LEAKSCAN---", args.range).split("---LEAKSCAN---"):
+            hits += scan_text("<commit-message>", message, patterns)
+    if args.all_tracked:
+        files += tracked_files()
+    for raw in args.path:
+        target = Path(raw)
+        if target.is_dir():
+            files += [f.relative_to(Path.cwd()) for f in target.rglob("*") if f.is_file()]
+        elif target.is_file():
+            files.append(target)
+
+    if not (args.staged or args.range or args.all_tracked or args.path or args.text):
+        print("leakscan: нечего сканировать — укажи --staged, --range, --all-tracked, --path или --text",
+              file=sys.stderr)
+        return 2
+
+    seen_files = set()
+    for rel in files:
+        if rel in seen_files or should_skip(rel):
+            continue
+        seen_files.add(rel)
+        path = Path(rel)
+        if not path.is_file():
+            continue
+        hits += scan_text(str(rel), path.read_text(encoding="utf-8", errors="replace"), patterns)
+
+    if hits:
+        print(f"🔴 leakscan: {len(hits)} совпадение(й) приватных терминов на публичной поверхности:", file=sys.stderr)
+        for hit in hits:
+            print(f"  {hit}", file=sys.stderr)
+        print("\nЧто делать: убрать термин из текста либо заменить на нейтральное описание. "
+              "Сам термин в выводе не печатается намеренно — лог может быть публичным.", file=sys.stderr)
+        return 4
+
+    print(f"🟢 leakscan: чисто ({len(merged)} терминов, {len(seen_files)} файлов)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

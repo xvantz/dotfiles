@@ -75,11 +75,64 @@ Why this shape:
 - the agent picks the stack pack by detection (`package.json` / `go.mod` / `pyproject.toml`) or by profile —
   no per-repo configuration file has to be committed anywhere;
 - domain knowledge (business terms, service names, money rules of a specific product) stays on the machine;
-- `--doctor` scans the public rule tree for every term in `leak-terms.txt` and exits 4 on a hit, so a rule
-  that leaks an internal name cannot be committed unnoticed.
+- `--doctor` scans the **entire skill directory** (SKILL.md, references, scripts, tests, assets) for every term
+  in `leak-terms.txt` and exits 4 with a file:term list on a hit. Scope matters: scanning only `assets/rules`
+  misses leaks in docs and tests.
 
 Add a stack pack when a new stack shows up; add a project pack only in the private root. See
 `references/rule-packs.md` for packing conventions and the ordering pitfall.
+
+### Publishing to a public repo
+
+This skill lives in a public dotfiles repo, so every writable surface is a publication surface.
+
+- Keep `leak-terms.txt` (project names, service names, domain vocabulary) private, and never restate that list
+  in the repo — a test that enumerates banned terms leaks the vocabulary it guards. Assemble probe terms at
+  runtime (`"secret" + "name"`) or read them from the private file.
+- Project-specific findings do not belong in docs or PR bodies either. Publish aggregates (files, tokens,
+  wall clock, cost, actionable share); "missing deadline on the money path" or "spec without the tenant
+  field" identifies a real system even without naming it.
+- `--doctor` before every commit that touches the skill; the leaked-term list is only as good as the words
+  already on it, so add a term the moment it appears.
+- If a leak did reach an unmerged branch, squash the branch to one clean commit and
+  `git push --force-with-lease` — rewriting history before review costs nothing, doing it after a merge is a
+  different project. Old objects stay fetchable by direct SHA until the server runs GC, so say so instead of
+  claiming the leak is gone.
+
+## Public surface: не выносить внутреннее
+
+This skill lives in a public repository. Anything written here, committed, pushed, or pasted into a PR body
+is published. Keep the boundary mechanical, not a matter of remembering.
+
+**Two zones.** Public: this repo, public repos, PR/MR bodies, commit messages, CI logs. Private:
+`~/.config/ocr-review/` (project rule packs, repo mapping, term list, `provider.env`), `/data/.hermes/`,
+sops, private repos. A public file may *reference* the private zone (`${VAR}`, paths, config) but never
+*copy* its content.
+
+**Write at the level of the class of problem, not the instance.** "External calls must carry a timeout"
+is publishable; naming the service, endpoint, or module where the timeout is missing is not. Test: could a
+reader learn what system this is and what it does? Then rewrite.
+
+**Mechanical gates, in order of reliability:**
+
+```bash
+scripts/leakscan --staged                     # pre-commit: files
+scripts/leakscan --range origin/master..HEAD  # pre-push: files + commit messages
+printf '%s' "$pr_body" | scripts/leakscan --text - --require-terms   # before opening a PR
+scripts/leakscan --all-tracked                # repo-wide audit after an incident
+scripts/leakscan --derive                    # which terms came from where
+scripts/install-hooks <repo>                  # wire pre-commit + pre-push
+```
+
+Terms come from `~/.config/ocr-review/leak-terms.txt` plus terms *derived* from `repos.json`
+(project name, repo basename, project pack filename) — register a repo and it is covered automatically.
+The scanner never prints the matched term (CI logs are public): output is `term[7] (9 симв.)`.
+Exit codes: 0 clean, 4 hits, 5 no terms configured (fail-closed with `--require-terms`).
+A server-side CI job (`.forgejo/workflows/leakscan.yaml`) reads terms from the `LEAK_TERMS` secret, so the
+check cannot be skipped with `--no-verify`.
+
+Full policy, promotion procedure (private → public) and the incident playbook:
+`references/public-surface-policy.md`.
 
 ## Environment
 

@@ -203,6 +203,53 @@ print("ok")
     finally:
         probe.unlink()
 
+    print("6. leakscan: публичная поверхность")
+    scan = SKILL / "scripts" / "leakscan"
+    leak_repo = tmp / "leak-repo"
+    leak_repo.mkdir()
+    subprocess.run(["git", "init", "-q"], cwd=leak_repo, check=True)
+    subprocess.run(["git", "config", "user.email", "t@t"], cwd=leak_repo, check=True)
+    subprocess.run(["git", "config", "user.name", "t"], cwd=leak_repo, check=True)
+    (leak_repo / "readme.md").write_text("нейтральный текст\n")
+    subprocess.run(["git", "add", "-A"], cwd=leak_repo, check=True)
+    subprocess.run(["git", "commit", "-qm", "init"], cwd=leak_repo, check=True)
+
+    scan_env = {**env, "OCR_REVIEW_PRIVATE": str(private)}
+    r = sh([str(scan), "--staged"], cwd=leak_repo, env=scan_env)
+    check("чистый индекс -> rc=0", r.returncode == 0, r.stderr)
+
+    (leak_repo / "notes.md").write_text(f"тут {leak_term} и всё\n")
+    subprocess.run(["git", "add", "-A"], cwd=leak_repo, check=True)
+    r = sh([str(scan), "--staged"], cwd=leak_repo, env=scan_env)
+    check("термин в индексе -> rc=4", r.returncode == 4, f"rc={r.returncode} {r.stdout}")
+    check("термин в выводе замаскирован", leak_term not in (r.stdout + r.stderr), r.stderr)
+
+    (leak_repo / "notes.md").unlink()
+    subprocess.run(["git", "add", "-A"], cwd=leak_repo, check=True)
+    subprocess.run(["git", "commit", "--allow-empty", "-qm", f"fix: {leak_term} в сообщении"],
+                   cwd=leak_repo, check=True)
+    r = sh([str(scan), "--range", "HEAD~1..HEAD"], cwd=leak_repo, env=scan_env)
+    check("термин в коммит-сообщении -> rc=4", r.returncode == 4, f"rc={r.returncode}")
+
+    r = subprocess.run([str(scan), "--text", "-"], cwd=leak_repo, capture_output=True, text=True,
+                       env=scan_env, input=f"тело PR упоминает {probe_term}")
+    check("термин в теле PR -> rc=4", r.returncode == 4, f"rc={r.returncode}")
+
+    short_term = "q" + "7"
+    (private / "leak-terms.txt").write_text(f"{leak_term}\n{probe_term}\n{short_term}\n")
+    r = subprocess.run([str(scan), "--text", "-"], cwd=leak_repo, capture_output=True, text=True,
+                       env=scan_env, input="строка aq7b не должна считаться совпадением")
+    check("короткий термин не ловит подстроку", r.returncode == 0, r.stderr)
+    r = subprocess.run([str(scan), "--text", "-"], cwd=leak_repo, capture_output=True, text=True,
+                       env=scan_env, input=f"а тут {short_term} отдельным словом")
+    check("короткий термин по границе ловится", r.returncode == 4, r.stderr)
+
+    empty_private = tmp / "empty-private"
+    empty_private.mkdir()
+    r = sh([str(scan), "--staged", "--require-terms"], cwd=leak_repo,
+           env={**env, "OCR_REVIEW_PRIVATE": str(empty_private)})
+    check("без терминов fail-closed -> rc=5", r.returncode == 5, f"rc={r.returncode}")
+
     shutil.rmtree(tmp, ignore_errors=True)
     print()
     if FAILED:

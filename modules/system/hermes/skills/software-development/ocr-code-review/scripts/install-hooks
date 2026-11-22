@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+"""install-hooks — ставит git-хуки leakscan в текущий репозиторий.
+
+    install-hooks [path-to-repo]
+
+pre-commit: leakscan по индексу (быстро, файлы)
+pre-push:   leakscan по диапазону (файлы + сообщения коммитов)
+
+Хуки уважают OCR_REVIEW_PRIVATE и путь к приватному списку терминов.
+Если терминов нет — хуки молча пропускают проверку (мягкий режим); в CI используй
+`leakscan --require-terms`, чтобы отсутствие терминов было ошибкой.
+"""
+from __future__ import annotations
+
+import os
+import stat
+import subprocess
+import sys
+from pathlib import Path
+
+SCAN = Path(__file__).resolve().parent / "leakscan"
+
+PRE_COMMIT = f"""#!/bin/sh
+# установлено install-hooks из скилла ocr-code-review
+exec "{SCAN}" --staged || exit $?
+"""
+
+PRE_PUSH = f"""#!/bin/sh
+# установлено install-hooks из скилла ocr-code-review
+while read -r local_ref local_sha remote_ref remote_sha; do
+  case "$local_sha" in
+    0000000000000000000000000000000000000000) continue ;;
+  esac
+  if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+    range="$local_sha --not --remotes"
+    "{SCAN}" --range "$range" || exit $?
+  else
+    "{SCAN}" --range "$remote_sha..$local_sha" || exit $?
+  fi
+done
+exit 0
+"""
+
+
+def install(repo: Path) -> int:
+    if not (repo / ".git").exists():
+        print(f"install-hooks: {repo} не git-репозиторий", file=sys.stderr)
+        return 2
+    hooks_dir = Path(subprocess.run(["git", "rev-parse", "--git-path", "hooks"],
+                                    cwd=repo, capture_output=True, text=True).stdout.strip())
+    if not hooks_dir.is_absolute():
+        hooks_dir = (repo / hooks_dir).resolve()
+    hooks_dir.mkdir(parents=True, exist_ok=True)
+    for name, body in (("pre-commit", PRE_COMMIT), ("pre-push", PRE_PUSH)):
+        target = hooks_dir / name
+        if target.exists():
+            print(f"install-hooks: {target} уже есть — перезаписываю")
+        target.write_text(body)
+        target.chmod(target.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        print(f"установлен {target}")
+    private = Path(os.environ.get("OCR_REVIEW_PRIVATE")
+                   or (Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / "ocr-review"))
+    if not (private / "leak-terms.txt").is_file():
+        print(f"⚠ нет {private / 'leak-terms.txt'} — хуки будут пропускать проверку", file=sys.stderr)
+    return 0
+
+
+if __name__ == "__main__":
+    repo = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path.cwd()
+    sys.exit(install(repo))
