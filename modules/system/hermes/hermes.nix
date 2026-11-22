@@ -163,8 +163,8 @@ in {
       toolsets = ["all"];
 
       skills = {
-        # Единственный корень скиллов: приватный репозиторий, материализованный в стор
-        # через flake input. Read-only намеренно: правка = коммит, применение = rebuild.
+        # Single skill root: the private repository materialised into the store through a
+        # flake input. Read-only on purpose - edits are commits, applying them is a rebuild.
         external_dirs = [
           "${inputs.skills.skills}"
         ];

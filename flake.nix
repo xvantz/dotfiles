@@ -39,8 +39,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Приватный источник правды для агентских скиллов: рантайм читает его из стора,
-    # правки идут коммитом/PR, применяются через nix flake update + rebuild.
     skills = {
       url = "git+https://git.827482.xyz/xvantz/skills";
     };
