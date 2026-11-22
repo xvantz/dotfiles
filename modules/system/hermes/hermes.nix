@@ -68,7 +68,7 @@ in {
     };
 
     extraDependencyGroups = ["messaging" "voice" "edge-tts" "firecrawl"];
-    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium podman podman-compose pnpm yarn-berry fontconfig dejavu_fonts nix kubectl kubernetes-helm uv];
+    extraPackages = with pkgs; [go zig bun buf golangci-lint gitea-mcp-server gopls typescript-language-server pyright rust-analyzer zls nixd svelte-language-server yaml-language-server bash-language-server lua-language-server terraform-ls dockerfile-language-server yt-dlp chromium podman podman-compose pnpm yarn-berry fontconfig dejavu_fonts nix kubectl kubernetes-helm uv xv-open-code-review];
 
     documents = {
       "OBSIDIAN_MEMORY.md" = ''
