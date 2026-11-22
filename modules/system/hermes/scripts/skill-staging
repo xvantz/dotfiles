@@ -1,0 +1,215 @@
+#!/usr/bin/env python3
+"""skill-staging — накопление и еженедельный разбор агентских знаний.
+
+Две ступени, разные по смыслу:
+
+  capture  — дописать наблюдение в staging. Дешёво, без git, без ревью, ничего не применяется.
+  digest   — сравнить staging с приватным репозиторием скиллов и выдать СПИСОК на решение.
+             Ничего не коммитит, не пушит, не открывает PR и не удаляет.
+
+Staging: $HERMES_STAGING или /data/.hermes/skill-staging
+Репозиторий скиллов: $SKILLS_REPO или /projects/skills
+
+Запись в staging:
+  skill-staging capture --name "some-app: vite cache" --project example --lesson "После смены .env чистить кеш сборки, иначе сборка отдаёт старый конфиг"
+  echo "текст урока" | skill-staging capture --name "ocr-gate" --project infra
+
+Отчёт:
+  skill-staging digest              # список: новое / изменилось / разрослось / протухло
+  skill-staging digest --json       # для крона
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+STAGING = Path(os.environ.get("HERMES_STAGING", "/data/.hermes/skill-staging"))
+REPO = Path(os.environ.get("SKILLS_REPO", "/projects/skills"))
+LEDGER = STAGING / "ledger.md"
+SIZE_CAP = 300  # строк: после этого reference-файл делят по темам
+
+
+def slug(text: str) -> str:
+    text = text.lower().strip()
+    text = re.sub(r"[^a-zа-я0-9а-я]+", "-", text, flags=re.IGNORECASE)
+    return re.sub(r"-+", "-", text).strip("-")[:60] or f"note-{int(time.time())}"
+
+
+def capture(args) -> int:
+    STAGING.mkdir(parents=True, exist_ok=True)
+    body = sys.stdin.read() if args.lesson is None else args.lesson
+    body = body.strip()
+    if not body:
+        print("skill-staging: пустой урок", file=sys.stderr)
+        return 2
+    name = args.name
+    path = STAGING / "drafts" / f"{slug(name)}.md"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    entry = (
+        "---\n"
+        f"name: {json.dumps(name, ensure_ascii=False)}\n"
+        f"date: {time.strftime('%Y-%m-%d')}\n"
+        f"project: {json.dumps(args.project or '', ensure_ascii=False)}\n"
+        f"confidence: {args.confidence}\n"
+        "---\n\n"
+        f"{body}\n"
+    )
+    if path.exists():
+        with path.open("a", encoding="utf-8") as fh:
+            fh.write(f"\n\n## Добавлено {time.strftime('%Y-%m-%d')}\n\n{body}\n")
+    else:
+        path.write_text(entry, encoding="utf-8")
+    LEDGER.parent.mkdir(parents=True, exist_ok=True)
+    with LEDGER.open("a", encoding="utf-8") as fh:
+        fh.write(f"- {time.strftime('%Y-%m-%d')} [{args.project or '-'}] {name} "
+                 f"(confidence: {args.confidence}) -> {path.name}\n")
+    print(f"captured: {path}")
+    return 0
+
+
+def frontmatter(text: str) -> dict:
+    meta = {}
+    if not text.startswith("---"):
+        return meta
+    end = text.find("\n---", 3)
+    if end < 0:
+        return meta
+    for line in text[3:end].splitlines():
+        if ":" in line:
+            key, value = line.split(":", 1)
+            meta[key.strip()] = value.strip().strip('"')
+    return meta
+
+
+def repo_skills() -> dict[str, Path]:
+    skills: dict[str, Path] = {}
+    root = REPO / "skills"
+    if not root.is_dir():
+        return skills
+    for skill_md in root.rglob("SKILL.md"):
+        skills[skill_md.parent.name] = skill_md.parent
+    return skills
+
+
+def digest(args) -> int:
+    known = repo_skills()
+    drafts = sorted((STAGING / "drafts").glob("*.md")) if (STAGING / "drafts").is_dir() else []
+    new, updates, oversized = [], [], []
+
+    for path in drafts:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        meta = frontmatter(text)
+        name = meta.get("name") or path.stem
+        target = known.get(slug_name(name))
+        item = {
+            "draft": str(path),
+            "name": name,
+            "project": meta.get("project") or "",
+            "confidence": meta.get("confidence") or "?",
+            "lines": len(text.splitlines()),
+            "days_old": days_since(meta.get("date")),
+        }
+        if target is None:
+            new.append(item)
+        else:
+            item["existing"] = str(target)
+            item["existing_lines"] = len((target / "SKILL.md").read_text(encoding="utf-8", errors="replace").splitlines())
+            updates.append(item)
+
+    # Разросшееся считаем не по абсолютному размеру (вендорные скиллы легально большие),
+    # а по РОСТУ с прошлого разбора: это и есть сигнал «снежного кома».
+    state_file = STAGING / "state.json"
+    try:
+        previous = json.loads(state_file.read_text(encoding="utf-8")).get("lines", {})
+    except (FileNotFoundError, json.JSONDecodeError):
+        previous = {}
+    current: dict[str, int] = {}
+
+    for name, path in known.items():
+        for md in path.rglob("*.md"):
+            rel = str(md.relative_to(REPO))
+            lines = len(md.read_text(encoding="utf-8", errors="replace").splitlines())
+            current[rel] = lines
+            before = previous.get(rel)
+            if before is not None and lines > before and (lines - before >= 40 or lines > before * 1.15):
+                oversized.append({"file": rel, "lines": lines, "before": before, "growth": lines - before})
+    oversized.sort(key=lambda item: -item["growth"])
+    oversized = oversized[: args.top]
+
+    state_file.parent.mkdir(parents=True, exist_ok=True)
+    state_file.write_text(json.dumps({"updated": time.strftime("%Y-%m-%d"), "lines": current},
+                                     ensure_ascii=False, indent=0), encoding="utf-8")
+
+    result = {"staging": str(STAGING), "new": new, "updates": updates, "oversized": oversized,
+              "drafts": len(drafts), "skills_in_repo": len(known)}
+
+    if args.json:
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
+
+    print(f"# Разбор staging — {time.strftime('%Y-%m-%d')}\n")
+    print(f"Черновиков в staging: {len(drafts)}\n")
+    if new:
+        print(f"## Новое ({len(new)}) — скилла с таким именем в репозитории нет")
+        for item in new:
+            print(f"- {item['name']} [{item['project'] or '-'}] · confidence {item['confidence']} · "
+                  f"{item['lines']} стр. · лежит {item['days_old']} дн.")
+        print()
+    if updates:
+        print(f"## Дополнения к существующим ({len(updates)}) — кандидат в правку скилла")
+        for item in updates:
+            print(f"- {item['name']} [{item['project'] or '-'}] · черновик {item['lines']} стр. "
+                  f"против скилла {item['existing_lines']} стр.")
+        print()
+    if oversized:
+        print(f"## Выросло с прошлого разбора ({len(oversized)}) — кандидат на сжатие или деление по темам")
+        for item in oversized:
+            print(f"- {item['file']} · {item['before']} -> {item['lines']} стр. (+{item['growth']})")
+        print()
+    if not (new or updates or oversized):
+        print("Нечего разбирать.\n")
+    print("Это список, а не решение. Промоушен делает агент после «да»: перенос в клон, ветка, PR.")
+    print("Ничего не изменено: staging не тронут, репозиторий не тронут.")
+    return 0
+
+
+def slug_name(name: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", name.lower().split(":")[0]).strip("-")
+
+
+def days_since(value: str | None) -> str:
+    try:
+        stamp = time.mktime(time.strptime(value or "", "%Y-%m-%d"))
+    except (ValueError, TypeError):
+        return "?"
+    return str(int((time.time() - stamp) // 86400))
+
+
+def main() -> int:
+    p = argparse.ArgumentParser(prog="skill-staging", description="Staging агентских знаний и еженедельный разбор")
+    sub = p.add_subparsers(dest="cmd", required=True)
+
+    c = sub.add_parser("capture", help="дописать наблюдение в staging")
+    c.add_argument("--name", required=True)
+    c.add_argument("--project", default="")
+    c.add_argument("--lesson", help="текст урока; иначе читается stdin")
+    c.add_argument("--confidence", default="medium", choices=["low", "medium", "high"])
+    c.set_defaults(func=capture)
+
+    d = sub.add_parser("digest", help="список на решение: новое, дополнения, разросшееся")
+    d.add_argument("--json", action="store_true")
+    d.add_argument("--top", type=int, default=5, help="сколько строк про рост показывать")
+    d.set_defaults(func=digest)
+
+    args = p.parse_args()
+    return args.func(args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
