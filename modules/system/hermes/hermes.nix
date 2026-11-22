@@ -163,8 +163,10 @@ in {
       toolsets = ["all"];
 
       skills = {
+        # Single skill root: the private repository materialised into the store through a
+        # flake input. Read-only on purpose - edits are commits, applying them is a rebuild.
         external_dirs = [
-          "/dotfiles/modules/system/hermes/skills"
+          "${inputs.skills.skills}"
         ];
       };
 

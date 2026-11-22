@@ -39,6 +39,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    skills = {
+      url = "git+https://git.827482.xyz/xvantz/skills";
+    };
+
     sync-agent = {
       url = "git+https://git.827482.xyz/xvantz/sync-agent.git";
       inputs.nixpkgs.follows = "nixpkgs";
