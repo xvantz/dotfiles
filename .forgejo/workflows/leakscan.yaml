@@ -8,7 +8,11 @@ name: leakscan
 #
 # No `uses:` steps and no jq/python on the runner image: the clone is done by hand,
 # and the scanner plus jq are pulled from nixpkgs at run time.
-on: [push, pull_request]
+#
+# `push` is the only trigger (a branch push used to fire `push` and `pull_request`
+# together, so every check ran twice), which means the PR title and body are not in
+# the event payload any more - they are fetched from the API for the commit's PR.
+on: [push]
 
 jobs:
   leakscan:
@@ -52,27 +56,35 @@ jobs:
           SCAN=modules/system/hermes/scripts/leakscan
 
           base="${{ github.event.before }}"
+          # A new branch has no previous commit, so compare against the fork point.
           if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
-            base="origin/${{ github.base_ref }}"
-          fi
-          if [ "$base" = "origin/" ]; then
-            base="HEAD~1"
+            base=$(git merge-base origin/master HEAD)
           fi
           echo "диапазон: $base..HEAD"
 
           nix shell nixpkgs#python3 --command python3 "$SCAN" \
             --terms "$RUNNER_TEMP/leak-terms.txt" --require-terms --range "$base..HEAD"
 
-      - name: Проверка тела PR
-        if: github.event_name == 'pull_request' && steps.conf.outputs.ok == 'true'
+      - name: Проверка заголовка и тела PR
+        if: steps.conf.outputs.ok == 'true'
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -eu
           SCAN=modules/system/hermes/scripts/leakscan
-          title=$(nix shell nixpkgs#jq --command jq -r '.pull_request.title // empty' "$GITHUB_EVENT_PATH")
-          body=$(nix shell nixpkgs#jq --command jq -r '.pull_request.body // empty' "$GITHUB_EVENT_PATH")
-          if [ -z "$body$title" ]; then
-            echo "тело и заголовок PR пусты, пропускаю"
+          host=${GITHUB_SERVER_URL#https://}
+          printf 'machine %s login ci password %s\n' "$host" "$TOKEN" > "$RUNNER_TEMP/api.netrc"
+          payload=$(curl -s --netrc-file "$RUNNER_TEMP/api.netrc" \
+            "$GITHUB_SERVER_URL/api/v1/repos/$GITHUB_REPOSITORY/pulls?state=open&limit=50")
+          if [ -z "$payload" ]; then
+            echo "::warning::API не ответил — текст PR не проверен"
             exit 0
           fi
-          printf '%s\n%s\n' "$title" "$body" | nix shell nixpkgs#python3 --command python3 "$SCAN" \
+          text=$(printf '%s' "$payload" | nix shell nixpkgs#jq --command jq -r --arg sha "$GITHUB_SHA" \
+            '.[] | select(.head.sha == $sha) | (.title // empty), (.body // empty)')
+          if [ -z "$text" ]; then
+            echo "у коммита $GITHUB_SHA нет открытого PR — проверять нечего"
+            exit 0
+          fi
+          printf '%s\n' "$text" | nix shell nixpkgs#python3 --command python3 "$SCAN" \
             --terms "$RUNNER_TEMP/leak-terms.txt" --require-terms --text -
