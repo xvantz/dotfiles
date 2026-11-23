@@ -3,7 +3,10 @@ name: ci
 # action (actions/checkout, actions/cache) dies with exit 127 before any step body
 # runs. The clone is done by hand; the flake-source cache went with it, since a
 # fresh container has no store to warm anyway.
-on: [push, pull_request]
+#
+# `push` is the only trigger: a branch push used to fire both `push` and
+# `pull_request`, so every check ran twice on the same commit.
+on: [push]
 
 jobs:
   check:
@@ -35,11 +38,9 @@ jobs:
         id: changes
         run: |
           base="${{ github.event.before }}"
+          # A new branch has no previous commit, so compare against the fork point.
           if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
-            base="origin/${{ github.base_ref }}"
-          fi
-          if [ "$base" = "origin/" ]; then
-            base="HEAD~1"
+            base=$(git merge-base origin/master HEAD)
           fi
           files=$(git diff --name-only "$base" HEAD -- 2>/dev/null || true)
           echo "changed: $files"
@@ -62,11 +63,9 @@ jobs:
         continue-on-error: true
         run: |
           base="${{ github.event.before }}"
+          # A new branch has no previous commit, so compare against the fork point.
           if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
-            base="origin/${{ github.base_ref }}"
-          fi
-          if [ "$base" = "origin/" ]; then
-            base="HEAD~1"
+            base=$(git merge-base origin/master HEAD)
           fi
           files=$(git diff --name-only "$base" HEAD -- '*.nix' 2>/dev/null || true)
           if [ -z "$files" ]; then
