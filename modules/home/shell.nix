@@ -1,4 +1,26 @@
-{...}: {
+{
+  config,
+  pkgs,
+  ...
+}: let
+  # Same as the GUI does on database unlock, minus the removal on lock: the GUI
+  # only tracks keys it added itself (SSHAgent::m_addedKeys), so a key added
+  # here survives locking the database.
+  kpx-ssh-add = pkgs.writeShellApplication {
+    name = "kpx-ssh-add";
+    runtimeInputs = [
+      pkgs.keepassxc
+      pkgs.openssh
+    ];
+    text = ''
+      [ $# -eq 2 ] || { echo 'usage: KPXC_DB=<db> kpx-ssh-add ENTRY ATTACHMENT' >&2; exit 2; }
+      : "''${KPXC_DB:?set KPXC_DB to the path of your .kdbx}"
+      keepassxc-cli attachment-export --stdout "$KPXC_DB" "$1" "$2" | ssh-add -
+    '';
+  };
+in {
+  home.packages = [kpx-ssh-add];
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -46,6 +68,8 @@
   };
 
   home.sessionVariables = {
+    # KeePassXC database for kpx-ssh-add (a file without the .kdbx extension).
+    KPXC_DB = "${config.home.homeDirectory}/Documents/Passwords/keepass";
     XCURSOR_THEME = "catppuccin-mocha-dark-cursors";
     XCURSOR_SIZE = "24";
     HYPRCURSOR_THEME = "catppuccin-mocha-dark-cursors";
