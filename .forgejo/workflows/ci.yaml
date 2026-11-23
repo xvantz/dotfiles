@@ -1,4 +1,8 @@
 name: ci
+# No `uses:` steps on purpose: the nix runner image carries no Node.js, and a JS
+# action (actions/checkout, actions/cache) dies with exit 127 before any step body
+# runs. The clone is done by hand; the flake-source cache went with it, since a
+# fresh container has no store to warm anyway.
 on: [push, pull_request]
 
 jobs:
@@ -10,17 +14,17 @@ jobs:
         sandbox = false
         filter-syscalls = false
     steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - name: Cache nix flake sources
-        uses: actions/cache@v4
-        continue-on-error: true
-        with:
-          path: ~/.cache/nix
-          key: nix-flake-${{ hashFiles('flake.lock') }}
-          restore-keys: nix-flake-
+      # Full history (change detection diffs against the previous push) plus pull
+      # refs, which is how a PR head reaches a clone of the base repo.
+      - name: Checkout
+        run: |
+          set -eu
+          git init -q .
+          git remote add origin "https://git.827482.xyz/${{ github.repository }}.git"
+          git fetch -q --no-tags origin '+refs/heads/*:refs/remotes/origin/*' '+refs/pull/*:refs/pull/*'
+          # GITHUB_SHA can name a merge commit that only exists in the ref, hence the fallback.
+          git checkout -q --detach "$GITHUB_SHA" || git checkout -q --detach "$(git rev-parse "$GITHUB_REF")"
+          git --no-pager log --oneline -1
 
       - name: Auth for private flake inputs
         run: |
