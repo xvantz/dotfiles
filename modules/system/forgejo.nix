@@ -103,7 +103,8 @@ in {
             "node:docker://node:lts-bookworm"
             "python:docker://python:3.12-bookworm"
             "go:docker://golang:1.23-bookworm"
-            "nix:docker://nixos/nix:latest"
+            # Pinned: a floating tag can swap the image under CI with no local commit.
+            "nix:docker://nixos/nix:2.36.0"
           ];
           container = {
             network = "host";
