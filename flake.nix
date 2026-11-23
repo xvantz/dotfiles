@@ -40,9 +40,7 @@
     };
 
     skills = {
-      type = "github";
-      owner = "xvantz";
-      repo = "skills";
+      url = "git+ssh://git@github.com/xvantz/skills";
     };
 
     sync-agent = {
