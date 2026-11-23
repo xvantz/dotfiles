@@ -1,0 +1,62 @@
+name: leakscan
+# Страж публичной поверхности: ищет приватные термины в диффах, сообщениях коммитов
+# и теле PR. Термины приходят из секрета LEAK_TERMS (по строке на термин), а не из репозитория.
+# Сам сканер - modules/system/hermes/scripts/leakscan (код, не знания: поэтому публичный).
+#
+# Пока секрет не задан, джоба честно предупреждает и не падает: защита не настроена,
+# но и не блокирует работу. Как только секрет появится — проверка становится обязательной.
+on: [push, pull_request]
+
+jobs:
+  leakscan:
+    runs-on: nix
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Настроен ли список терминов
+        id: conf
+        run: |
+          if [ -n "${{ secrets.LEAK_TERMS }}" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Список терминов не задан
+        if: steps.conf.outputs.ok != 'true'
+        run: |
+          echo "::warning::секрет LEAK_TERMS не задан — проверка публичной поверхности выключена"
+          echo "Задай репозиторный секрет LEAK_TERMS: приватные термины проекта, по одному на строку."
+
+      - name: Проверка диффа и сообщений коммитов
+        if: steps.conf.outputs.ok == 'true'
+        run: |
+          set -eu
+          printf '%s\n' "${{ secrets.LEAK_TERMS }}" > "$RUNNER_TEMP/leak-terms.txt"
+          SCAN=modules/system/hermes/scripts/leakscan
+
+          base="${{ github.event.before }}"
+          if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
+            base="origin/${{ github.base_ref }}"
+          fi
+          if [ "$base" = "origin/" ]; then
+            base="HEAD~1"
+          fi
+          echo "диапазон: $base..HEAD"
+
+          "$SCAN" --terms "$RUNNER_TEMP/leak-terms.txt" --require-terms --range "$base..HEAD"
+
+      - name: Проверка тела PR
+        if: github.event_name == 'pull_request' && steps.conf.outputs.ok == 'true'
+        run: |
+          set -eu
+          SCAN=modules/system/hermes/scripts/leakscan
+          body=$(jq -r '.pull_request.body // empty' "$GITHUB_EVENT_PATH")
+          title=$(jq -r '.pull_request.title // empty' "$GITHUB_EVENT_PATH")
+          if [ -z "$body$title" ]; then
+            echo "тело и заголовок PR пусты, пропускаю"
+            exit 0
+          fi
+          printf '%s\n%s\n' "$title" "$body" | "$SCAN" --terms "$RUNNER_TEMP/leak-terms.txt" --require-terms --text -
