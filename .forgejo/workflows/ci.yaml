@@ -28,7 +28,7 @@ jobs:
 
       - name: Auth for private flake inputs
         run: |
-          printf 'machine git.827482.xyz login ci password %s\n' '${{ secrets.FORGEJO_READ_TOKEN }}' > "$HOME/.netrc"
+          printf 'machine git.827482.xyz login ci password %s\n' '${{ secrets.READ_TOKEN }}' > "$HOME/.netrc"
           chmod 600 "$HOME/.netrc"
 
       - name: Detect changed areas
