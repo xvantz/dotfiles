@@ -5,15 +5,29 @@ name: leakscan
 #
 # Пока секрет не задан, джоба честно предупреждает и не падает: защита не настроена,
 # но и не блокирует работу. Как только секрет появится — проверка становится обязательной.
+#
+# No `uses:` steps and no jq/python on the runner image: the clone is done by hand,
+# and the scanner plus jq are pulled from nixpkgs at run time.
 on: [push, pull_request]
 
 jobs:
   leakscan:
     runs-on: nix
+    env:
+      NIX_CONFIG: |
+        experimental-features = nix-command flakes
+        sandbox = false
+        filter-syscalls = false
     steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
+      - name: Checkout
+        run: |
+          set -eu
+          git init -q .
+          git remote add origin "https://git.827482.xyz/${{ github.repository }}.git"
+          git fetch -q --no-tags origin '+refs/heads/*:refs/remotes/origin/*' '+refs/pull/*:refs/pull/*'
+          # GITHUB_SHA can name a merge commit that only exists in the ref, hence the fallback.
+          git checkout -q --detach "$GITHUB_SHA" || git checkout -q --detach "$(git rev-parse "$GITHUB_REF")"
+          git --no-pager log --oneline -1
 
       - name: Настроен ли список терминов
         id: conf
@@ -46,17 +60,19 @@ jobs:
           fi
           echo "диапазон: $base..HEAD"
 
-          "$SCAN" --terms "$RUNNER_TEMP/leak-terms.txt" --require-terms --range "$base..HEAD"
+          nix shell nixpkgs#python3 --command python3 "$SCAN" \
+            --terms "$RUNNER_TEMP/leak-terms.txt" --require-terms --range "$base..HEAD"
 
       - name: Проверка тела PR
         if: github.event_name == 'pull_request' && steps.conf.outputs.ok == 'true'
         run: |
           set -eu
           SCAN=modules/system/hermes/scripts/leakscan
-          body=$(jq -r '.pull_request.body // empty' "$GITHUB_EVENT_PATH")
-          title=$(jq -r '.pull_request.title // empty' "$GITHUB_EVENT_PATH")
+          title=$(nix shell nixpkgs#jq --command jq -r '.pull_request.title // empty' "$GITHUB_EVENT_PATH")
+          body=$(nix shell nixpkgs#jq --command jq -r '.pull_request.body // empty' "$GITHUB_EVENT_PATH")
           if [ -z "$body$title" ]; then
             echo "тело и заголовок PR пусты, пропускаю"
             exit 0
           fi
-          printf '%s\n%s\n' "$title" "$body" | "$SCAN" --terms "$RUNNER_TEMP/leak-terms.txt" --require-terms --text -
+          printf '%s\n%s\n' "$title" "$body" | nix shell nixpkgs#python3 --command python3 "$SCAN" \
+            --terms "$RUNNER_TEMP/leak-terms.txt" --require-terms --text -
